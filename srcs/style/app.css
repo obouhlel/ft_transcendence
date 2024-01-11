@@ -1,0 +1,130 @@
+header
+{
+	background-color: rgba(0, 0, 0, 0.5);
+	height: 3em;
+	width: 100%;
+	position: fixed;
+	padding-top: 0.25em;
+	padding-bottom: 0.25em;
+}
+
+header h1
+{
+	font-family: Arial, Helvetica, sans-serif;
+	color: #fff;
+	text-align: center;
+	font-size: 2.5em;
+	font-weight: 300;
+	margin: 0;
+	padding: 0;
+}
+
+footer
+{
+	height: 1em;
+	width: 100%;
+	position: absolute;
+	bottom: 5px;
+}
+
+footer p
+{
+	font-family: Arial, Helvetica, sans-serif;
+	color: #000;
+	text-align: center;
+	font-size: 0.75em;
+}
+
+main
+{
+	width: calc(100vw - (5px * 2));
+	height: calc(100vh - (3em + 1em + 5px + (5px * 2)));
+	display: block;
+	background: radial-gradient(circle, #328043, #32806e);
+	position: fixed;
+	top: calc(3em);
+	left: 0;
+	border: 5px solid #000;
+}
+
+/* Players */
+
+.Player
+{
+	display: flex;
+	position: absolute;
+	width: 20px;
+	height: 125px;
+	background: linear-gradient(to top,  #292d5c, cyan, #292d5c);
+	border-radius: 5px;
+	border: 1px solid #000;
+	box-shadow: inset 0 0 20px #292d5c;
+}
+
+#playerLeft
+{
+	position: absolute;
+	top: calc(50vh - ((127px + 3em + 1em + 5px + (5px * 2)) / 2));
+	left: 20px;
+}
+
+#playerRight
+{
+	position: absolute;
+	top: calc(50vh - ((127px + 3em + 1em + 5px + (5px * 2)) / 2));
+	right: 20px;
+}
+
+/* Ball */
+
+.Ball
+{
+	display: flex;
+	width: 50px;
+	height: 50px;
+	background: radial-gradient(circle, yellow, #000);
+	border: 1px solid #000;
+	border-radius: 50%;
+}
+
+#ball
+{
+	position: absolute;
+	top: calc(50vh - ((50px + 3em + 1em + 5px + (5px * 2)) / 2));
+	left: calc(50vw - ((50px + (5px * 2)) / 2));
+}
+
+/* Score */
+
+.Score
+{
+	display: flex;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 50px;
+
+}
+
+.ScoreLeft
+{
+	display: block;
+	width: 48%;
+	height: 100%;
+	text-align: right;
+	padding-right: 2%;
+	font-size: 40px;
+	font-family: Impact, 'Arial Narrow Bold', sans-serif;
+}
+
+.ScoreRight
+{
+	display: block;
+	width: 48%;
+	height: 100%;
+	text-align: left;
+	padding-left: 2%;
+	font-size: 40px;
+	font-family: Impact, 'Arial Narrow Bold', sans-serif;
+}
