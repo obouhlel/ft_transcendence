@@ -16,6 +16,12 @@ const copy = createElt('p', 'copy', '© 2024 - All rights reserved');
 if (copy)
 	footer.appendChild(copy);
 
+/* Start Button */
+
+const startButton = createElt('button', 'StartButton', 'Start');
+if (startButton)
+	main.appendChild(startButton);
+
 /* Score */
 
 const score = createElt('div', 'Score');
@@ -32,12 +38,10 @@ if (scoreRight)
 
 /* Ball */
 
-const ball = createElt('div', 'Ball');
+export const ball = createElt('div', 'Ball');
 ball.id = 'ball';
 if (ball)
 	main.appendChild(ball);
-
-setInterval(moveBall, 1);
 
 /* Players */
 
@@ -51,7 +55,19 @@ playerRight.id = 'playerRight';
 if (playerRight)
 	main.appendChild(playerRight);
 
-window.addEventListener('keydown', (event) => handleKeyDown(event));
-window.addEventListener('keyup', (event) => handleKeyUp(event));
-window.addEventListener('keydown', () => move());
-window.addEventListener('keyup', () => move());
+startButton.addEventListener('click', () => {
+	handleButton();
+});
+
+function handleButton() {
+		ball.style.display = 'block';
+		playerLeft.style.display = 'block';
+		playerRight.style.display = 'block';
+		score.style.display = 'flex';
+		startButton.style.display = 'none';
+		window.addEventListener('keydown', (event) => handleKeyDown(event));
+		window.addEventListener('keyup', (event) => handleKeyUp(event));
+		window.addEventListener('keydown', () => move());
+		window.addEventListener('keyup', () => move());
+		setInterval(moveBall, 5);
+}

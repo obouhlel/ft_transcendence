@@ -1,0 +1,92 @@
+/* Arena */
+.Arena
+{
+	display: block;
+	width: 90%;
+	height: 85vh;
+	margin-top: 3vh;
+	margin-bottom: 3vh;
+	margin-left: auto;
+	margin-right: auto;
+	background: linear-gradient(to right, blue, black, red);
+	border: solid 2px #000;
+}
+
+/* Players */
+
+.Player
+{
+	display: block;
+	position: absolute;
+	width: 20px;
+	height: 150px;
+	background: linear-gradient(to top,  white, black, white);
+	border-radius: 5px;
+	border: 1px solid #000;
+	box-shadow: inset 0 0 10px white;
+}
+
+#playerLeft
+{
+	position: absolute;
+	top: calc(50% - (150px / 2));
+	left: 7%;
+}
+
+#playerRight
+{
+	position: absolute;
+	top: calc(50% - (150px / 2));
+	right: 7%;
+}
+
+/* Ball */
+
+.Ball
+{
+	display: block;
+	width: 50px;
+	height: 50px;
+	background: radial-gradient(circle, white, #000);
+	box-shadow: inset 0 0 1px #fff;
+	border: 1px solid #fff;
+	border-radius: 50%;
+	position: absolute;
+	top: calc(50% - (50px / 2));
+	left: calc(50% - (50px / 2));
+}
+
+/* Score */
+
+.Score
+{
+	display: block;
+	position: relative;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 50px;
+	color: #fff;
+}
+
+.ScoreLeft
+{
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+	text-align: right;
+	padding-right: 2%;
+	font-size: 40px;
+	font-family: Impact, 'Arial Narrow Bold', sans-serif;
+}
+
+.ScoreRight
+{
+	display: inline-block;
+	width: 50%;
+	height: 100%;
+	text-align: left;
+	padding-left: 2%;
+	font-size: 40px;
+	font-family: Impact, 'Arial Narrow Bold', sans-serif;
+}
