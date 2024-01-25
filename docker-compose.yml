@@ -1,0 +1,29 @@
+version: '3'
+services:
+  # db:
+  #   image: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: password
+  #     POSTGRES_DB: transcendance_db
+
+  web:
+    build:
+      context: ./srcs/
+      dockerfile: Dockerfile
+    restart: always
+    # depends_on:
+    #   - db
+    ports:
+      - 8000:8000
+
+  nginx:
+    image: nginx
+    restart: always
+    depends_on:
+      - web
+    ports:
+      - "0.0.0.0:8080:80"
+    volumes:
+      - ./srcs/nginx.conf:/etc/nginx/nginx.conf
