@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sleep 5
+
 python /app/django/manage.py makemigrations
 python /app/django/manage.py migrate
 
