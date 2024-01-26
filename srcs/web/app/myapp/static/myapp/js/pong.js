@@ -44,7 +44,7 @@ export function pong3D() {
 	class Player {
 		constructor(playerType, scene) {
 			this.type = playerType;
-			this.speed = 0.1;
+			this.speed = 0.15;
 			this.cube = new THREE.Mesh( new THREE.BoxGeometry( 0.5, 2, 0.5 ), new THREE.MeshStandardMaterial( { color: 0xff0000 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 			this.score = 0;
@@ -104,8 +104,7 @@ export function pong3D() {
 
 	class Ball {
 		constructor(scene) {
-			this.speed = 0.1;
-			this.needReset = 0;
+			this.speed = 0.2;
 			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
@@ -119,9 +118,11 @@ export function pong3D() {
 
 		move(playerLeft, playerRight, arena) {
 
-			if (this.speed > 0.1) {
+			// After pinch (slow systeme)
+			if (this.speed > 0.2) {
 				this.speed -= 0.1;
 			}
+
 			// If the ball hit the bottom or top
 			this.hitbox.setFromObject(this.cube);
 			arena.hitbox.setFromObject(arena.cube);
@@ -147,6 +148,7 @@ export function pong3D() {
 				this.direction = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, this.cube.position.y - playerRight.cube.position.y, 0);
 			}
 
+			// Pinch
 			if (this.hitbox.max.y >= arena.hitbox.max.y && this.hitbox.min.y <= playerLeft.hitbox.max.y
 				&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
 				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
@@ -170,12 +172,14 @@ export function pong3D() {
 					this.speed = 2;
 			}
 
+			// AntiBlock system
 			if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
-				this.direction.x = 0.5;
+				this.direction.x = 0.2;
 			} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
-				this.direction.x = -0.5
+				this.direction.x = -0.2;
 			}
 
+			// Setup the director vector
 			this.direction.normalize();
 			this.direction.multiplyScalar(this.speed);
 			this.cube.position.add(this.direction);
