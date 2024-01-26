@@ -3,6 +3,8 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const X_SIZE_MAP = 20;
+
 // ------------------------------------setup------------------------------------
 // Font gestion
 let textScore, theFont;
@@ -31,7 +33,7 @@ export function pong3D() {
 
 	class Arena {
 		constructor(scene) {
-			this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(20, 20, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
+			this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(X_SIZE_MAP, 20, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
 			// this.cube.castShadow = true;
@@ -50,9 +52,9 @@ export function pong3D() {
 			this.score = 0;
 
 			if (playerType == "left") {
-				this.cube.position.x = -9;
+				this.cube.position.x = -(X_SIZE_MAP/2) + 1;
 			} else if (playerType == "right") {
-				this.cube.position.x = 9;
+				this.cube.position.x = X_SIZE_MAP/2 -1;
 			}
 			this.cube.position.z = -0.3;
 
@@ -131,10 +133,10 @@ export function pong3D() {
 			}
 
 			// If the ball go through the player line (scoring)
-			if (this.cube.position.x >= 10) {
+			if (this.cube.position.x >= X_SIZE_MAP/2) {
 				playerLeft.score += 1;
 				this.reset();
-			} else if (this.cube.position.x <= -10) {
+			} else if (this.cube.position.x <= -(X_SIZE_MAP/2)) {
 				playerRight.score += 1;
 				this.reset();
 			}
@@ -237,7 +239,7 @@ export function pong3D() {
 	scene.add( title );
 	
 	// Floor
-	const floor = new THREE.Mesh( new THREE.BoxGeometry( 20, 20, 0.1 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
+	const floor = new THREE.Mesh( new THREE.BoxGeometry( X_SIZE_MAP, 20, 0.1 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
 	
 	floor.position.z = -0.6;
 	floor.receiveShadow = true;
@@ -247,7 +249,7 @@ export function pong3D() {
 	// Camera
 	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 	camera.position.y = -10;
-	camera.position.z = 15;
+	camera.position.z = X_SIZE_MAP - 5;
 	camera.rotation.x = 0.55;
 	
 	let controls = new OrbitControls(camera, renderer.domElement);
@@ -267,7 +269,7 @@ export function pong3D() {
 	// Directional light that enlighte all the elements
 	const globalLight = new THREE.DirectionalLight( 0xffffff , 1 );
 	// Setup the position of both light
-	spot.position.set( 0, 0, 10 );
+	spot.position.set( 0, 0, X_SIZE_MAP/2 );
 	globalLight.position.set( 0, -20, 10 );
 	
 	// Enable shadow casting
@@ -275,8 +277,8 @@ export function pong3D() {
 	spot.castShadow = true;
 	
 	// Setup the light data and fov
-	globalLight.shadow.camera.left = -10;
-	globalLight.shadow.camera.right = 10;
+	globalLight.shadow.camera.left = -(X_SIZE_MAP/2);
+	globalLight.shadow.camera.right = X_SIZE_MAP/2;
 	globalLight.shadow.camera.top = 10;
 	globalLight.shadow.camera.bottom = -10;
 	globalLight.shadow.camera.near = 0.5;
