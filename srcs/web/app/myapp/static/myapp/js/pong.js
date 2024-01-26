@@ -105,6 +105,7 @@ export function pong3D() {
 	class Ball {
 		constructor(scene) {
 			this.speed = 0.1;
+			this.needReset = 0;
 			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
@@ -117,13 +118,10 @@ export function pong3D() {
 		}
 
 		move(playerLeft, playerRight, arena) {
-			this.direction.normalize();
-			this.direction.multiplyScalar(this.speed);
-			this.cube.position.add(this.direction);
 
-			// Don't need to update the arena hitbox because it's a static object
-			//arena.hitbox.setFromObject(arena.cube);
-
+			if (this.speed > 0.1) {
+				this.speed -= 0.1;
+			}
 			// If the ball hit the bottom or top
 			this.hitbox.setFromObject(this.cube);
 			arena.hitbox.setFromObject(arena.cube);
@@ -144,12 +142,43 @@ export function pong3D() {
 			playerLeft.hitbox.setFromObject(playerLeft.cube);
 			playerRight.hitbox.setFromObject(playerRight.cube);
 			if (this.hitbox.intersectsBox(playerLeft.hitbox)) {
-				let vec = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, this.cube.position.y - playerLeft.cube.position.y, 0);
-				this.direction = vec;
+				this.direction = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, this.cube.position.y - playerLeft.cube.position.y, 0);
 			} else if (this.hitbox.intersectsBox(playerRight.hitbox)) {
-				let vec = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, this.cube.position.y - playerRight.cube.position.y, 0);
-				this.direction = vec;
+				this.direction = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, this.cube.position.y - playerRight.cube.position.y, 0);
 			}
+
+			if (this.hitbox.max.y >= arena.hitbox.max.y && this.hitbox.min.y <= playerLeft.hitbox.max.y
+				&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
+				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(1, -0.5, 0);
+					this.speed = 2;
+			} else if (this.hitbox.max.y >= arena.hitbox.max.y && this.hitbox.min.y <= playerRight.hitbox.max.y
+				&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
+				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(-1, -0.5, 0);
+					this.speed = 2;
+			}
+			if (this.hitbox.min.y <= arena.hitbox.min.y && this.hitbox.max.y >= playerLeft.hitbox.min.y
+				&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
+				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(1, 0.5, 0);
+					this.speed = 2;
+			} else if (this.hitbox.min.y <= arena.hitbox.min.y && this.hitbox.max.y >= playerRight.hitbox.min.y
+				&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
+				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(-1, 0.5, 0);
+					this.speed = 2;
+			}
+
+			if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
+				this.direction.x = 0.5;
+			} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
+				this.direction.x = -0.5
+			}
+
+			this.direction.normalize();
+			this.direction.multiplyScalar(this.speed);
+			this.cube.position.add(this.direction);
 		}
 
 		reset() {
@@ -298,51 +327,33 @@ export function pong3D() {
 			playerRight.score = 0;
 			ball.reset();
 		}
-		if (keys['+']) {
-			camera.rotation.x += 0.01;
-		}
-		if (keys['-']) {
-			camera.rotation.x -= 0.01;
-		}
-		if (keys['8']) {
-			camera.position.y += 0.1;
+		if (keys['4']) {
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerLeft.cube.position.x;
+			ball.cube.position.y = playerLeft.cube.position.y + 2;
 		}
 		if (keys['5']) {
-			camera.position.z += 0.1;
-		}
-		if (keys['2']) {
-			camera.position.y -= 0.1;
-		}
-		if (keys['4']) {
-			camera.position.x -= 0.1;
-		}
-		if (keys['6']) {
-			camera.position.x += 0.1;
-		}
-		if (keys['0']) {
-			camera.position.z -= 0.1;
-		}
-		if (keys['7']) {
-			camera.rotation.z += 0.01;
-		}
-		if (keys['9']) {
-			camera.rotation.z -= 0.01;
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerRight.cube.position.x;
+			ball.cube.position.y = playerRight.cube.position.y + 2;
 		}
 		if (keys['1']) {
-			camera.rotation.y += 0.01;
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerLeft.cube.position.x;
+			ball.cube.position.y = playerLeft.cube.position.y - 2;
 		}
-		if (keys['3']) {
-			camera.rotation.y -= 0.01;
-		}
-		if (keys['d']) {
-			playerLeft.speed += 0.01;
-			playerRight.speed += 0.01;
-			ball.speed += 0.01;
-		}
-		if (keys['a']) {
-			playerLeft.speed -= 0.01;
-			playerRight.speed -= 0.01;
-			ball.speed -= 0.01;
+		if (keys['2']) {
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerRight.cube.position.x;
+			ball.cube.position.y = playerRight.cube.position.y - 2;
 		}
 	}
 	
@@ -358,6 +369,7 @@ export function pong3D() {
 				memGoing = true;
 				ball.reset();
 			}
+			
 			ball.move(playerLeft, playerRight, arena);
 			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
 			debug();
