@@ -104,7 +104,7 @@ export function pong3D() {
 
 	class Ball {
 		constructor(scene) {
-			this.speed = 0.15;
+			this.speed = 0.2;
 			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
@@ -119,7 +119,7 @@ export function pong3D() {
 		move(playerLeft, playerRight, arena) {
 
 			// After pinch (slow systeme)
-			if (this.speed > 0.15) {
+			if (this.speed > 0.2) {
 				this.speed -= 0.1;
 			}
 
@@ -215,9 +215,9 @@ export function pong3D() {
 		playerRight.score = 0;
 	});
 
+	// Get the header and footer rect box
 	const headerRect = document.querySelector('header').getBoundingClientRect();
 	const footerRect = document.querySelector('footer').getBoundingClientRect();
-
 
 	const scene = new THREE.Scene();
 	const renderer = new THREE.WebGLRenderer();
@@ -261,14 +261,20 @@ export function pong3D() {
 	const playerLeft = new Player("left", scene);
 	const playerRight = new Player("right", scene);
 	
+	// ------------------------------------light------------------------------------
+	// Spot light that follow the ball
 	const spot = new THREE.SpotLight( 0xffffff, 50, 100, Math.PI / 8, 0);
+	// Directional light that enlighte all the elements
 	const globalLight = new THREE.DirectionalLight( 0xffffff , 1 );
+	// Setup the position of both light
 	spot.position.set( 0, 0, 10 );
 	globalLight.position.set( 0, -20, 10 );
 	
+	// Enable shadow casting
 	globalLight.castShadow = true;
 	spot.castShadow = true;
 	
+	// Setup the light data and fov
 	globalLight.shadow.camera.left = -10;
 	globalLight.shadow.camera.right = 10;
 	globalLight.shadow.camera.top = 10;
@@ -325,6 +331,7 @@ export function pong3D() {
 		scene.add( textScore );
 	}
 	
+	// To delete (cheats for debug)
 	function debug() {
 		if (keys['r']) {
 			playerLeft.score = 0;
