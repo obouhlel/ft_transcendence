@@ -1,5 +1,5 @@
 import { home } from './home.js';
-import { pong } from './pong.js';
+import { pong3D } from './pong.js';
 
 export function route()
 {
@@ -11,7 +11,7 @@ export function route()
     else if (pathname === '/home/')
         home();
     else if (pathname === '/pong/')
-        pong();
+        pong3D();
     else
         home();
 }

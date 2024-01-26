@@ -1,25 +1,46 @@
-import { main } from './app.js';
 import * as THREE from 'three';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// ------------------------------------setup------------------------------------
+// Font gestion
+let textScore, theFont;
+function loadFont(url) {
+	return new Promise((resolve, reject) => {
+		const loader = new FontLoader();
 
-export function pong()
-{
+		loader.load(url, function (font) {
+			resolve(font);
+		}, undefined, function (error) {
+			reject(error);
+		});
+	});
+}
+
+// Wait for the font to be loaded (async)
+await loadFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json')
+	.then(font => {
+		theFont = font;
+	})
+	.catch(error => {
+		console.log("the font could not be loaded: " + error);
+	});
+
+export function pong3D() {
 
 	class Arena {
 		constructor(scene) {
 			this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(20, 20, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
-	
+
 			// this.cube.castShadow = true;
 			// this.cube.receiveShadow = true;
-	
+
 			scene.add( this.cube );
 		}
 	}
-	
+
 	class Player {
 		constructor(playerType, scene) {
 			this.type = playerType;
@@ -27,20 +48,20 @@ export function pong()
 			this.cube = new THREE.Mesh( new THREE.BoxGeometry( 0.5, 2, 0.5 ), new THREE.MeshStandardMaterial( { color: 0xff0000 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 			this.score = 0;
-	
+
 			if (playerType == "left") {
 				this.cube.position.x = -9;
 			} else if (playerType == "right") {
 				this.cube.position.x = 9;
 			}
-			this.cube.position.z = -0.25;
-	
+			this.cube.position.z = -0.3;
+
 			this.cube.castShadow = true;
 			this.cube.receiveShadow = true;
-	
+
 			scene.add( this.cube );
 		}
-	
+
 		move(keys, arena) {
 			this.hitbox.setFromObject(this.cube);
 			if (this.type == "left") {
@@ -75,12 +96,12 @@ export function pong()
 				}
 			}
 		}
-	
+
 		reset() {
 			this.cube.position.y = 0;
 		}
 	}
-	
+
 	class Ball {
 		constructor(scene) {
 			this.speed = 0.1;
@@ -88,28 +109,28 @@ export function pong()
 			this.dirY = 0;
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
-	
+
 			this.cube.position.z = -0.2;
-	
+
 			this.cube.castShadow = true;
 			this.cube.receiveShadow = true;
 			scene.add( this.cube );
 		}
-	
+
 		move(playerLeft, playerRight, arena) {
 			this.cube.position.x += this.speed * this.dirX;
 			this.cube.position.y += this.speed * this.dirY;
-	
+
 			// Don't need to update the arena hitbox because it's a static object
 			//arena.hitbox.setFromObject(arena.cube);
-	
+
 			// If the ball hit the bottom or top
 			this.hitbox.setFromObject(this.cube);
 			arena.hitbox.setFromObject(arena.cube);
 			if (this.hitbox.max.y >= arena.hitbox.max.y || this.hitbox.min.y <= arena.hitbox.min.y) {
 				this.dirY *= -1;
 			}
-	
+
 			// If the ball go through the player line (scoring)
 			if (this.cube.position.x >= 10) {
 				playerLeft.score += 1;
@@ -118,7 +139,7 @@ export function pong()
 				playerRight.score += 1;
 				this.reset();
 			}
-	
+
 			// If the ball hit the player (bounce)
 			playerLeft.hitbox.setFromObject(playerLeft.cube);
 			playerRight.hitbox.setFromObject(playerRight.cube);
@@ -131,7 +152,7 @@ export function pong()
 			}
 			
 		}
-	
+
 		reset() {
 			updateScore();
 			this.cube.position.x = 0;
@@ -142,37 +163,33 @@ export function pong()
 			playerRight.reset();
 		}
 	}
-	
-	// ------------------------------------setup------------------------------------
-	// Scene
+
+	let going = false;
+	let memGoing =  false;
+
+	const main = document.querySelector("main");
+
+	const container = document.createElement("div");
+	container.id = "pong";
+	main.appendChild( container );
+
+	const button = document.createElement("button");
+	button.id = "buttonPong3D";
+	button.innerHTML = "PLAY";
+	container.appendChild( button );
+	button.addEventListener("click", () => {
+		going = true;
+		button.style.display = "none";
+		playerLeft.score = 0;
+		playerRight.score = 0;
+	});
+
 	const scene = new THREE.Scene();
 	const renderer = new THREE.WebGLRenderer();
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	document.body.appendChild( renderer.domElement );
-	
-	// Font gestion
-	let textScore, theFont;
-	function loadFont(url) {
-		return new Promise((resolve, reject) => {
-			const loader = new FontLoader();
-	
-			loader.load(url, function (font) {
-				resolve(font);
-			}, undefined, function (error) {
-				reject(error);
-			});
-		});
-	}
-	// Wait for the font to be loaded (async)
-	// await loadFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json')
-	// 	.then(font => {
-	// 		theFont = font;
-	// 	})
-	// 	.catch(error => {
-	// 		console.log("the font could not be loaded: " + error);
-	// 	});
+	container.appendChild( renderer.domElement );
 	
 	// 3d Title
 	const title = new THREE.Mesh( doTextGeo("PONG", 5, true), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
@@ -185,9 +202,9 @@ export function pong()
 	scene.add( title );
 	
 	// Floor
-	const floor = new THREE.Mesh( new THREE.PlaneGeometry( 20, 20 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
+	const floor = new THREE.Mesh( new THREE.BoxGeometry( 20, 20, 0.1 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
 	
-	floor.position.z = -0.5;
+	floor.position.z = -0.6;
 	floor.receiveShadow = true;
 	floor.castShadow = true;
 	scene.add( floor );
@@ -258,19 +275,19 @@ export function pong()
 	
 		if (playerLeft.score == 10 || playerRight.score == 10) {
 			// End of the game
-			playerLeft.score = 0;
-			playerRight.score = 0;
-			ball.reset();
-		} else {
-			let scoreString = playerLeft.score.toString() + " - " + playerRight.score.toString();
-			textScore = new THREE.Mesh( doTextGeo(scoreString, 1.5), new THREE.MeshBasicMaterial( { color: 0xffffff } ) );	
-			
-			// Add to the scene and set positions
-			textScore.position.x = -2;
-			textScore.position.y = 11;
-			textScore.position.z = 1;
-			scene.add( textScore );
+			button.innerHTML = "RESTART";
+			button.style.display = "block";
+			going = false;
+			memGoing = false;
 		}
+		let scoreString = playerLeft.score.toString() + " - " + playerRight.score.toString();
+		textScore = new THREE.Mesh( doTextGeo(scoreString, 1.5), new THREE.MeshBasicMaterial( { color: 0xffffff } ) );	
+		
+		// Add to the scene and set positions
+		textScore.position.x = -2;
+		textScore.position.y = 11;
+		textScore.position.z = 1;
+		scene.add( textScore );
 	}
 	
 	function debug() {
@@ -329,18 +346,24 @@ export function pong()
 	
 	// ------------------------------------loop------------------------------------
 	function animate() {
-		requestAnimationFrame( animate );
-	
-		playerLeft.move(keys, arena);
-		playerRight.move(keys, arena);
-		ball.move(playerLeft, playerRight, arena);
-		spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
-		debug();
-	
-		controls.update();
-	
-		renderer.render( scene, camera );
+			requestAnimationFrame( animate );
+		
+			if (going) {
+				playerLeft.move(keys, arena);
+				playerRight.move(keys, arena);
+			}
+			if (going && !memGoing) {
+				memGoing = true;
+				ball.reset();
+			}
+			ball.move(playerLeft, playerRight, arena);
+			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
+			debug();
+		
+			controls.update();
+		
+			renderer.render( scene, camera );
 	}
-	
+
 	animate();
 }
