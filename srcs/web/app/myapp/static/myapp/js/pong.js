@@ -3,8 +3,6 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import { getElt } from './utils.js';
-
 // ------------------------------------setup------------------------------------
 // Font gestion
 let textScore, theFont;
@@ -107,8 +105,7 @@ export function pong3D() {
 	class Ball {
 		constructor(scene) {
 			this.speed = 0.1;
-			this.dirX = Math.round(Math.random()) * 2 - 1;
-			this.dirY = 0;
+			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
@@ -120,8 +117,9 @@ export function pong3D() {
 		}
 
 		move(playerLeft, playerRight, arena) {
-			this.cube.position.x += this.speed * this.dirX;
-			this.cube.position.y += this.speed * this.dirY;
+			this.direction.normalize();
+			this.direction.multiplyScalar(this.speed);
+			this.cube.position.add(this.direction);
 
 			// Don't need to update the arena hitbox because it's a static object
 			//arena.hitbox.setFromObject(arena.cube);
@@ -130,7 +128,7 @@ export function pong3D() {
 			this.hitbox.setFromObject(this.cube);
 			arena.hitbox.setFromObject(arena.cube);
 			if (this.hitbox.max.y >= arena.hitbox.max.y || this.hitbox.min.y <= arena.hitbox.min.y) {
-				this.dirY *= -1;
+				this.direction.y *= -1
 			}
 
 			// If the ball go through the player line (scoring)
@@ -145,22 +143,20 @@ export function pong3D() {
 			// If the ball hit the player (bounce)
 			playerLeft.hitbox.setFromObject(playerLeft.cube);
 			playerRight.hitbox.setFromObject(playerRight.cube);
-			if (this.hitbox.min.x <= playerLeft.hitbox.max.x && this.hitbox.min.x > playerLeft.hitbox.min.x && this.hitbox.max.y >= playerLeft.hitbox.min.y && this.hitbox.min.y <= playerLeft.hitbox.max.y) {
-				this.dirY = (this.cube.position.y - playerLeft.cube.position.y) / 2;
-				this.dirX = 1;
-			} else if (this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x < playerRight.hitbox.max.x && this.hitbox.max.y >= playerRight.hitbox.min.y && this.hitbox.min.y <= playerRight.hitbox.max.y) {
-				this.dirY = (this.cube.position.y - playerRight.cube.position.y) / 2;
-				this.dirX = -1;
+			if (this.hitbox.intersectsBox(playerLeft.hitbox)) {
+				let vec = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, this.cube.position.y - playerLeft.cube.position.y, 0);
+				this.direction = vec;
+			} else if (this.hitbox.intersectsBox(playerRight.hitbox)) {
+				let vec = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, this.cube.position.y - playerRight.cube.position.y, 0);
+				this.direction = vec;
 			}
-			
 		}
 
 		reset() {
 			updateScore();
 			this.cube.position.x = 0;
 			this.cube.position.y = 0;
-			this.dirX = Math.round(Math.random()) * 2 - 1;
-			this.dirY = 0;
+			this.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
 			playerLeft.reset();
 			playerRight.reset();
 		}
