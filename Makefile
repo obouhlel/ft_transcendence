@@ -1,9 +1,9 @@
-DOCKER=transcendance-web-1
+DOCKER=ft_transcendance-web-1
 
 all: up
 
 exec:
-	docker exec -it $(DOCKER) bash
+	docker exec -it $(DOCKER) sh
 
 ps:
 	docker compose ps
