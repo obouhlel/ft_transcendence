@@ -104,7 +104,7 @@ export function pong3D() {
 
 	class Ball {
 		constructor(scene) {
-			this.speed = 0.2;
+			this.speed = 0.15;
 			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
@@ -119,7 +119,7 @@ export function pong3D() {
 		move(playerLeft, playerRight, arena) {
 
 			// After pinch (slow systeme)
-			if (this.speed > 0.2) {
+			if (this.speed > 0.15) {
 				this.speed -= 0.1;
 			}
 
