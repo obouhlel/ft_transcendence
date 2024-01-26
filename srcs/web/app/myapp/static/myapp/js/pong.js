@@ -3,6 +3,8 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import { getElt } from './utils.js';
+
 // ------------------------------------setup------------------------------------
 // Font gestion
 let textScore, theFont;
@@ -184,9 +186,13 @@ export function pong3D() {
 		playerRight.score = 0;
 	});
 
+	const headerRect = document.querySelector('header').getBoundingClientRect();
+	const footerRect = document.querySelector('footer').getBoundingClientRect();
+
+
 	const scene = new THREE.Scene();
 	const renderer = new THREE.WebGLRenderer();
-	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( window.innerWidth, window.innerHeight - headerRect.bottom - footerRect.bottom );
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	container.appendChild( renderer.domElement );
