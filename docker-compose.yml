@@ -1,12 +1,14 @@
 version: '3'
 services:
   db:
+    container_name: postgres
     image: postgres
     restart: always
     env_file:
       - .env
 
   web:
+    container_name: django
     build:
       context: ./srcs/web
       dockerfile: Dockerfile
@@ -16,11 +18,13 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./srcs/web/app:/app/django
+      - web:/app/django
+      - staticfiles:/var/www/static/
     env_file:
       - .env
 
   nginx:
+    container_name: nginx
     build:
       context: ./srcs/nginx
       dockerfile: Dockerfile
@@ -29,5 +33,17 @@ services:
       - web
     ports:
       - "0.0.0.0:8080:80"
+    volumes:
+      - staticfiles:/var/www/static/
     env_file:
       - .env
+
+volumes:
+  web:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./srcs/web/app
+      o: bind
+  staticfiles:
+    driver: local
