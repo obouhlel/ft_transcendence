@@ -3,7 +3,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import { getElt } from './utils.js';
+const X_SIZE_MAP = 20;
 
 // ------------------------------------setup------------------------------------
 // Font gestion
@@ -33,7 +33,7 @@ export function pong3D() {
 
 	class Arena {
 		constructor(scene) {
-			this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(20, 20, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
+			this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(X_SIZE_MAP, 20, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
 			// this.cube.castShadow = true;
@@ -52,9 +52,9 @@ export function pong3D() {
 			this.score = 0;
 
 			if (playerType == "left") {
-				this.cube.position.x = -9;
+				this.cube.position.x = -(X_SIZE_MAP/2) + 1;
 			} else if (playerType == "right") {
-				this.cube.position.x = 9;
+				this.cube.position.x = X_SIZE_MAP/2 -1;
 			}
 			this.cube.position.z = -0.3;
 
@@ -107,8 +107,7 @@ export function pong3D() {
 	class Ball {
 		constructor(scene) {
 			this.speed = 0.1;
-			this.dirX = Math.round(Math.random()) * 2 - 1;
-			this.dirY = 0;
+			this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
 			this.cube = new THREE.Mesh( new THREE.SphereGeometry( 0.4, 32, 32), new THREE.MeshStandardMaterial( { color: 0x00ff00 } ) );
 			this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
@@ -120,24 +119,24 @@ export function pong3D() {
 		}
 
 		move(playerLeft, playerRight, arena) {
-			this.cube.position.x += this.speed * this.dirX;
-			this.cube.position.y += this.speed * this.dirY;
 
-			// Don't need to update the arena hitbox because it's a static object
-			//arena.hitbox.setFromObject(arena.cube);
+			// After pinch (slow systeme)
+			if (this.speed > 0.1) {
+				this.speed -= 0.1;
+			}
 
 			// If the ball hit the bottom or top
 			this.hitbox.setFromObject(this.cube);
 			arena.hitbox.setFromObject(arena.cube);
 			if (this.hitbox.max.y >= arena.hitbox.max.y || this.hitbox.min.y <= arena.hitbox.min.y) {
-				this.dirY *= -1;
+				this.direction.y *= -1
 			}
 
 			// If the ball go through the player line (scoring)
-			if (this.cube.position.x >= 10) {
+			if (this.cube.position.x >= X_SIZE_MAP/2) {
 				playerLeft.score += 1;
 				this.reset();
-			} else if (this.cube.position.x <= -10) {
+			} else if (this.cube.position.x <= -(X_SIZE_MAP/2)) {
 				playerRight.score += 1;
 				this.reset();
 			}
@@ -145,22 +144,54 @@ export function pong3D() {
 			// If the ball hit the player (bounce)
 			playerLeft.hitbox.setFromObject(playerLeft.cube);
 			playerRight.hitbox.setFromObject(playerRight.cube);
-			if (this.hitbox.min.x <= playerLeft.hitbox.max.x && this.hitbox.min.x > playerLeft.hitbox.min.x && this.hitbox.max.y >= playerLeft.hitbox.min.y && this.hitbox.min.y <= playerLeft.hitbox.max.y) {
-				this.dirY = (this.cube.position.y - playerLeft.cube.position.y) / 2;
-				this.dirX = 1;
-			} else if (this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x < playerRight.hitbox.max.x && this.hitbox.max.y >= playerRight.hitbox.min.y && this.hitbox.min.y <= playerRight.hitbox.max.y) {
-				this.dirY = (this.cube.position.y - playerRight.cube.position.y) / 2;
-				this.dirX = -1;
+			if (this.hitbox.intersectsBox(playerLeft.hitbox)) {
+				this.direction = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, this.cube.position.y - playerLeft.cube.position.y, 0);
+			} else if (this.hitbox.intersectsBox(playerRight.hitbox)) {
+				this.direction = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, this.cube.position.y - playerRight.cube.position.y, 0);
 			}
-			
+
+			// Pinch
+			if (this.hitbox.max.y >= arena.hitbox.max.y && this.hitbox.min.y <= playerLeft.hitbox.max.y
+				&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
+				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(1, -0.5, 0);
+					this.speed = 2;
+			} else if (this.hitbox.max.y >= arena.hitbox.max.y && this.hitbox.min.y <= playerRight.hitbox.max.y
+				&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
+				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(-1, -0.5, 0);
+					this.speed = 2;
+			}
+			if (this.hitbox.min.y <= arena.hitbox.min.y && this.hitbox.max.y >= playerLeft.hitbox.min.y
+				&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
+				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(1, 0.5, 0);
+					this.speed = 2;
+			} else if (this.hitbox.min.y <= arena.hitbox.min.y && this.hitbox.max.y >= playerRight.hitbox.min.y
+				&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
+				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
+					this.direction = new THREE.Vector3(-1, 0.5, 0);
+					this.speed = 2;
+			}
+
+			// AntiBlock system
+			if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
+				this.direction.x = 0.2;
+			} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
+				this.direction.x = -0.2;
+			}
+
+			// Setup the director vector
+			this.direction.normalize();
+			this.direction.multiplyScalar(this.speed);
+			this.cube.position.add(this.direction);
 		}
 
 		reset() {
 			updateScore();
 			this.cube.position.x = 0;
 			this.cube.position.y = 0;
-			this.dirX = Math.round(Math.random()) * 2 - 1;
-			this.dirY = 0;
+			this.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
 			playerLeft.reset();
 			playerRight.reset();
 		}
@@ -186,9 +217,9 @@ export function pong3D() {
 		playerRight.score = 0;
 	});
 
+	// Get the header and footer rect box
 	const headerRect = document.querySelector('header').getBoundingClientRect();
 	const footerRect = document.querySelector('footer').getBoundingClientRect();
-
 
 	const scene = new THREE.Scene();
 	const renderer = new THREE.WebGLRenderer();
@@ -208,7 +239,7 @@ export function pong3D() {
 	scene.add( title );
 	
 	// Floor
-	const floor = new THREE.Mesh( new THREE.BoxGeometry( 20, 20, 0.1 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
+	const floor = new THREE.Mesh( new THREE.BoxGeometry( X_SIZE_MAP, 20, 0.1 ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
 	
 	floor.position.z = -0.6;
 	floor.receiveShadow = true;
@@ -218,7 +249,7 @@ export function pong3D() {
 	// Camera
 	const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 	camera.position.y = -10;
-	camera.position.z = 15;
+	camera.position.z = X_SIZE_MAP - 5;
 	camera.rotation.x = 0.55;
 	
 	let controls = new OrbitControls(camera, renderer.domElement);
@@ -232,16 +263,22 @@ export function pong3D() {
 	const playerLeft = new Player("left", scene);
 	const playerRight = new Player("right", scene);
 	
+	// ------------------------------------light------------------------------------
+	// Spot light that follow the ball
 	const spot = new THREE.SpotLight( 0xffffff, 50, 100, Math.PI / 8, 0);
+	// Directional light that enlighte all the elements
 	const globalLight = new THREE.DirectionalLight( 0xffffff , 1 );
-	spot.position.set( 0, 0, 10 );
+	// Setup the position of both light
+	spot.position.set( 0, 0, X_SIZE_MAP/2 );
 	globalLight.position.set( 0, -20, 10 );
 	
+	// Enable shadow casting
 	globalLight.castShadow = true;
 	spot.castShadow = true;
 	
-	globalLight.shadow.camera.left = -10;
-	globalLight.shadow.camera.right = 10;
+	// Setup the light data and fov
+	globalLight.shadow.camera.left = -(X_SIZE_MAP/2);
+	globalLight.shadow.camera.right = X_SIZE_MAP/2;
 	globalLight.shadow.camera.top = 10;
 	globalLight.shadow.camera.bottom = -10;
 	globalLight.shadow.camera.near = 0.5;
@@ -296,57 +333,40 @@ export function pong3D() {
 		scene.add( textScore );
 	}
 	
+	// To delete (cheats for debug)
 	function debug() {
 		if (keys['r']) {
 			playerLeft.score = 0;
 			playerRight.score = 0;
 			ball.reset();
 		}
-		if (keys['+']) {
-			camera.rotation.x += 0.01;
-		}
-		if (keys['-']) {
-			camera.rotation.x -= 0.01;
-		}
-		if (keys['8']) {
-			camera.position.y += 0.1;
+		if (keys['4']) {
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerLeft.cube.position.x;
+			ball.cube.position.y = playerLeft.cube.position.y + 2;
 		}
 		if (keys['5']) {
-			camera.position.z += 0.1;
-		}
-		if (keys['2']) {
-			camera.position.y -= 0.1;
-		}
-		if (keys['4']) {
-			camera.position.x -= 0.1;
-		}
-		if (keys['6']) {
-			camera.position.x += 0.1;
-		}
-		if (keys['0']) {
-			camera.position.z -= 0.1;
-		}
-		if (keys['7']) {
-			camera.rotation.z += 0.01;
-		}
-		if (keys['9']) {
-			camera.rotation.z -= 0.01;
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerRight.cube.position.x;
+			ball.cube.position.y = playerRight.cube.position.y + 2;
 		}
 		if (keys['1']) {
-			camera.rotation.y += 0.01;
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerLeft.cube.position.x;
+			ball.cube.position.y = playerLeft.cube.position.y - 2;
 		}
-		if (keys['3']) {
-			camera.rotation.y -= 0.01;
-		}
-		if (keys['d']) {
-			playerLeft.speed += 0.01;
-			playerRight.speed += 0.01;
-			ball.speed += 0.01;
-		}
-		if (keys['a']) {
-			playerLeft.speed -= 0.01;
-			playerRight.speed -= 0.01;
-			ball.speed -= 0.01;
+		if (keys['2']) {
+			ball.direction.x = 0;
+			ball.direction.y = 0;
+			ball.direction.z = 0;
+			ball.cube.position.x = playerRight.cube.position.x;
+			ball.cube.position.y = playerRight.cube.position.y - 2;
 		}
 	}
 	
@@ -362,6 +382,7 @@ export function pong3D() {
 				memGoing = true;
 				ball.reset();
 			}
+			
 			ball.move(playerLeft, playerRight, arena);
 			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
 			debug();
