@@ -1,4 +1,4 @@
-DOCKER=ft_transcendance-web-1
+DOCKER=django
 
 all: up
 
