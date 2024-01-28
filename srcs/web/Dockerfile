@@ -4,11 +4,7 @@ LABEL key='[Django]'
 
 RUN apk update && apk add --no-cache \
 	python3 \
-	py3-pip \
-	python3-dev \
-	vim \
-	curl \
-	openssl
+	py3-pip
 
 RUN mkdir -p /app /var/www
 

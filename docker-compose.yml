@@ -39,11 +39,6 @@ services:
       - ./srcs/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
     env_file:
       - .env
-    healthcheck:
-      test: ["CMD", "curl", "-k", "https://localhost:8000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   web:
