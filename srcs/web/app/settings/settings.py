@@ -26,8 +26,7 @@ SECRET_KEY = 'django-insecure-2cgz15z)^90j)(1g!$%h%4_2oai#_c799*#+=33=hi2y0!v*7$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
-
+ALLOWED_HOSTS = ["www.transcendance.fr", "transcendance.fr", "localhost", "0.0.0.0"]
 
 # Application definition
 
@@ -130,3 +129,21 @@ STATIC_ROOT = '/var/www/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security
+
+# Définir SECURE_PROXY_SSL_HEADER si vous utilisez un proxy inverse comme Nginx
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Rediriger les requêtes HTTP vers HTTPS
+SECURE_SSL_REDIRECT = True
+
+# Utiliser des cookies sécurisés
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Configuration HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # Une année en secondes
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+USE_X_FORWARDED_HOST = True

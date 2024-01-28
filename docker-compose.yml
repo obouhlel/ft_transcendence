@@ -32,11 +32,18 @@ services:
     depends_on:
       - web
     ports:
-      - "0.0.0.0:8080:80"
+      - "80:80"
+      - "443:443"
     volumes:
       - staticfiles:/var/www/static/
+      - ./srcs/nginx/conf/nginx.conf:/etc/nginx/nginx.conf
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD", "curl", "-k", "https://localhost:8000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   web:
