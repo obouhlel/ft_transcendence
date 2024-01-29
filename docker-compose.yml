@@ -32,7 +32,6 @@ services:
     depends_on:
       - web
     ports:
-      - "80:80"
       - "0.0.0.0:8080:443"
     volumes:
       - staticfiles:/var/www/static/
