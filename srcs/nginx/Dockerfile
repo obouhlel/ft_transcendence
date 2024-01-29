@@ -23,6 +23,8 @@ RUN chown -R nginx:nginx /var/www/static \
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
+EXPOSE 8080
+
 USER nginx
 
 ENTRYPOINT [ "nginx", "-g", "daemon off;" ]
