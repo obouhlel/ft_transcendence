@@ -1,13 +1,14 @@
 import { theFont } from "./pong.js";
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
 export function shooter() {
 	class Player {
-		constructor(name, x, y) {
+		constructor(name, x, z) {
 			this.name = name;
 			this.speed = 0.1;
-			this.pos = new THREE.Vector3(x, y, 0);
+			this.pos = new THREE.Vector3(x, 0, z);
 			this.dir = new THREE.Vector3(0, 0, 0);
 			this.hp = 150;
 			this.dmg = 30;
@@ -19,13 +20,13 @@ export function shooter() {
 				this.speed = 0.2;
 			}
 			if (keys['w']) {
-				let tmpDir = new THREE.Vector3(this.dir.x, this.dir.y, 0);
+				let tmpDir = new THREE.Vector3(this.dir.x, 0, this.dir.z);
 				tmpDir.normalize();
 				tmpDir.multiplyScalar(this.speed);
 				this.pos.add(tmpDir);
 			}
 			if (keys['s']) {
-				let tmpDir = new THREE.Vector3(this.dir.x, this.dir.y, 0);
+				let tmpDir = new THREE.Vector3(this.dir.x, 0, this.dir.z);
 				tmpDir.normalize();
 				tmpDir.multiplyScalar(this.speed);
 				this.pos.sub(tmpDir);
@@ -75,15 +76,16 @@ export function shooter() {
 	// Camera
 	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 	camera.position.x = player.pos.x;
-	camera.position.y = player.pos.y;
-	camera.position.z = player.pos.z + 2;
-	camera.rotation.x = 1;
+	camera.position.y = player.pos.y + 2;
+	camera.position.z = player.pos.z;
+	camera.rotation.x = 0;
 	camera.rotation.y = 0;
 	camera.rotation.z = 0;
 
+	let controls = new PointerLockControls(camera, renderer.domElement);
+
 	// Floor
-	const floor = new THREE.Mesh(new THREE.BoxGeometry(20, 20, 0.1), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-	floor.position.z = 0;
+	const floor = new THREE.Mesh(new THREE.BoxGeometry(20, 0.1, 20), new THREE.MeshStandardMaterial({ color: 0xffffff }));
 	floor.receiveShadow = true;
 	floor.castShadow = true;
 	scene.add(floor);
@@ -95,7 +97,7 @@ export function shooter() {
 
 	const globalLight = new THREE.DirectionalLight(0xffffff, 1);
 	// Setup the position of both light
-	globalLight.position.set(0, 0, 20);
+	globalLight.position.set(0, 20, 0);
 
 	// Enable shadow casting
 	globalLight.castShadow = true;
@@ -110,30 +112,24 @@ export function shooter() {
 
 	scene.add(globalLight);
 
-	document.addEventListener('mousemove', function (event) {
-		const movementX = event.movementX || event.mozMovementX || 0;
-		const movementY = event.movementY || event.mozMovementY || 0;
+	// Créer un helper d'axes avec une taille de 5
+	let axesHelper = new THREE.AxesHelper(5);
+	axesHelper.position.set(1, 1, 1);
 
-		camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), movementX * -0.001);
-		camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), movementY * -0.001);
-	}, false);
+	// Ajouter le helper d'axes à la scène
+	scene.add(axesHelper);
 
 	document.addEventListener('click', function () {
-		document.body.requestPointerLock();
+		controls.lock();
 	});
-
-	function debug() {
-		
-	}
 
 	function animate() {
 		requestAnimationFrame(animate);
 
-		debug();
 		player.move(keys);
 		camera.position.x = player.pos.x;
-		camera.position.y = player.pos.y;
-		camera.position.z = player.pos.z + 2;
+		camera.position.y = player.pos.y + 2;
+		camera.position.z = player.pos.z;
 		camera.getWorldDirection(player.dir);
 
 
