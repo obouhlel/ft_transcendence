@@ -7,7 +7,8 @@ const X_SIZE_MAP = 20;
 
 // ------------------------------------setup------------------------------------
 // Font gestion
-let textScore, theFont;
+let textScore;
+export let theFont;
 function loadFont(url) {
 	return new Promise((resolve, reject) => {
 		const loader = new FontLoader();
