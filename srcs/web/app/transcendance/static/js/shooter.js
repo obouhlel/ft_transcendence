@@ -1,7 +1,6 @@
 import { theFont } from "./pong.js";
 import * as THREE from 'three';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 export function shooter() {
 	class Player {
@@ -78,7 +77,7 @@ export function shooter() {
 	camera.position.x = player.pos.x;
 	camera.position.y = player.pos.y;
 	camera.position.z = player.pos.z + 2;
-	camera.rotation.x = 0;
+	camera.rotation.x = 1;
 	camera.rotation.y = 0;
 	camera.rotation.z = 0;
 
@@ -111,20 +110,20 @@ export function shooter() {
 
 	scene.add(globalLight);
 
-	// let controls = new OrbitControls(camera, renderer.domElement);
-	// controls.enableRotate = true;
-	// controls.rotateSpeed = 1.0;
-	// controls.target.set(0, 0, 0);
+	document.addEventListener('mousemove', function (event) {
+		const movementX = event.movementX || event.mozMovementX || 0;
+		const movementY = event.movementY || event.mozMovementY || 0;
+
+		camera.rotateOnAxis(new THREE.Vector3(0, 1, 0), movementX * -0.001);
+		camera.rotateOnAxis(new THREE.Vector3(1, 0, 0), movementY * -0.001);
+	}, false);
+
+	document.addEventListener('click', function () {
+		document.body.requestPointerLock();
+	});
 
 	function debug() {
-		if (keys['+'])
-			camera.rotation.x += 0.1;
-		if (keys['-'])
-			camera.rotation.x -= 0.1;
-		if (keys['ArrowRight'])
-			camera.rotation.y -= 0.1;
-		if (keys['ArrowLeft'])
-			camera.rotation.y += 0.1;
+		
 	}
 
 	function animate() {
@@ -136,8 +135,9 @@ export function shooter() {
 		camera.position.y = player.pos.y;
 		camera.position.z = player.pos.z + 2;
 		camera.getWorldDirection(player.dir);
-		// controls.update();
 
+
+		
 		renderer.render(scene, camera);
 	}
 
