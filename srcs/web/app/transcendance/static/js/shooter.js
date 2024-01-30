@@ -1,7 +1,17 @@
-import { theFont } from "./pong.js";
 import * as THREE from 'three';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+import { doTextGeo } from './textFont.js';
+
+const map = [1, 1, 1, 1, 1, 1, 1, 1,
+			 1, 0, 0, 0, 0, 0, 0, 1,
+			 1, 0, 0, 0, 0, 0, 0, 1,
+			 1, 0, 0, 0, 1, 0, 0, 1,
+			 1, 0, 0, 1, 0, 0, 0, 1,
+			 1, 0, 0, 0, 0, 0, 0, 1,
+			 1, 0, 0, 0, 0, 0, 0, 1,
+			 1, 0, 0, 0, 0, 0, 0, 1,
+			 1, 1, 1, 1, 1, 1, 1, 1,];
 
 export function shooter() {
 	class Player {
@@ -16,20 +26,14 @@ export function shooter() {
 		}
 
 		move(keys) {
-			if (keys['shift']) {
-				this.speed = 0.2;
-			}
 			if (keys['w']) {
-				let tmpDir = new THREE.Vector3(this.dir.x, 0, this.dir.z);
-				tmpDir.normalize();
-				tmpDir.multiplyScalar(this.speed);
-				this.pos.add(tmpDir);
+				this.speed = 0.1;
+				if (keys['shift']) {
+					this.speed = 0.2;
+				}
 			}
 			if (keys['s']) {
-				let tmpDir = new THREE.Vector3(this.dir.x, 0, this.dir.z);
-				tmpDir.normalize();
-				tmpDir.multiplyScalar(this.speed);
-				this.pos.sub(tmpDir);
+				this.speed = -0.1;
 			}
 		}
 
@@ -45,6 +49,7 @@ export function shooter() {
 	let going = false;
 	let memGoing = false;
 
+	// HTML Generator
 	const main = document.querySelector("main");
 
 	const container = document.createElement("div");
@@ -60,7 +65,7 @@ export function shooter() {
 		button.style.display = "none";
 	});
 
-	// Get the header and footer rect box
+	// Create game window
 	const headerRect = document.querySelector('header').getBoundingClientRect();
 	const footerRect = document.querySelector('footer').getBoundingClientRect();
 
@@ -71,6 +76,7 @@ export function shooter() {
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	container.appendChild(renderer.domElement);
 
+	// Player
 	let player = new Player("test", 0, 0);
 
 	// Camera
@@ -78,11 +84,16 @@ export function shooter() {
 	camera.position.x = player.pos.x;
 	camera.position.y = player.pos.y + 2;
 	camera.position.z = player.pos.z;
-	camera.rotation.x = 0;
-	camera.rotation.y = 0;
-	camera.rotation.z = 0;
 
+	// Mouse
 	let controls = new PointerLockControls(camera, renderer.domElement);
+
+	document.addEventListener('click', function () {
+		controls.lock();
+	});
+
+	// Cursor
+
 
 	// Floor
 	const floor = new THREE.Mesh(new THREE.BoxGeometry(20, 0.1, 20), new THREE.MeshStandardMaterial({ color: 0xffffff }));
@@ -95,14 +106,12 @@ export function shooter() {
 	document.addEventListener('keydown', (e) => keys[e.key] = true);
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 
+	// Light
 	const globalLight = new THREE.DirectionalLight(0xffffff, 1);
-	// Setup the position of both light
 	globalLight.position.set(0, 20, 0);
 
-	// Enable shadow casting
 	globalLight.castShadow = true;
 
-	// Setup the light data and fov
 	globalLight.shadow.camera.left = -(20 / 2);
 	globalLight.shadow.camera.right = 20 / 2;
 	globalLight.shadow.camera.top = 10;
@@ -112,17 +121,7 @@ export function shooter() {
 
 	scene.add(globalLight);
 
-	// Créer un helper d'axes avec une taille de 5
-	let axesHelper = new THREE.AxesHelper(5);
-	axesHelper.position.set(1, 1, 1);
-
-	// Ajouter le helper d'axes à la scène
-	scene.add(axesHelper);
-
-	document.addEventListener('click', function () {
-		controls.lock();
-	});
-
+	// Loop
 	function animate() {
 		requestAnimationFrame(animate);
 
@@ -132,8 +131,11 @@ export function shooter() {
 		camera.position.z = player.pos.z;
 		camera.getWorldDirection(player.dir);
 
-
-		
+		player.dir.y = 0;
+		player.dir.normalize();
+		player.dir.multiplyScalar(player.speed);
+		player.pos.add(player.dir);
+		player.speed = 0;
 		renderer.render(scene, camera);
 	}
 

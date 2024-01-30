@@ -1,35 +1,12 @@
 import * as THREE from 'three';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+import { doTextGeo } from './textFont.js';
+
 const X_SIZE_MAP = 20;
+let textScore;
 
 // ------------------------------------setup------------------------------------
-// Font gestion
-let textScore;
-export let theFont;
-function loadFont(url) {
-	return new Promise((resolve, reject) => {
-		const loader = new FontLoader();
-
-		loader.load(url, function (font) {
-			resolve(font);
-		}, undefined, function (error) {
-			reject(error);
-		});
-	});
-}
-
-// Wait for the font to be loaded (async)
-await loadFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json')
-	.then(font => {
-		theFont = font;
-	})
-	.catch(error => {
-		console.log("the font could not be loaded: " + error);
-	});
-
 export function pong3D() {
 
 	class Arena {
@@ -296,22 +273,7 @@ export function pong3D() {
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 	
 	// ------------------------------------functions------------------------------------
-	function doTextGeo(text, fontSize, threeD = false) {
-		return new TextGeometry( text, {
-			font: theFont,
-			size: fontSize,
-			height: 1 * threeD,
-			curveSegments: 12,
-			bevelEnabled: threeD,
-			bevelThickness: 0.01,
-			bevelSize: 0.1,
-			bevelOffset: 0,
-			bevelSegments: 5
-		} );
-	}
-	
 	function updateScore() {
-	
 		if (textScore) {
 			// If the TextScore already exist, remove it
 			scene.remove(textScore);
