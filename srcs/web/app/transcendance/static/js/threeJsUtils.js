@@ -38,9 +38,10 @@ export function doTextGeo(text, fontSize, threeD = false) {
 	} );
 }
 
-export function createScene(text = 0x000000) {
+export function createScene(text) {
 	const scene = new THREE.Scene();
-	scene.background = text;
+	if (text)
+		scene.background = text;
 	return scene;
 }
 
