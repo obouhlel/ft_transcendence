@@ -19,11 +19,43 @@ const map = [
 ];
 const sizeBox = 5;
 const widthMap = map[0].length * sizeBox;
-const heightMap = map.length *sizeBox;
+const heightMap = map.length * sizeBox;
+
+let wall;
+let ground;
+export function loadTexture(url) {
+	return new Promise((resolve, reject) => {
+		const loader = new THREE.TextureLoader();
+
+		loader.load(url, function (texture) {
+			resolve(texture);
+		}, undefined, function (error) {
+			reject(error);
+		});
+	});
+}
+
+await loadTexture('/static/img/ground.jpg')
+	.then(texture => {
+		ground = texture;
+	})
+	.catch(error => {
+		console.log("the texture could not be loaded: " + error);
+	});
+
+await loadTexture('/static/img/wall.jpeg')
+	.then(texture => {
+		wall = texture;
+	})
+	.catch(error => {
+		console.log("the texture could not be loaded: " + error);
+	});
+
 
 function blitMap(scene) {
-	const floor = new THREE.Mesh( new THREE.BoxGeometry( widthMap, 0.1, heightMap ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
-	const bloc = new THREE.Mesh( new THREE.BoxGeometry( sizeBox, sizeBox, sizeBox ), new THREE.MeshStandardMaterial( { color: 0xffffff } ) );
+	ground.wrapS = THREE.RepeatWrapping;
+	const floor = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: ground }));
+	const bloc = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox), new THREE.MeshBasicMaterial({ map: wall }));
 	floor.receiveShadow = true;
 	floor.castShadow = true;
 	bloc.receiveShadow = true;
@@ -37,7 +69,7 @@ function blitMap(scene) {
 		for (let x = 0; x < map[z].length; x++) {
 			if (map[z][x] == 1) {
 				let blocCpy = bloc.clone();
-				blocCpy.position.set((x * sizeBox) + sizeBox/2, sizeBox/2, (z * sizeBox) + sizeBox/2);
+				blocCpy.position.set((x * sizeBox) + sizeBox / 2, sizeBox / 2, (z * sizeBox) + sizeBox / 2);
 				scene.add(blocCpy);
 			}
 		}
@@ -106,7 +138,7 @@ export function shooter() {
 	});
 
 	// Player
-	let player = new Player("test", 0, 0);
+	let player = new Player("test", 10, 10);
 
 	// Camera
 	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -129,21 +161,11 @@ export function shooter() {
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 
 	// Light
-	const globalLight = new THREE.DirectionalLight(0xffffff, 3);
-	globalLight.position.set(widthMap/2, 50, heightMap);
-	globalLight.target.position.set(widthMap/2, 0, heightMap/2);
-	scene.add(globalLight.target);
+	const light = new THREE.PointLight(0xffffff, 5, 500);
+	light.castShadow = true;
+	light.position.set(10, 2, 10);
 
-	globalLight.castShadow = true;
-
-	globalLight.shadow.camera.left = -(widthMap / 2);
-	globalLight.shadow.camera.right = widthMap / 2;
-	globalLight.shadow.camera.top = heightMap/2;
-	globalLight.shadow.camera.bottom = -heightMap/2;
-	globalLight.shadow.camera.near = 0.5;
-	globalLight.shadow.camera.far = 500;
-
- 	scene.add(globalLight);
+	scene.add(light);
 
 	// Loop
 	function animate() {
