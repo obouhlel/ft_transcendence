@@ -1,4 +1,4 @@
-#buttonPong3D {
+#buttonPong {
 	background-color: #4CAF50;
 	border: none;
 	color: white;
@@ -16,7 +16,7 @@
 	left: calc(50vw - 15px - 32px);
 }
 
-#buttonPong3D:hover {
+#buttonPong:hover {
 	background-color: #45a049;
 }
 
