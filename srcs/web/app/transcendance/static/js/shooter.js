@@ -90,6 +90,25 @@ function blitMap(scene) {
 	}
 }
 
+class Bullet {
+	constructor(x, y, z, dir, scene) {
+		this.speed = 1;
+		this.body = new THREE.Mesh(new THREE.SphereGeometry(0.1), new THREE.MeshBasicMaterial({ color: 0xff0000 }));
+		this.pos = new THREE.Vector3(x, y, z);
+		this.dir = dir;
+		this.body.position.set(this.pos.x, this.pos.y, this.pos.z);
+		scene.add(this.body);
+	}
+
+	move() {
+		let vecMove = new THREE.Vector3();
+		vecMove.add(this.dir.normalize().multiplyScalar(this.speed));
+		this.pos.add(vecMove);
+		this.body.position.set(this.pos.x, this.pos.y, this.pos.z);
+	}
+
+}
+
 class Player {
 	constructor(name, x, z, scene) {
 		this.name = name;
@@ -133,12 +152,26 @@ class Player {
 		}
 		vecMove.y = 0;
 		vecMove.normalize().multiplyScalar(this.speed);
+	
+		let nextPosX = this.pos.clone().add(new THREE.Vector3(vecMove.x, 0, 0));
+		let nextPosZ = this.pos.clone().add(new THREE.Vector3(0, 0, vecMove.z));
+	
+		if (map[Math.floor(this.pos.z / sizeBox)][Math.floor(nextPosX.x / sizeBox)] == 1) {
+			vecMove.x = 0;
+		}
+		if (map[Math.floor(nextPosZ.z / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
+			vecMove.z = 0;
+		}
+	
 		this.pos.add(vecMove);
 		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
 
-	shoot(keys) {
-
+	shoot() {
+		if (this.ammo > 0) {
+			console.log("pew");
+			this.ammo--;
+		}
 	}
 
 	takeDmg() {
@@ -175,7 +208,11 @@ export function shooter() {
 
 	// Keys
 	let keys = {};
-	document.addEventListener('keydown', (e) => keys[e.key] = true);
+	document.addEventListener('keydown', (e) => {
+		if (keys[e.key] != 2) {
+			keys[e.key] = true;
+		}
+	});
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 
 	// Light
@@ -200,8 +237,15 @@ export function shooter() {
 		player.move(keys);
 		player.view.getWorldDirection(player.dir);
 		// player.body.rotation.copy(player.view.rotation);
-		renderer.render(scene, cameraGlobal);
-		// renderer.render(scene, player.view);
+		if (keys['b'] == true) {
+			player.shoot();
+			keys['b'] = 2;
+		}
+		if (!keys[' ']) {
+			renderer.render(scene, cameraGlobal);
+		} else {
+			renderer.render(scene, player.view);
+		}
 	}
 
 	animate();
