@@ -2,7 +2,7 @@ import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 // Font gestion
-let theFont;
+export let theFont;
 function loadFont(url) {
 	return new Promise((resolve, reject) => {
 		const loader = new FontLoader();
@@ -38,10 +38,9 @@ export function doTextGeo(text, fontSize, threeD = false) {
 	} );
 }
 
-export function createScene(text) {
+export function createScene(color = 0x000000) {
 	const scene = new THREE.Scene();
-	if (text)
-		scene.background = text;
+	scene.background = new THREE.Color(color);
 	return scene;
 }
 

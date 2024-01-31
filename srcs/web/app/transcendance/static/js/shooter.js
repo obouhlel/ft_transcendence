@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 import * as UTILS from './threeJsUtils.js';
 
@@ -23,7 +24,7 @@ const heightMap = map.length * sizeBox;
 
 let wall;
 let ground;
-let sky;
+let roof;
 export function loadTexture(url) {
 	return new Promise((resolve, reject) => {
 		const loader = new THREE.TextureLoader();
@@ -52,17 +53,17 @@ await loadTexture('/static/img/brickWall.jpg')
 		console.log("the texture could not be loaded: " + error);
 	});
 
-await loadTexture('/static/img/sky.jpeg')
+await loadTexture('/static/img/ceil.jpg')
 	.then(texture => {
-		sky = texture;
+		roof = texture;
 	})
 	.catch(error => {
 		console.log("the texture could not be loaded: " + error);
 	});
 
-
 function blitMap(scene) {
 	ground.repeat.set(1, 1);
+	const ceil = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: roof }));
 	const floor = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: ground }));
 	const bloc = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox), new THREE.MeshBasicMaterial({ map: wall }));
 	floor.receiveShadow = true;
@@ -71,8 +72,12 @@ function blitMap(scene) {
 	bloc.castShadow = true;
 
 
+	ceil.position.y += sizeBox;
+	ceil.position.x += widthMap / 2;
+	ceil.position.z += heightMap / 2;
 	floor.position.x += widthMap / 2;
 	floor.position.z += heightMap / 2;
+	scene.add(ceil);
 	scene.add(floor);
 	for (let z = 0; z < map.length; z++) {
 		for (let x = 0; x < map[z].length; x++) {
@@ -137,7 +142,7 @@ export function shooter() {
 	let going = false;
 	let memGoing = false;
 
-	const scene = UTILS.createScene(sky);
+	const scene = UTILS.createScene(0xFF0000);
 	const renderer = UTILS.createRenderer();
 	const button = UTILS.createContainerForGame("shooter", renderer);
 
