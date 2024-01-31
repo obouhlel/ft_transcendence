@@ -94,7 +94,7 @@ class Player {
 	constructor(name, x, z, scene) {
 		this.name = name;
 		this.speed = 0.2;
-		this.body = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+		this.body = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.7, 2), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
 		this.weapon = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 1), new THREE.MeshBasicMaterial({ color: 0x0000ff }));
 		this.view = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.pos = new THREE.Vector3(x, 0, z);
@@ -102,8 +102,10 @@ class Player {
 		this.hp = 150;
 		this.dmg = 30;
 		this.ammo = 8;
-		this.weapon.position.set(0, 0.5, -1);
-		this.body.add(this.weapon);
+		this.view.position.set(0, 1, 0);
+		this.weapon.position.set(0, -0.7, -0.7);
+		this.view.add(this.weapon);
+		this.body.add(this.view);
 		scene.add(this.body);
 	}
 
@@ -132,7 +134,6 @@ class Player {
 		vecMove.y = 0;
 		vecMove.normalize().multiplyScalar(this.speed);
 		this.pos.add(vecMove);
-		this.view.position.set(this.pos.x, this.pos.y + 2, this.pos.z);
 		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
 
@@ -198,8 +199,9 @@ export function shooter() {
 		controlsGLobal.update();
 		player.move(keys);
 		player.view.getWorldDirection(player.dir);
-		player.body.rotation.copy(player.view.rotation);
-		renderer.render(scene, cameraGlobal);
+		// player.body.rotation.copy(player.view.rotation);
+		// renderer.render(scene, cameraGlobal);
+		renderer.render(scene, player.view);
 	}
 
 	animate();
