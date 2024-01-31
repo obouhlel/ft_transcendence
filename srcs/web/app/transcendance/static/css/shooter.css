@@ -1,4 +1,4 @@
-#buttonShooter3D {
+#buttonShooter {
 	background-color: #4CAF50;
 	border: none;
 	color: white;
@@ -16,7 +16,7 @@
 	left: calc(50vw - 15px - 32px);
 }
 
-#buttonShooter3D:hover {
+#buttonShooter:hover {
 	background-color: #45a049;
 }
 

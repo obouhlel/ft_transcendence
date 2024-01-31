@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 
-import { doTextGeo } from './textFont.js';
+import * as UTILS from './threeJsUtils.js';
 
 // 1 => wall
 // 0 => space
@@ -44,84 +44,66 @@ function blitMap(scene) {
 	}
 }
 
-export function shooter() {
-	class Player {
-		constructor(name, x, z) {
-			this.name = name;
-			this.speed = 0.2;
-			this.pos = new THREE.Vector3(x, 0, z);
-			this.dir = new THREE.Vector3(0, 0, 0);
-			this.hp = 150;
-			this.dmg = 30;
-			this.ammo = 8;
-		}
-
-		move(keys) {
-			let vecMove = new THREE.Vector3();
-			if (keys['w']) {
-				let front = new THREE.Vector3();
-				front = this.dir.normalize().multiplyScalar(this.speed);
-				vecMove.add(front);
-			}
-			if (keys['s']) {
-				let back = new THREE.Vector3();
-				back = this.dir.normalize().multiplyScalar(-this.speed);
-				vecMove.add(back);
-			}
-			if (keys['a']) {
-				let left = new THREE.Vector3();
-				left.crossVectors(new THREE.Vector3(0, 1, 0), this.dir).normalize().multiplyScalar(this.speed);
-				vecMove.add(left);
-			}
-			if (keys['d']) {
-				let right = new THREE.Vector3();
-				right.crossVectors(this.dir, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(this.speed);
-				vecMove.add(right);
-			}
-			vecMove.y = 0;
-			console.log(vecMove);
-			vecMove.normalize().multiplyScalar(this.speed);
-			this.pos.add(vecMove);
-		}
-
-		shoot(keys) {
-
-		}
-
-		takeDmg() {
-
-		}
+class Player {
+	constructor(name, x, z) {
+		this.name = name;
+		this.speed = 0.2;
+		this.pos = new THREE.Vector3(x, 0, z);
+		this.dir = new THREE.Vector3(0, 0, 0);
+		this.hp = 150;
+		this.dmg = 30;
+		this.ammo = 8;
 	}
+
+	move(keys) {
+		let vecMove = new THREE.Vector3();
+		if (keys['w']) {
+			let front = new THREE.Vector3();
+			front = this.dir.normalize().multiplyScalar(this.speed);
+			vecMove.add(front);
+		}
+		if (keys['s']) {
+			let back = new THREE.Vector3();
+			back = this.dir.normalize().multiplyScalar(-this.speed);
+			vecMove.add(back);
+		}
+		if (keys['a']) {
+			let left = new THREE.Vector3();
+			left.crossVectors(new THREE.Vector3(0, 1, 0), this.dir).normalize().multiplyScalar(this.speed);
+			vecMove.add(left);
+		}
+		if (keys['d']) {
+			let right = new THREE.Vector3();
+			right.crossVectors(this.dir, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(this.speed);
+			vecMove.add(right);
+		}
+		vecMove.y = 0;
+		vecMove.normalize().multiplyScalar(this.speed);
+		this.pos.add(vecMove);
+	}
+
+	shoot(keys) {
+
+	}
+
+	takeDmg() {
+
+	}
+}
+
+export function shooter() {
 
 	let going = false;
 	let memGoing = false;
 
-	// HTML Generator
-	const main = document.querySelector("main");
+	const scene = UTILS.createScene();
+	const renderer = UTILS.createRenderer();
+	const button = UTILS.createContainerForGame("shooter", renderer);
 
-	const container = document.createElement("div");
-	container.id = "shooter";
-	main.appendChild(container);
-
-	const button = document.createElement("button");
-	button.id = "buttonShooter3D";
-	button.innerHTML = "PLAY";
-	container.appendChild(button);
 	button.addEventListener("click", () => {
 		going = true;
 		button.style.display = "none";
 	});
-
-	// Create game window
-	const headerRect = document.querySelector('header').getBoundingClientRect();
-	const footerRect = document.querySelector('footer').getBoundingClientRect();
-
-	const scene = new THREE.Scene();
-	const renderer = new THREE.WebGLRenderer();
-	renderer.setSize(window.innerWidth, window.innerHeight - headerRect.bottom - footerRect.bottom);
-	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-	container.appendChild(renderer.domElement);
 
 	// Player
 	let player = new Player("test", 0, 0);
@@ -147,8 +129,8 @@ export function shooter() {
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 
 	// Light
-	const globalLight = new THREE.DirectionalLight(0xffffff, 1);
-	globalLight.position.set(widthMap/2, 20, heightMap);
+	const globalLight = new THREE.DirectionalLight(0xffffff, 3);
+	globalLight.position.set(widthMap/2, 50, heightMap);
 	globalLight.target.position.set(widthMap/2, 0, heightMap/2);
 	scene.add(globalLight.target);
 
@@ -161,17 +143,6 @@ export function shooter() {
 	globalLight.shadow.camera.near = 0.5;
 	globalLight.shadow.camera.far = 500;
 
-	let help = new THREE.DirectionalLightHelper(globalLight);
-	scene.add(help);
-	const leftLight = globalLight.clone();
-	const rightLight = globalLight.clone();
-	const topLight = globalLight.clone();
-	leftLight.position.set(widthMap, 20, heightMap/2);
-	rightLight.position.set(0, 20, heightMap/2);
-	topLight.position.set(widthMap/2, 20, 0);
-	scene.add(topLight);
-	scene.add(leftLight);
-	scene.add(rightLight);
  	scene.add(globalLight);
 
 	// Loop
