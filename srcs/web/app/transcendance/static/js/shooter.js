@@ -168,19 +168,28 @@ class Player {
 		}
 		vecMove.y = 0;
 		vecMove.normalize().multiplyScalar(this.speed);
-	
-		let nextPosX = this.pos.clone().add(new THREE.Vector3(vecMove.x, 0, 0));
-		let nextPosZ = this.pos.clone().add(new THREE.Vector3(0, 0, vecMove.z));
-	
-		console.log("x: " + Math.floor(this.pos.x / sizeBox) + " | z: " + Math.floor(this.pos.z / sizeBox));
-
-		if (map[Math.floor(nextPosZ.z / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
-			vecMove.z = 0;
+		let hitBox = new THREE.Box3().setFromObject(this.body);
+		if (this.dir.z > 0) {
+			if (map[Math.floor((hitBox.max.z + vecMove.z) / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
+				vecMove.z = 0;
+			}
 		}
-		if (map[Math.floor(this.pos.z / sizeBox)][Math.floor(nextPosX.x / sizeBox)] == 1) {
-			vecMove.x = 0;
+		else if (this.dir.z < 0) {
+			if (map[Math.floor((hitBox.min.z + vecMove.z) / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
+				vecMove.z = 0;
+			}
 		}
-
+		if (this.dir.x > 0) {
+			if (map[Math.floor(this.pos.z / sizeBox)][Math.floor((hitBox.max.x + vecMove.x) / sizeBox)] == 1) {
+				vecMove.x = 0;
+			}
+		}
+		else if (this.dir.x < 0) {
+			if (map[Math.floor(this.pos.z / sizeBox)][Math.floor((hitBox.min.x + vecMove.x) / sizeBox)] == 1) {
+				vecMove.x = 0;
+			}
+		}
+		console.log(vecMove);
 		this.pos.add(vecMove);
 		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
