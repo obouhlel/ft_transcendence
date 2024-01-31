@@ -64,7 +64,8 @@ await loadTexture('/static/img/ceil.jpg')
 function blitMap(scene) {
 	ground.repeat.set(1, 1);
 	const ceil = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: roof }));
-	const floor = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: ground }));
+	const floor = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, 0.1, sizeBox), new THREE.MeshBasicMaterial({ color: 0x000000}));
+	const floorb = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, 0.1, sizeBox), new THREE.MeshBasicMaterial({ color: 0xffffff}));
 	const bloc = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox), new THREE.MeshBasicMaterial({ map: wall }));
 	floor.receiveShadow = true;
 	floor.castShadow = true;
@@ -72,13 +73,10 @@ function blitMap(scene) {
 	bloc.castShadow = true;
 
 
-	ceil.position.y += sizeBox;
-	ceil.position.x += widthMap / 2;
-	ceil.position.z += heightMap / 2;
-	floor.position.x += widthMap / 2;
-	floor.position.z += heightMap / 2;
-	scene.add(ceil);
-	scene.add(floor);
+	ceil.position.y = sizeBox;
+	ceil.position.x = widthMap / 2;
+	ceil.position.z = heightMap / 2;
+	// scene.add(ceil);
 	for (let z = 0; z < map.length; z++) {
 		for (let x = 0; x < map[z].length; x++) {
 			if (map[z][x] == 1) {
@@ -86,6 +84,24 @@ function blitMap(scene) {
 				blocCpy.position.set((x * sizeBox) + sizeBox / 2, sizeBox / 2, (z * sizeBox) + sizeBox / 2);
 				scene.add(blocCpy);
 			}
+			let floorCpy;
+			// faire un damier
+			if (z % 2 == 0) {
+				if (x % 2 == 0) {
+					floorCpy = floor.clone();
+				} else {
+					floorCpy = floorb.clone();
+				}
+			}
+			else {
+				if (x % 2 == 0) {
+					floorCpy = floorb.clone();
+				} else {
+					floorCpy = floor.clone();
+				}
+			}
+			floorCpy.position.set((x * sizeBox) + sizeBox / 2, 0, (z * sizeBox) + sizeBox / 2);
+			scene.add(floorCpy);
 		}
 	}
 }
@@ -156,13 +172,15 @@ class Player {
 		let nextPosX = this.pos.clone().add(new THREE.Vector3(vecMove.x, 0, 0));
 		let nextPosZ = this.pos.clone().add(new THREE.Vector3(0, 0, vecMove.z));
 	
-		if (map[Math.floor(this.pos.z / sizeBox)][Math.floor(nextPosX.x / sizeBox)] == 1) {
-			vecMove.x = 0;
-		}
+		console.log("x: " + Math.floor(this.pos.x / sizeBox) + " | z: " + Math.floor(this.pos.z / sizeBox));
+
 		if (map[Math.floor(nextPosZ.z / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
 			vecMove.z = 0;
 		}
-	
+		if (map[Math.floor(this.pos.z / sizeBox)][Math.floor(nextPosX.x / sizeBox)] == 1) {
+			vecMove.x = 0;
+		}
+
 		this.pos.add(vecMove);
 		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
