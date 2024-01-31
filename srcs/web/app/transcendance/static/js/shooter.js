@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import * as UTILS from './threeJsUtils.js';
 
@@ -91,14 +91,20 @@ function blitMap(scene) {
 }
 
 class Player {
-	constructor(name, x, z) {
+	constructor(name, x, z, scene) {
 		this.name = name;
 		this.speed = 0.2;
+		this.body = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0x00ff00 }));
+		this.weapon = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 1), new THREE.MeshBasicMaterial({ color: 0x0000ff }));
+		this.view = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 		this.pos = new THREE.Vector3(x, 0, z);
 		this.dir = new THREE.Vector3(0, 0, 0);
 		this.hp = 150;
 		this.dmg = 30;
 		this.ammo = 8;
+		this.weapon.position.set(0, 0.5, -1);
+		this.body.add(this.weapon);
+		scene.add(this.body);
 	}
 
 	move(keys) {
@@ -126,6 +132,8 @@ class Player {
 		vecMove.y = 0;
 		vecMove.normalize().multiplyScalar(this.speed);
 		this.pos.add(vecMove);
+		this.view.position.set(this.pos.x, this.pos.y + 2, this.pos.z);
+		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
 
 	shoot(keys) {
@@ -152,16 +160,11 @@ export function shooter() {
 	});
 
 	// Player
-	let player = new Player("test", 10, 10);
+	let player = new Player("test", 10, 10, scene);
 
 	// Camera
-	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	camera.position.x = player.pos.x;
-	camera.position.y = player.pos.y + 2;
-	camera.position.z = player.pos.z;
-
-	// Mouse
-	let controls = new PointerLockControls(camera, renderer.domElement);
+	const cameraGlobal = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	cameraGlobal.position.set(player.pos.x, player.pos.y + 2, player.pos.z);
 
 	document.addEventListener('click', function () {
 		controls.lock();
@@ -181,17 +184,22 @@ export function shooter() {
 
 	scene.add(light);
 
+	// Player controls
+	let controls = new PointerLockControls(player.view, renderer.domElement);
+	// GAme controls
+	let controlsGLobal = new OrbitControls(cameraGlobal, renderer.domElement);
+	controlsGLobal.enableRotate = true;
+	controlsGLobal.rotateSpeed = 1.0;
 	// Loop
 	function animate() {
 		requestAnimationFrame(animate);
 
+		controlsGLobal.target.set(widthMap / 2, 0, heightMap / 2);
+		controlsGLobal.update();
 		player.move(keys);
-		camera.position.x = player.pos.x;
-		camera.position.y = player.pos.y + 2;
-		camera.position.z = player.pos.z;
-		camera.getWorldDirection(player.dir);
-
-		renderer.render(scene, camera);
+		player.view.getWorldDirection(player.dir);
+		player.body.rotation.copy(player.view.rotation);
+		renderer.render(scene, cameraGlobal);
 	}
 
 	animate();

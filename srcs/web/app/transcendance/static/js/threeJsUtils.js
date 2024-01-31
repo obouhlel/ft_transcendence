@@ -54,9 +54,12 @@ export function createRenderer() {
 	return renderer;
 }
 
-export function resizeRenderer(renderer, fullScreen = false) {
-	const headerRect = document.querySelector('header').getBoundingClientRect();
-	const footerRect = document.querySelector('footer').getBoundingClientRect();
+export function resizeRenderer(renderer, camera, fullScreen = false) {
+	const headerRect = document.querySelector('header');
+	const footerRect = document.querySelector('footer');
+
+	camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 	if (fullScreen) {
 		headerRect.style.display = "none";
 		footerRect.style.display = "none";
