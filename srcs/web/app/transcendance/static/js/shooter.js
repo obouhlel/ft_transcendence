@@ -103,7 +103,7 @@ class Player {
 		this.dmg = 30;
 		this.ammo = 8;
 		this.view.position.set(0, 1, 0);
-		this.weapon.position.set(0, -0.7, -0.7);
+		this.weapon.position.set(0, -0.7, -0.7); // for the opponent put 0 on y
 		this.view.add(this.weapon);
 		this.body.add(this.view);
 		scene.add(this.body);
