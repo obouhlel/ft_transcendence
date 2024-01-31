@@ -23,6 +23,7 @@ const heightMap = map.length * sizeBox;
 
 let wall;
 let ground;
+let sky;
 export function loadTexture(url) {
 	return new Promise((resolve, reject) => {
 		const loader = new THREE.TextureLoader();
@@ -43,7 +44,7 @@ await loadTexture('/static/img/ground.jpg')
 		console.log("the texture could not be loaded: " + error);
 	});
 
-await loadTexture('/static/img/wall.jpeg')
+await loadTexture('/static/img/brickWall.jpg')
 	.then(texture => {
 		wall = texture;
 	})
@@ -51,9 +52,17 @@ await loadTexture('/static/img/wall.jpeg')
 		console.log("the texture could not be loaded: " + error);
 	});
 
+await loadTexture('/static/img/sky.jpeg')
+	.then(texture => {
+		sky = texture;
+	})
+	.catch(error => {
+		console.log("the texture could not be loaded: " + error);
+	});
+
 
 function blitMap(scene) {
-	ground.wrapS = THREE.RepeatWrapping;
+	ground.repeat.set(1, 1);
 	const floor = new THREE.Mesh(new THREE.BoxGeometry(widthMap, 0.1, heightMap), new THREE.MeshBasicMaterial({ map: ground }));
 	const bloc = new THREE.Mesh(new THREE.BoxGeometry(sizeBox, sizeBox, sizeBox), new THREE.MeshBasicMaterial({ map: wall }));
 	floor.receiveShadow = true;
@@ -128,7 +137,7 @@ export function shooter() {
 	let going = false;
 	let memGoing = false;
 
-	const scene = UTILS.createScene();
+	const scene = UTILS.createScene(sky);
 	const renderer = UTILS.createRenderer();
 	const button = UTILS.createContainerForGame("shooter", renderer);
 
