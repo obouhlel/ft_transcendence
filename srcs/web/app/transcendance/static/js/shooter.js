@@ -200,8 +200,8 @@ export function shooter() {
 		player.move(keys);
 		player.view.getWorldDirection(player.dir);
 		// player.body.rotation.copy(player.view.rotation);
-		// renderer.render(scene, cameraGlobal);
-		renderer.render(scene, player.view);
+		renderer.render(scene, cameraGlobal);
+		// renderer.render(scene, player.view);
 	}
 
 	animate();
