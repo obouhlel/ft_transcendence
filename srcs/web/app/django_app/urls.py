@@ -1,7 +1,8 @@
-"""settings URL Configuration
+"""
+URL configuration for django_app project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/3.2/topics/http/urls/
+    https://docs.djangoproject.com/en/5.0/topics/http/urls/
 Examples:
 Function views
     1. Add an import:  from my_app import views
@@ -15,11 +16,14 @@ Including another URLconf
 """
 # from django.contrib import admin
 from django.urls import path
-from transcendance import views
+from transcendence import views
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', views.index, name='index'),
-    path('home/', views.index, name='home'),
-    path('pong/', views.index, name='game'),
+	path('', views.login),
+	path('login/', views.login),
+	path('signin/', views.signin),
+	path('games/', views.games),
+    path('pong/', views.pong),
+	path('pew/', views.pew),
 ]

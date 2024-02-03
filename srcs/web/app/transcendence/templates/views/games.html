@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Games{% endblock %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+	<main>
+		<a href="/pong/">
+			<div id="pong"></div>
+		</a>
+		<a href="/pew/">
+			<div id="pew"></div>
+		</a>
+	</main>
+{% endblock %}
+
+{% block extra_js %}
+	<script type="module" src="{% static 'js/login.js' %}"></script>
+{% endblock %}
