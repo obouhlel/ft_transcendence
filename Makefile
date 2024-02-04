@@ -2,7 +2,7 @@ DOCKER=django
 
 all: up
 
-reset: down build up
+reset: down build up logs
 
 exec:
 	docker exec -it $(DOCKER) sh
@@ -31,6 +31,6 @@ stop:
 clean: stop
 	docker system prune -a -f
 
-re: clean all logs
+# re: clean all logs
 
 .PHONY: all build up down logs re build
