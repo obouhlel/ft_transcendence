@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class User(models.Model):
 	id = models.AutoField(primary_key=True)
-	login = models.CharField(max_length=30, unique=True)
+	username = models.CharField(max_length=30, unique=True)
 	email = models.EmailField(max_length=254, unique=True)
 	password = models.CharField(max_length=128)
 	first_name = models.CharField(max_length=30)
@@ -11,7 +11,7 @@ class User(models.Model):
 	is_admin = models.BooleanField(default=False)
 	sex = models.CharField(max_length=1, default='N')
 	age = models.IntegerField(default=0)
-	token = models.CharField(max_length=128, unique=True)
+	token = models.CharField(max_length=128)
 	avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
 	created_at = models.DateTimeField(auto_now_add=True)
 	last_connexion = models.DateTimeField(auto_now=True)
@@ -21,7 +21,7 @@ class User(models.Model):
 	list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
 	stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
 	def __str__(self):
-		return self.login
+		return self.username
 
 class Game(models.Model):
 	id = models.AutoField(primary_key=True)
