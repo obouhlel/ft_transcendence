@@ -1,12 +1,12 @@
-import { login } from './login.js';
+// import { login } from './login.js';
 // import { signin } from './signin.js';
 // import { games } from './games.js';
 import { pong3D } from './pong.js';
 // import { pew } from './pew.js';
 
 const routes = {
-	'/': login,
-	'/login': login,
+	'/': null,
+	'/login': null,
 	'/signin': null,
 	'/games': null,
 	'/pong': pong3D,
@@ -33,11 +33,11 @@ function route()
 		// Route to the function
         func();
     }
-	else
-	{
-		// Default route
-        login();
-    }
+	// else
+	// {
+	// 	// Default route
+    //     login();
+    // }
 
     if (listenerFunc)
 	{
