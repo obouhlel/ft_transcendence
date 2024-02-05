@@ -1,4 +1,4 @@
-#buttonPong {
+#buttonShooter {
 	background-color: #4CAF50;
 	border: none;
 	color: white;
@@ -16,13 +16,17 @@
 	left: calc(50vw - 15px - 32px);
 }
 
-#buttonPong:hover {
+#buttonShooter:hover {
 	background-color: #45a049;
 }
 
-#pong
+#shooter
 {
 	display: block;
 	width: 80%;
 	height: 80%;
+}
+
+body {
+	margin: 0px;
 }
