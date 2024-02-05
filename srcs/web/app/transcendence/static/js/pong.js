@@ -394,5 +394,3 @@ export function pong3D() {
 
 	animate();
 }
-
-pong3D();

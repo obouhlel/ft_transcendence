@@ -5,6 +5,15 @@
 		<meta charset="utf-8">
 		<title>{% block title %}Transcendence{% endblock %}</title>
 		<link rel="stylesheet" href="{% static 'css/base.css' %}">
+		<script src="https://unpkg.com/three@v0.160.1/build/three.min.js"></script>
+		<script type="importmap">
+			{
+			"imports": {
+				"three": "https://unpkg.com/three@v0.160.1/build/three.module.js",
+				"three/addons/": "https://unpkg.com/three@v0.160.1/examples/jsm/"
+			}
+			}
+		</script>
 		{% block extra_head %}{% endblock %}
 	</head>
 	<body>
