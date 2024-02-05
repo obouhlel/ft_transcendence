@@ -196,7 +196,7 @@ class Player {
 
 	shoot() {
 		if (this.ammo > 0) {
-			console.log("pew");
+			console.log("shooter");
 			this.ammo--;
 		}
 	}

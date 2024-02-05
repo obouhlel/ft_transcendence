@@ -2,24 +2,24 @@
 // import { signin } from './signin.js';
 // import { games } from './games.js';
 import { pong3D } from './pong.js';
-// import { pew } from './pew.js';
+import { shooter } from './shooter.js';
 
 const routes = {
 	'/': null,
-	'/login': null,
-	'/signin': null,
-	'/games': null,
-	'/pong': pong3D,
-	'/pew': null
+	'/login/': null,
+	'/signin/': null,
+	'/games/': null,
+	'/pong/': pong3D,
+	'/shooter/': shooter
 };
 
 const listeners = {
 	'/': null,
-	'/login': null,
-	'/signin': null,
-	'/games': null,
-	'/pong': null,
-	'/pew': null
+	'/login/': null,
+	'/signin/': null,
+	'/games/': null,
+	'/pong/': null,
+	'/shooter/': null
 };
 
 function route()
@@ -28,10 +28,13 @@ function route()
     const routeFunc = routes[url];
     const listenerFunc = listeners[url];
 
+	console.log(url);
+	console.log(routeFunc);
+	console.log(listenerFunc);
     if (routeFunc)
 	{
 		// Route to the function
-        func();
+        routeFunc();
     }
 	// else
 	// {

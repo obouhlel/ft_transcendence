@@ -10,8 +10,8 @@ def signin(request):
 def games(request):
 	return render(request, 'views/games.html')
 
-def pong(request, id_lobby):
-	return render(request, 'views/games/pong.html', {'id_lobby': id_lobby})
+def pong(request):
+	return render(request, 'views/games/pong.html')
 
-def pew(request):
-	return render(request, 'views/games/pew.html')
+def shooter(request):
+	return render(request, 'views/games/shooter.html')

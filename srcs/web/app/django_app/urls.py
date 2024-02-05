@@ -24,6 +24,6 @@ urlpatterns = [
 	path('login/', views.login),
 	path('signin/', views.signin),
 	path('games/', views.games),
-    path('pong/<str:id_lobby>/', views.pong),
-	path('pew/', views.pew),
+    path('pong/', views.pong),
+	path('shooter/', views.shooter),
 ]
