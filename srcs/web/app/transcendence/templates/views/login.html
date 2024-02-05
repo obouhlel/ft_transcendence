@@ -10,7 +10,7 @@
 
 {% block content %}
 	<main>
-		<form method="post">
+		<form method="post" id="login-form" >
 			{% csrf_token %}
 			<label for="login">Login</label>
 			<input type="text" id="login" name="login">

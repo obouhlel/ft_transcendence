@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", 
 
 INSTALLED_APPS = [
 	'transcendence',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -133,13 +135,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = ['https://*.domain.com', 'https://localhost:8000', 'http://localhost:8000', 'http://*.*.*.*:8000', 'https://localhost:8080', 'http://*.*.*.*:8080']
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = ['*'] # need to be changed
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = [
-#     'https://localhost:8080',
-# 	'https://0.0.0.0:8080',
-# ]
+# CORS_ALLOWED_ORIGINS = ["*"]
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True
@@ -150,7 +151,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
 # Rediriger les requêtes HTTP vers HTTPS
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 
 # Utiliser des cookies sécurisés
 SESSION_COOKIE_SECURE = True
