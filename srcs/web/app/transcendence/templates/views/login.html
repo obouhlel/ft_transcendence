@@ -10,10 +10,17 @@
 
 {% block content %}
 	<main>
+		{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+		{% endif %}
 		<form method="post" id="login-form" >
 			{% csrf_token %}
-			<label for="login">Login</label>
-			<input type="text" id="login" name="login">
+			<label for="username">Username</label>
+			<input type="text" id="username" name="username">
 			<br>
 			<label for="password">Password</label>
 			<input type="password" id="password" name="password">

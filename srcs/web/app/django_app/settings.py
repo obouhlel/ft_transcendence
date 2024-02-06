@@ -133,14 +133,29 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security
 
+CSRF_COOKIE_SAMESITE = 'None'
+
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ['https://*.domain.com', 'https://localhost:8000', 'http://localhost:8000', 'http://*.*.*.*:8000', 'https://localhost:8080', 'http://*.*.*.*:8080']
+CORS_ALLOW_ALL_ORIGINS = False
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8080",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+]
 ALLOWED_HOSTS = ['*']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-CORS_ALLOW_HEADERS = ['*'] # need to be changed
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'origin',
+    'x-csrftoken',
+    'x-requested-with',
+    'accept',
+    'authorization',
+    'x-csrftoken'
+]
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost:8080"  # Ajoutez cette ligne
+]
+
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True
