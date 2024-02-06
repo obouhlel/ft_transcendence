@@ -94,7 +94,7 @@ class Ball {
 		scene.add(this.cube);
 	}
 
-	move(scene, playerLeft, playerRight, button, arena, deltaTime) {
+	move(scene, playerLeft, playerRight, button, arena, game, deltaTime) {
 
 		// After pinch (slow systeme)
 		if (this.speed > 0.1) {
@@ -111,10 +111,10 @@ class Ball {
 		// If the ball go through the player line (scoring)
 		if (this.cube.position.x >= X_SIZE_MAP / 2) {
 			playerLeft.score += 1;
-			this.reset(scene, playerLeft, playerRight, button);
+			this.reset(scene, playerLeft, playerRight, button, game);
 		} else if (this.cube.position.x <= -(X_SIZE_MAP / 2)) {
 			playerRight.score += 1;
-			this.reset(scene, playerLeft, playerRight, button);
+			this.reset(scene, playerLeft, playerRight, button, game);
 		}
 
 		// If the ball hit the player (bounce)
@@ -127,6 +127,7 @@ class Ball {
 		}
 
 		// Pinch
+		// top
 		if (this.hitbox.max.z >= arena.hitbox.max.z && this.hitbox.min.z <= playerLeft.hitbox.max.z
 			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
 				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
@@ -138,6 +139,7 @@ class Ball {
 			this.direction = new THREE.Vector3(-1, 0, -0.5);
 			this.speed = 2;
 		}
+		// bot
 		if (this.hitbox.min.z <= arena.hitbox.min.z && this.hitbox.max.z >= playerLeft.hitbox.min.z
 			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
 				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
@@ -152,9 +154,9 @@ class Ball {
 
 		// AntiBlock system
 		if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
-			this.direction.x = -0.2;
-		} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
 			this.direction.x = 0.2;
+		} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
+			this.direction.x = -0.2;
 		}
 
 		// Setup the director vector
@@ -335,7 +337,7 @@ export function pong3D() {
 				ball.reset(scene, playerLeft, playerRight, button, game);
 			}
 
-			ball.move(scene, playerLeft, playerRight, button, arena, delta);
+			ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
 			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
 			debug();
 
