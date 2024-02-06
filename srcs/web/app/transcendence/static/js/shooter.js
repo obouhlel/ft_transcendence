@@ -144,30 +144,30 @@ class Player {
 		scene.add(this.body);
 	}
 
-	move(keys) {
+	move(keys, deltaTime) {
 		let vecMove = new THREE.Vector3();
 		if (keys['w']) {
 			let front = new THREE.Vector3();
-			front = this.dir.normalize().multiplyScalar(this.speed);
+			front = this.dir.normalize().multiplyScalar(this.speed * deltaTime);
 			vecMove.add(front);
 		}
 		if (keys['s']) {
 			let back = new THREE.Vector3();
-			back = this.dir.normalize().multiplyScalar(-this.speed);
+			back = this.dir.normalize().multiplyScalar(-this.speed * deltaTime);
 			vecMove.add(back);
 		}
 		if (keys['a']) {
 			let left = new THREE.Vector3();
-			left.crossVectors(new THREE.Vector3(0, 1, 0), this.dir).normalize().multiplyScalar(this.speed);
+			left.crossVectors(new THREE.Vector3(0, 1, 0), this.dir).normalize().multiplyScalar(this.speed * deltaTime);
 			vecMove.add(left);
 		}
 		if (keys['d']) {
 			let right = new THREE.Vector3();
-			right.crossVectors(this.dir, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(this.speed);
+			right.crossVectors(this.dir, new THREE.Vector3(0, 1, 0)).normalize().multiplyScalar(this.speed * deltaTime);
 			vecMove.add(right);
 		}
 		vecMove.y = 0;
-		vecMove.normalize().multiplyScalar(this.speed);
+		vecMove.normalize().multiplyScalar(this.speed * deltaTime);
 		let hitBox = new THREE.Box3().setFromObject(this.body);
 		if (this.dir.z > 0) {
 			if (map[Math.floor((hitBox.max.z + vecMove.z) / sizeBox)][Math.floor(this.pos.x / sizeBox)] == 1) {
@@ -255,24 +255,29 @@ export function shooter() {
 	let controlsGLobal = new OrbitControls(cameraGlobal, renderer.domElement);
 	controlsGLobal.enableRotate = true;
 	controlsGLobal.rotateSpeed = 1.0;
-	// Loop
-	function animate() {
-		requestAnimationFrame(animate);
 
-		controlsGLobal.target.set(widthMap / 2, 0, heightMap / 2);
-		controlsGLobal.update();
-		player.move(keys);
-		player.view.getWorldDirection(player.dir);
-		// player.body.rotation.copy(player.view.rotation);
-		if (keys['b'] == true) {
-			player.shoot();
-			keys['b'] = 2;
+	let lastTime = 0;
+	// Loop
+	function animate(currentTime) {
+		if (lastTime) {
+			let delta = (currentTime - lastTime) / 20;
+			controlsGLobal.target.set(widthMap / 2, 0, heightMap / 2);
+			controlsGLobal.update();
+			player.move(keys, delta);
+			player.view.getWorldDirection(player.dir);
+			// player.body.rotation.copy(player.view.rotation);
+			if (keys['b'] == true) {
+				player.shoot();
+				keys['b'] = 2;
+			}
+			if (!keys[' ']) {
+				renderer.render(scene, cameraGlobal);
+			} else {
+				renderer.render(scene, player.view);
+			}
 		}
-		if (!keys[' ']) {
-			renderer.render(scene, cameraGlobal);
-		} else {
-			renderer.render(scene, player.view);
-		}
+		lastTime = currentTime;
+		requestAnimationFrame(animate);
 	}
 
 	animate();

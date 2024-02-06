@@ -344,7 +344,6 @@ export function pong3D() {
 			controls.update();
 			renderer.render(scene, camera);
 		}
-		console.log(currentTime);
 		lastTime = currentTime;
 		requestAnimationFrame(animate);
 	}
