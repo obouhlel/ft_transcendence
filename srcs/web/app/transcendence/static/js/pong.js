@@ -39,8 +39,9 @@ class Player {
 		scene.add(this.cube);
 	}
 
-	move(keys, arena) {
+	move(keys, arena, deltaTime) {
 		this.hitbox.setFromObject(this.cube);
+		this.speed = 0.1 * deltaTime;
 		if (this.type == "left") {
 			if (keys['w']) {
 				if (this.hitbox.min.z - this.speed > arena.hitbox.min.z) {
@@ -93,7 +94,7 @@ class Ball {
 		scene.add(this.cube);
 	}
 
-	move(scene, playerLeft, playerRight, button, arena) {
+	move(scene, playerLeft, playerRight, button, arena, deltaTime) {
 
 		// After pinch (slow systeme)
 		if (this.speed > 0.1) {
@@ -158,12 +159,12 @@ class Ball {
 
 		// Setup the director vector
 		this.direction.normalize();
-		this.direction.multiplyScalar(this.speed);
+		this.direction.multiplyScalar(this.speed * deltaTime);
 		this.cube.position.add(this.direction);
 	}
 
-	reset(scene, playerLeft, playerRight, button) {
-		updateScore(scene, playerLeft, playerRight, button);
+	reset(scene, playerLeft, playerRight, button, game) {
+		updateScore(scene, playerLeft, playerRight, button, game);
 		this.cube.position.x = 0;
 		this.cube.position.z = 0;
 		this.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
@@ -174,7 +175,7 @@ class Ball {
 
 let textScore = new THREE.Mesh(UTILS.doTextGeo("0 - 0", 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
 
-function updateScore(scene, playerLeft, playerRight, button) {
+function updateScore(scene, playerLeft, playerRight, button, game) {
 	if (scene && textScore) {
 		// If the TextScore already exist, remove it
 		scene.remove(textScore);
@@ -184,8 +185,8 @@ function updateScore(scene, playerLeft, playerRight, button) {
 		// End of the game
 		button.innerHTML = "RESTART";
 		button.style.display = "block";
-		going = false;
-		memGoing = false;
+		game.going = false;
+		game.memGoing = false;
 	}
 	let scoreString = playerLeft.score.toString() + " - " + playerRight.score.toString();
 	textScore = new THREE.Mesh(UTILS.doTextGeo(scoreString, 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
@@ -201,14 +202,16 @@ function updateScore(scene, playerLeft, playerRight, button) {
 // ------------------------------------setup------------------------------------
 export function pong3D() {
 
-	let going = false;
-	let memGoing = false;
+	let game = {
+		going: false,
+		memGoing: false,
+	}
 
 	const scene = UTILS.createScene();
 	const renderer = UTILS.createRenderer();
 	const button = UTILS.createContainerForGame("pong", renderer);
 	button.addEventListener("click", () => {
-		going = true;
+		game.going = true;
 		button.style.display = "none";
 		playerLeft.score = 0;
 		playerRight.score = 0;
@@ -272,7 +275,7 @@ export function pong3D() {
 	scene.add(spot);
 	scene.add(spot.target);
 	scene.add(globalLight);
-	updateScore(scene, playerLeft, playerRight, button);
+	updateScore(scene, playerLeft, playerRight, button, game);
 
 	// ------------------------------------keys------------------------------------
 	let keys = {};
@@ -286,7 +289,7 @@ export function pong3D() {
 		if (keys['r']) {
 			playerLeft.score = 0;
 			playerRight.score = 0;
-			ball.reset(scene, playerLeft, playerRight, button);
+			ball.reset(scene, playerLeft, playerRight, button, game);
 		}
 		if (keys['4']) {
 			ball.direction.x = 0;
@@ -318,26 +321,30 @@ export function pong3D() {
 		}
 	}
 
+	let lastTime = 0;
 	// ------------------------------------loop------------------------------------
-	function animate() {
+	function animate(currentTime) {
+		if (lastTime) {
+			let delta = (currentTime - lastTime) / 10;
+			if (game.going) {
+				playerLeft.move(keys, arena, delta);
+				playerRight.move(keys, arena, delta);
+			}
+			if (game.going && !game.memGoing) {
+				game.memGoing = true;
+				ball.reset(scene, playerLeft, playerRight, button, game);
+			}
+
+			ball.move(scene, playerLeft, playerRight, button, arena, delta);
+			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
+			debug();
+
+			controls.update();
+			renderer.render(scene, camera);
+		}
+		console.log(currentTime);
+		lastTime = currentTime;
 		requestAnimationFrame(animate);
-
-		if (going) {
-			playerLeft.move(keys, arena);
-			playerRight.move(keys, arena);
-		}
-		if (going && !memGoing) {
-			memGoing = true;
-			ball.reset(scene, playerLeft, playerRight, button);
-		}
-
-		ball.move(scene, playerLeft, playerRight, button, arena);
-		spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
-		debug();
-
-		controls.update();
-
-		renderer.render(scene, camera);
 	}
 
 	animate();
