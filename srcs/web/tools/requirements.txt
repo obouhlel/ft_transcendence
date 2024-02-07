@@ -4,3 +4,6 @@ python-decouple
 tzdata
 channels
 daphne
+django-cors-headers
+pytz
+django-sslserver

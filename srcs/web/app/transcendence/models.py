@@ -1,4 +1,7 @@
+from django.contrib.auth.models import AbstractUser, PermissionsMixin, Group, Permission
+from django.utils.translation import gettext as _
 from django.db import models
+from django.utils import timezone
 
 # Create your models here.
 class User(models.Model):
@@ -22,6 +25,15 @@ class User(models.Model):
 	stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
 	def __str__(self):
 		return self.username
+
+# class CustomUser(AbstractUser):
+#     # Ajoutez vos champs personnalisés ici
+#     sexe = models.CharField(max_length=50)
+#     birthdate = models.DateField()
+#     token = models.CharField(max_length=50, null=True)
+#     avatar = models.CharField(max_length=255, default='/var/www/default_avatar.webp')
+#     status = models.CharField(max_length=50, default='offline')
+#     id_list_friend = models.ForeignKey('ListFriends', on_delete=models.CASCADE, null=True)
 
 class Game(models.Model):
 	id = models.AutoField(primary_key=True)

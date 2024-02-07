@@ -4,7 +4,8 @@ LABEL key='[Django]'
 
 RUN apk update && apk add --no-cache \
 	python3 \
-	py3-pip
+	py3-pip \
+	openssl
 
 RUN mkdir -p /app /var/www
 
@@ -20,6 +21,11 @@ COPY ./tools/requirements.txt .
 
 RUN venv/bin/pip install --upgrade pip
 RUN venv/bin/pip install --no-cache-dir -r requirements.txt
+
+RUN openssl req -x509 -out /etc/ssl/certs/localhost.crt -keyout /etc/ssl/private/localhost.key \
+  -newkey rsa:2048 -nodes -sha256 \
+  -subj '/CN=localhost' -extensions EXT -config <( \
+   printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 
 COPY ./tools/run_server.sh /app
 

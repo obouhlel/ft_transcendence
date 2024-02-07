@@ -28,22 +28,24 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", "0.0.0.0"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
 	'daphne',
 	'channels',
 	'transcendence',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -94,6 +96,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'transcendence.CustomUser'
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -139,15 +143,30 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security
 
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 # CORS
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = False
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8080",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+]
+ALLOWED_HOSTS = ['*']
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
-CORS_ALLOW_HEADERS = ['*'] # need to be changed
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'origin',
+    'x-csrftoken',
+    'x-requested-with',
+    'accept',
+    'authorization',
+    'x-csrftoken'
+]
 CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = [
-#     'https://localhost:8080',
-# 	'https://0.0.0.0:8080',
-# ]
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost:8080"  # Ajoutez cette ligne
+]
+
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True
