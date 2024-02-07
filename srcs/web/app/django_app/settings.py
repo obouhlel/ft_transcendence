@@ -28,7 +28,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", "0.0.0.0"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +88,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'transcendence.CustomUser'
+
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -133,7 +135,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security
 
-CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False

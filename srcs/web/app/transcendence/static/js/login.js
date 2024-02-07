@@ -26,16 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
 		event.preventDefault();
 
 		// Obtenez les valeurs des champs de formulaire
-		var username = document.getElementById('username').value;
-		var password = document.getElementById('password').value;
+		var username = document.getElementById('id_username').value;
+		var password = document.getElementById('id_password').value;
 
 		// Créez un objet avec les données du formulaire
 		var data = {
 			'username': username,
 			'password': password
 		};
+		console.log("dataa: ", data); // A supprimer
 		// Envoyez les données à votre serveur via une requête AJAX
-		fetch('http://localhost:8000/login/', {
+		fetch('https://localhost:8000/login/', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -45,20 +46,55 @@ document.addEventListener('DOMContentLoaded', function() {
 			credentials: 'include',
 			body: JSON.stringify(data)
 		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Erreur HTTP, statut = ' + response.status);
-			}
-			return response.json();
-		})
+		.then(response => response.json())
 		.then(data => {
 			// Gérez la réponse de votre serveur ici
-			console.log(data);
-			console.log('CONNEXION REUSSIE');
+			console.log(data); // a supprimer
+			var messageElement = document.getElementById('message');
+			if (data.status === 'ok') {
+				console.log('CONNEXION REUSSIEE');
+				messageElement.textContent = data.message;
+				messageElement.style.color = 'green';  // Changez la couleur du texte en vert
+				// window.location.reload();
+			} else if (data.status === 'error') {
+				console.log('ERREUR DE CONNEXION');
+				messageElement.textContent = data.message;
+				messageElement.style.color = 'red';  // Changez la couleur du texte en rouge
+			}
 		})
 		.catch(error => {
 			// Gérez les erreurs ici
+			var messageElement = document.getElementById('message');
 			console.log('ERREUR DE CONNEXION');
+			console.error(error);
+			messageElement.textContent = 'Erreur de connexion';
+			messageElement.style.color = 'red';
+		});
+	});
+});
+
+
+// logout
+document.addEventListener('DOMContentLoaded', function() {
+	var logoutButton = document.getElementById('logout-button');
+	logoutButton.addEventListener('click', function(event) {
+		event.preventDefault();
+		fetch('https://localhost:8000/logout/', {
+			method: 'GET',
+			credentials: 'include'
+		})
+		.then(response => response.json())
+		.then(data => {
+			console.log(data);
+			if (data.status === 'ok') {
+				console.log('DECONNEXION REUSSIE');
+				window.location.href = 'https://localhost:8000/'; // Redirigez l'utilisateur vers la page d'accueil
+			} else if (data.status === 'error') {
+				console.log('ERREUR DE DECONNEXION');
+			}
+		})
+		.catch(error => {
+			console.log('ERREUR DE DECONNEXION');
 			console.error(error);
 		});
 	});

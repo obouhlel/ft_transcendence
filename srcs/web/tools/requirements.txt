@@ -4,3 +4,4 @@ python-decouple
 django-cors-headers
 tzdata
 pytz
+django-sslserver

@@ -10,23 +10,11 @@
 
 {% block content %}
 	<main>
-		{% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
+		<div id="message"></div>
 		<form method="post" id="login-form" >
 			{% csrf_token %}
-			<label for="username">Username</label>
-			<input type="text" id="username" name="username">
-			<br>
-			<label for="password">Password</label>
-			<input type="password" id="password" name="password">
-			<br>
-			<button type="submit">Login</button>
-			<button type="button" id="signin" onclick="window.location.href='/signin/'">Sign In</button>
+			{{ form.as_p }}
+			<input type="submit" value="Se connecter">
 			<br>
 			<button type="button" id="Auth42">42</button>
 		</form>

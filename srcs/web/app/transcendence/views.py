@@ -1,36 +1,39 @@
-from django.shortcuts import render
-from .models import User
+from django.shortcuts import render, redirect
+from transcendence.models import CustomUser # mon propre model
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth import authenticate, login as django_login
 from django.http import JsonResponse
 from django.utils import timezone
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout #test
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm #test
+from django.views.decorators.csrf import csrf_exempt
 import pytz
 import json
 
-# Create your views here.
-def login(request):
-	if request.method == 'POST':
-		print("Request body: ", request.body)
-		data = json.loads(request.body)
-		username = data.get('username')
-		password = data.get('password')
-		print("Username: ", username)
-		print("Password: ", password)
-		user = authenticate(request, username=username, password=password)
-		print("Authentication result: ", user)
-		if user is not None:
-			django_login(request, user)
-			messages.success(request, 'Vous êtes maintenant connecté.')
-			return redirect('/pong')  # Remplacez '/home' par l'URL de la page vers laquelle vous souhaitez rediriger l'utilisateur après la connexion
-		else:
-			messages.error(request, 'username ou mot de passe incorrect.')
-			return redirect('/login')
-	else:
-		return render(request, 'views/login.html')
+def logout_user(request):
+	django_logout(request)
+	messages.success(request, 'Vous êtes maintenant déconnecté.')
+	return JsonResponse({'status': 'ok', 'message': 'Vous êtes maintenant déconnecté.'})
 
-def signin(request):
+# Create your views here.
+# @csrf_exempt
+def login_user(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['username']
+        password = data['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            django_login(request, user)
+            messages.success(request, 'Vous êtes maintenant connecté.')
+            return JsonResponse({'status': 'ok', 'message': 'Vous êtes maintenant connecté en tant que ' + username})
+        else:
+            messages.error(request, 'username ou mot de passe incorrect.')
+            return JsonResponse({'status': 'error', 'message': 'username ou mot de passe incorrect.'})
+    form = AuthenticationForm()
+    return render(request, 'views/login.html', {'form': form})
+
+def signin_user(request):
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
@@ -46,11 +49,11 @@ def signin(request):
 			messages.error(request, 'Les données sont trop longues.')
 			return redirect('/signin')
 		# verifier que le username n'est pas déjà utilisé
-		if User.objects.filter(username=username).exists():
+		if CustomUser.objects.filter(username=username).exists():
 			messages.error(request, 'Ce username est déjà utilisé.')
 			return redirect('/signin')
 		# Valider que l'email n'est pas déjà utilisé
-		if User.objects.filter(email=email).exists():
+		if CustomUser.objects.filter(email=email).exists():
 			messages.error(request, 'Cet email est déjà utilisé.')
 			return redirect('/signin')
 		# verifier que le mot de passe est la confirmation du mot de passe sont identiques
@@ -73,7 +76,7 @@ def signin(request):
 			return redirect('/signin')
 
 		# Créer l'utilisateur
-		user = User.objects.create(username=username, password=make_password(password), email=email, firstname=firstname, lastname=lastname ,sexe=sexe, birthdate=birthdate, date_creation=timezone.now())
+		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
 		messages.success(request, 'Votre compte a été créé avec succès.')
 		return redirect('/login')
 	else:

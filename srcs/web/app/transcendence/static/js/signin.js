@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         data.append('birthdate', birthdate);
         data.append('sexe', sex);
 
-        fetch('http://localhost:8000/signin/', {
+        fetch('https://localhost:8000/signin/', {
             method: 'POST',
             headers: {
                 'X-CSRFToken': csrftoken,
