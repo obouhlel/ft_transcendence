@@ -6,8 +6,7 @@ python-decouple
 # utils
 tzdata
 # websocket
-daphne
-channels
+channels[daphne]
 # cors
 django-cors-headers
 pytz
