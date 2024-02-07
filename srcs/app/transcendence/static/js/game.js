@@ -1,6 +1,3 @@
-const url = `wss://${window.location.host}/ws/matchmaking/`;
-const socketMatchmaking = new WebSocket(url);
-
 function send_message() {
 	var message = { "message": "Hello, world!" };
 	socketMatchmaking.send(JSON.stringify(message));
@@ -9,6 +6,8 @@ function send_message() {
 
 export function game()
 {
+	const url = `wss://${window.location.host}/ws/matchmaking/`;
+	const socketMatchmaking = new WebSocket(url);
 	
 	socketMatchmaking.onopen = function(e) {
 		console.log("Connection established");
