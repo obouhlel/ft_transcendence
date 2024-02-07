@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-c_dug2-$h$y^4#6c1sj2qh9@%x7wq7vd#_@=5e-7blbl%7!3sz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", "0.0.0.0"]
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -148,9 +148,9 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CSRF_TRUSTED_ORIGINS = [
-    "https://localhost:8080",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+    "https://localhost:8000",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
 ]
-ALLOWED_HOSTS = ['*']
+
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = [
     'content-type',
@@ -163,7 +163,7 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://localhost:8080"  # Ajoutez cette ligne
+    "https://localhost:8000"  # Ajoutez cette ligne
 ]
 
 

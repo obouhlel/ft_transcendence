@@ -10,5 +10,5 @@ python manage.py migrate
 
 python manage.py collectstatic --noinput
 
-# python manage.py runserver 0.0.0.0:8000
-python manage.py runsslserver 0.0.0.0:8000 --certificate /etc/ssl/certs/transcendance.crt --key /etc/ssl/private/transcendance.key
+python manage.py runserver 0.0.0.0:8000
+# python manage.py runsslserver 0.0.0.0:8000 --certificate /etc/ssl/certs/localhost.crt --key /etc/ssl/private/localhost.key
