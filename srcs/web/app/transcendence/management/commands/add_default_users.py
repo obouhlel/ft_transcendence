@@ -2,7 +2,8 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from transcendence.models import CustomUser  # Remplacez 'transcendence' par le nom de votre application
-
+from transcendence.models import Game  # Remplacez 'transcendence' par le nom de votre application
+from transcendence.models import Stat_Game
 
 class Command(BaseCommand):
     help = 'Add default users to the database'
@@ -15,7 +16,7 @@ class Command(BaseCommand):
             password=make_password('adminadmin'),
             first_name='admin',
             last_name='admin',
-            sexe='M',
+            sex='M',
             birthday=timezone.now() - timezone.timedelta(days=25*365),  # Remplacez par la date de naissance réelle
         )
 
@@ -30,3 +31,13 @@ class Command(BaseCommand):
             date_joined=timezone.now(),
             last_login=timezone.now(),
         )
+
+        stat_game1 = Stat_Game()
+        stat_game1.save()
+
+        game1 = Game.objects.create( name='game1',description='description1',genre='genre1',stat=stat_game1)
+
+        stat_game2 = Stat_Game()
+        stat_game2.save()
+
+        game2 = Game.objects.create( name='game2',description='description2',genre='genre2',stat=stat_game2)
