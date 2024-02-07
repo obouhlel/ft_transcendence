@@ -15,7 +15,9 @@ RUN mkdir -p /app/django
 
 RUN python3 -m venv venv
 RUN source venv/bin/activate
+
 ENV PATH="/app/venv/bin:$PATH"
+ENV DJANGO_SETTINGS_MODULE=django_app.settings
 
 COPY ./tools/requirements.txt .
 
@@ -32,6 +34,8 @@ COPY ./tools/run_server.sh /app
 RUN chmod +x /app/run_server.sh
 
 EXPOSE 8000
+
+WORKDIR /app/django
 
 ENTRYPOINT ["sh", "/app/run_server.sh"]
 # for debug

@@ -1,9 +1,15 @@
+# backend
 Django
+# db
 psycopg2-binary
 python-decouple
+# utils
 tzdata
-channels
+# websocket
 daphne
+channels
+# cors
 django-cors-headers
 pytz
+# ssl
 django-sslserver

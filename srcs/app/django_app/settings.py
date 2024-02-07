@@ -31,7 +31,6 @@ ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", 
 # Application definition
 
 INSTALLED_APPS = [
-	'daphne',
 	'channels',
 	'transcendence',
     'corsheaders',
