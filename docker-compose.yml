@@ -8,7 +8,7 @@ services:
       - .env
 
   web:
-    container_name: django
+    container_name: web
     build:
       context: ./srcs
       dockerfile: Dockerfile
@@ -23,12 +23,46 @@ services:
     env_file:
       - .env
 
+  nginx:
+    container_name: nginx
+    image: nginx
+    restart: on-failure
+    depends_on:
+      - web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ssl_cert:/etc/nginx/ssl
+      - ssl_key:/etc/nginx/ssl
+      - nginx_conf:/etc/nginx/nginx.conf
+      - staticfiles:/var/www/static/
+    env_file:
+      - .env
+
 volumes:
   app_django:
     driver: local
     driver_opts:
       type: none
       device: ./srcs/app
+      o: bind
+  nginx_conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./srcs/tools/nginx.conf
+      o: bind
+  ssl_cert:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./srcs/tools/ssl/cert.pem
+      o: bind
+  ssl_key:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./srcs/tools/ssl/key.pem
       o: bind
   staticfiles:
     driver: local

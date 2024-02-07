@@ -10,4 +10,4 @@ python manage.py migrate
 
 python manage.py collectstatic --noinput
 
-python manage.py runsslserver 0.0.0.0:8000 --certificate /etc/ssl/certs/localhost.crt --key /etc/ssl/private/localhost.key
+python manage.py runserver 0.0.0.0:8000
