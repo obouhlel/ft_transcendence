@@ -15,9 +15,8 @@ class Command(BaseCommand):
             password=make_password('adminadmin'),
             first_name='admin',
             last_name='admin',
-            sexe='Male',
-            birthdate=timezone.now() - timezone.timedelta(days=25*365),  # Remplacez par la date de naissance réelle
-            id_list_friend=None
+            sexe='M',
+            birthday=timezone.now() - timezone.timedelta(days=25*365),  # Remplacez par la date de naissance réelle
         )
 
         user2 = CustomUser.objects.create(
@@ -26,9 +25,8 @@ class Command(BaseCommand):
             password=make_password('password2'),
             first_name='User',
             last_name='Two',
-            sexe='Female',
-            birthdate=timezone.now() - timezone.timedelta(days=30*365),  # Remplacez par la date de naissance réelle
+            sex='F',
+            birthday=timezone.now() - timezone.timedelta(days=30*365),  # Remplacez par la date de naissance réelle
             date_joined=timezone.now(),
             last_login=timezone.now(),
-            id_list_friend=None
         )

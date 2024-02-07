@@ -11,12 +11,8 @@ from django.utils import timezone
 # You can add more fields to the user model by creating a custom model that inherits from AbstractUser. 
 
 class CustomUser(AbstractUser):
-	password = models.CharField(max_length=128)
-	first_name = models.CharField(max_length=30)
-	last_name = models.CharField(max_length=30)	
-	is_admin = models.BooleanField(default=False)
 	sex = models.CharField(max_length=1, default='N')
-	age = models.IntegerField(default=0)
+	birthday = models.DateField(default=timezone.now)
 	token = models.CharField(max_length=128)
 	avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
 	created_at = models.DateTimeField(auto_now_add=True)
