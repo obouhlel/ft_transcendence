@@ -52,10 +52,10 @@ document.addEventListener('DOMContentLoaded', function() {
 			console.log(data); // a supprimer
 			var messageElement = document.getElementById('message');
 			if (data.status === 'ok') {
-				console.log('CONNEXION REUSSIEE');
+				console.log('CONNEXION REUSSIE');
 				messageElement.textContent = data.message;
 				messageElement.style.color = 'green';  // Changez la couleur du texte en vert
-				// window.location.reload();
+				window.location.reload();
 			} else if (data.status === 'error') {
 				console.log('ERREUR DE CONNEXION');
 				messageElement.textContent = data.message;
