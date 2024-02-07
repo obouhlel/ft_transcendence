@@ -3,37 +3,21 @@ from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
 
-# Create your models here.
-class User(models.Model):
-	id = models.AutoField(primary_key=True)
-	username = models.CharField(max_length=30, unique=True)
-	email = models.EmailField(max_length=254, unique=True)
-	password = models.CharField(max_length=128)
-	first_name = models.CharField(max_length=30)
-	last_name = models.CharField(max_length=30)	
-	is_admin = models.BooleanField(default=False)
-	sex = models.CharField(max_length=1, default='N')
-	age = models.IntegerField(default=0)
-	token = models.CharField(max_length=128)
-	avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
-	created_at = models.DateTimeField(auto_now_add=True)
-	last_connexion = models.DateTimeField(auto_now=True)
-	list_friends = models.ManyToManyField('User', related_name='friends')
-	list_blocked = models.ManyToManyField('User', related_name='blocked')
-	list_request = models.ManyToManyField('friend_request', related_name='request')
-	list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
-	stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
-	def __str__(self):
-		return self.username
-
-# class CustomUser(AbstractUser):
-#     # Ajoutez vos champs personnalisés ici
-#     sexe = models.CharField(max_length=50)
-#     birthdate = models.DateField()
-#     token = models.CharField(max_length=50, null=True)
-#     avatar = models.CharField(max_length=255, default='/var/www/default_avatar.webp')
-#     status = models.CharField(max_length=50, default='offline')
-#     id_list_friend = models.ForeignKey('ListFriends', on_delete=models.CASCADE, null=True)
+class User(AbstractUser):
+    is_admin = models.BooleanField(default=False)
+    sexe = models.CharField(max_length=1, default='N')
+    birthdate = models.DateField(default=timezone.now)
+    token = models.CharField(max_length=128)
+    avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_connexion = models.DateTimeField(auto_now=True)
+    list_friends = models.ManyToManyField('User', related_name='friends')
+    list_blocked = models.ManyToManyField('User', related_name='blocked')
+    list_request = models.ManyToManyField('friend_request', related_name='request')
+    list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
+    stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
+    def __str__(self):
+        return self.username
 
 class Game(models.Model):
 	id = models.AutoField(primary_key=True)

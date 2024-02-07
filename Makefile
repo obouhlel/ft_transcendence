@@ -1,6 +1,6 @@
 DOCKER=django
 
-all: up
+all: up logs
 
 reset: down build up logs
 

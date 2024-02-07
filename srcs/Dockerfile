@@ -19,8 +19,8 @@ ENV PATH="/app/venv/bin:$PATH"
 
 COPY ./tools/requirements.txt .
 
-RUN venv/bin/pip install --upgrade pip
-RUN venv/bin/pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN openssl req -x509 -out /etc/ssl/certs/localhost.crt -keyout /etc/ssl/private/localhost.key \
   -newkey rsa:2048 -nodes -sha256 \

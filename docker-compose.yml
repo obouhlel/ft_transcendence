@@ -10,7 +10,7 @@ services:
   web:
     container_name: django
     build:
-      context: ./srcs/web
+      context: ./srcs
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
@@ -18,32 +18,17 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - web:/app/django
-      - staticfiles:/var/www/static/
-    env_file:
-      - .env
-
-  nginx:
-    container_name: nginx
-    build:
-      context: ./srcs/nginx
-      dockerfile: Dockerfile
-    restart: on-failure
-    depends_on:
-      - web
-    ports:
-      - "0.0.0.0:8080:443"
-    volumes:
+      - app_django:/app/django
       - staticfiles:/var/www/static/
     env_file:
       - .env
 
 volumes:
-  web:
+  app_django:
     driver: local
     driver_opts:
       type: none
-      device: ./srcs/web/app
+      device: ./srcs/app
       o: bind
   staticfiles:
     driver: local
