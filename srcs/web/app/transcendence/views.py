@@ -10,6 +10,9 @@ def signin(request):
 def games(request):
 	return render(request, 'views/games.html')
 
+def game(request):
+	return render(request, 'views/game.html')
+
 def pong(request):
 	return render(request, 'views/games/pong.html')
 

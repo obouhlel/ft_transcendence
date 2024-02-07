@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ["www.transcendance.42.fr", "transcendance.42.fr", "localhost", 
 # Application definition
 
 INSTALLED_APPS = [
+	'daphne',
+	'channels',
 	'transcendence',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -69,8 +71,14 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'django_app.wsgi.application'
+# WSGI_APPLICATION = 'django_app.wsgi.application'
+ASGI_APPLICATION = 'django_app.asgi.application'
 
+CHANNEL_LAYERS = {
+	'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

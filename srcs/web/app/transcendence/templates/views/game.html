@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Game{% endblock %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="{% static 'css/game.css' %}">
+{% endblock %}
+
+{% block content %}
+	<main>
+		<div>
+			<h1>GAME</h1>
+			<div>
+				<p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eaque eveniet libero nam ex amet nemo consequuntur aut ipsa vero molestiae, aliquid placeat magnam porro. Aut iure ea maiores quam iusto.</p>
+				<button id="matchmaking">Matchmaking</button>
+			</div>
+		</div>
+	</main>
+{% endblock %}
