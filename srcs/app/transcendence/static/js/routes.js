@@ -1,7 +1,7 @@
 // import { login } from './login.js';
 // import { signin } from './signin.js';
 // import { games } from './games.js';
-import { game, listenerGame } from './game.js';
+import { game } from './game.js';
 import { pong3D } from './pong.js';
 import { shooter } from './shooter.js';
 
@@ -20,7 +20,7 @@ const listeners = {
 	'/login/': null,
 	'/signin/': null,
 	'/games/': null,
-	'/game/': listenerGame,
+	'/game/': null,
 	'/pong/': null,
 	'/shooter/': null
 };

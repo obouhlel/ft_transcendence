@@ -7,7 +7,7 @@ RUN apk update && apk add --no-cache \
 	py3-pip \
 	openssl
 
-RUN mkdir -p /app /var/www
+RUN mkdir -p /app /var/www /etc/ssl/certs /etc/ssl/private
 
 WORKDIR /app
 
@@ -17,7 +17,6 @@ RUN python3 -m venv venv
 RUN source venv/bin/activate
 
 ENV PATH="/app/venv/bin:$PATH"
-ENV DJANGO_SETTINGS_MODULE=django_app.settings
 
 COPY ./tools/requirements.txt .
 
@@ -38,5 +37,3 @@ EXPOSE 8000
 WORKDIR /app/django
 
 ENTRYPOINT ["sh", "/app/run_server.sh"]
-# for debug
-# CMD ["sh", "-c", "while true; do sleep inf; done"]

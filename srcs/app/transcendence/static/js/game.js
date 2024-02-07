@@ -1,9 +1,3 @@
-function send_message() {
-	var message = { "message": "Hello, world!" };
-	socketMatchmaking.send(JSON.stringify(message));
-	console.log("Sent message: " + JSON.stringify(message));
-}
-
 export function game()
 {
 	const url = `wss://${window.location.host}/ws/matchmaking/`;
@@ -26,9 +20,16 @@ export function game()
 		console.log(`socketMatchmaking error: ${event}`);
 		console.error(event);
 	}
-}	
 
-export function listenerGame() {
-    const btn = document.getElementById("matchmaking");
-    btn.addEventListener("click", send_message);
-}
+	function send_message() {
+		var message = { "message": "Hello, world!" };
+		socketMatchmaking.send(JSON.stringify(message));
+		console.log("Sent message: " + JSON.stringify(message));
+	}
+	
+	const btn = document.getElementById("matchmaking");
+	if (btn)
+	{
+		btn.addEventListener("click", send_message);
+	}
+}	

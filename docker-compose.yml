@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    container_name: postgres
+    container_name: db
     image: postgres
     restart: always
     env_file:
@@ -23,21 +23,19 @@ services:
     env_file:
       - .env
 
-  nginx:
-    container_name: nginx
-    image: nginx
-    restart: on-failure
-    depends_on:
-      - web
-    ports:
-      - "8080:8080"
-    volumes:
-      - ssl_cert:/etc/nginx/ssl/transcendance.crt
-      - ssl_key:/etc/nginx/ssl/transcendance.key
-      - nginx_conf:/etc/nginx/nginx.conf
-      - staticfiles:/var/www/static/
-    env_file:
-      - .env
+  # nginx:
+  #   container_name: nginx
+  #   image: nginx
+  #   restart: on-failure
+  #   depends_on:
+  #     - web
+  #   ports:
+  #     - "8080:8080"
+  #   volumes:
+  #     - nginx_conf:/etc/nginx/conf.d/
+  #     - staticfiles:/var/www/static/
+  #   env_file:
+  #     - .env
 
 volumes:
   app_django:
@@ -51,18 +49,6 @@ volumes:
     driver_opts:
       type: none
       device: ./srcs/tools/nginx.conf
-      o: bind
-  ssl_cert:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./srcs/tools/ssl/cert.pem
-      o: bind
-  ssl_key:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./srcs/tools/ssl/key.pem
       o: bind
   staticfiles:
     driver: local
