@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import * as UTILS from './threeJsUtils.js';
+import * as PONG from './pongUtils.js';
 
 const X_SIZE_MAP = 20;
 
@@ -22,15 +23,23 @@ class Player {
 	constructor(playerType, scene) {
 		this.type = playerType;
 		this.speed = 0.1;
-		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 2), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
+		this.size = 2;
+		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, this.size), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
 		this.hitbox = new THREE.Box3().setFromObject(this.cube);
 		this.score = 0;
+		this.keys = {
+			up: "",
+			down: "",
+		};
 
 		if (playerType == "left") {
+			this.keys = { up: "w", down: "s" };
 			this.cube.position.x = -(X_SIZE_MAP / 2) + 1;
 		} else if (playerType == "right") {
+			this.keys = { up: "ArrowUp", down: "ArrowDown" };
 			this.cube.position.x = X_SIZE_MAP / 2 - 1;
 		}
+
 		this.cube.position.y = -0.3;
 
 		this.cube.castShadow = true;
@@ -42,36 +51,11 @@ class Player {
 	move(keys, arena, deltaTime) {
 		this.hitbox.setFromObject(this.cube);
 		this.speed = 0.1 * deltaTime;
-		if (this.type == "left") {
-			if (keys['w']) {
-				if (this.hitbox.min.z - this.speed > arena.hitbox.min.z) {
-					this.cube.position.z -= this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.min.z + 1;
-				}
-			}
-			if (keys['s']) {
-				if (this.hitbox.max.z + this.speed < arena.hitbox.max.z) {
-					this.cube.position.z += this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.max.z - 1;
-				}
-			}
-		} else if (this.type == "right") {
-			if (keys['ArrowUp']) {
-				if (this.hitbox.min.z - this.speed > arena.hitbox.min.z) {
-					this.cube.position.z -= this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.min.z + 1;
-				}
-			}
-			if (keys['ArrowDown']) {
-				if (this.hitbox.max.z + this.speed < arena.hitbox.max.z) {
-					this.cube.position.z += this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.max.z - 1;
-				}
-			}
+		if (keys[this.keys['up']]) {
+			PONG.playerHitTop(this, arena.hitbox);
+		}
+		if (keys[this.keys['down']]) {
+			PONG.playerHitBottom(this, arena.hitbox);
 		}
 	}
 
@@ -101,63 +85,28 @@ class Ball {
 			this.speed -= 0.1;
 		}
 
-		// If the ball hit the bottom or top
 		this.hitbox.setFromObject(this.cube);
-		arena.hitbox.setFromObject(arena.cube);
-		if (this.hitbox.max.z >= arena.hitbox.max.z || this.hitbox.min.z <= arena.hitbox.min.z) {
-			this.direction.z *= -1
-		}
 
-		// If the ball go through the player line (scoring)
-		if (this.cube.position.x >= X_SIZE_MAP / 2) {
+		PONG.ballHitTopOrBot(this, arena.hitbox);
+
+		if (PONG.ballHitGoal(this, arena.hitbox) == "left") {
 			playerLeft.score += 1;
 			this.reset(scene, playerLeft, playerRight, button, game);
-		} else if (this.cube.position.x <= -(X_SIZE_MAP / 2)) {
+		} else if (PONG.ballHitGoal(this, arena.hitbox) == "right") {
 			playerRight.score += 1;
 			this.reset(scene, playerLeft, playerRight, button, game);
 		}
 
-		// If the ball hit the player (bounce)
 		playerLeft.hitbox.setFromObject(playerLeft.cube);
 		playerRight.hitbox.setFromObject(playerRight.cube);
-		if (this.hitbox.intersectsBox(playerLeft.hitbox)) {
-			this.direction = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, 0, this.cube.position.z - playerLeft.cube.position.z);
-		} else if (this.hitbox.intersectsBox(playerRight.hitbox)) {
-			this.direction = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, 0, this.cube.position.z - playerRight.cube.position.z);
-		}
+		PONG.ballHitPlayer(this, playerLeft);
+		PONG.ballHitPlayer(this, playerRight);
 
-		// Pinch
-		// top
-		if (this.hitbox.max.z >= arena.hitbox.max.z && this.hitbox.min.z <= playerLeft.hitbox.max.z
-			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
-				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(1, 0, -0.5);
-			this.speed = 2;
-		} else if (this.hitbox.max.z >= arena.hitbox.max.z && this.hitbox.min.z <= playerRight.hitbox.max.z
-			&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
-				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(-1, 0, -0.5);
-			this.speed = 2;
-		}
-		// bot
-		if (this.hitbox.min.z <= arena.hitbox.min.z && this.hitbox.max.z >= playerLeft.hitbox.min.z
-			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
-				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(1, 0, 0.5);
-			this.speed = 2;
-		} else if (this.hitbox.min.z <= arena.hitbox.min.z && this.hitbox.max.z >= playerRight.hitbox.min.z
-			&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
-				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(-1, 0, 0.5);
-			this.speed = 2;
-		}
+		PONG.ballPinch(this, playerLeft, arena.hitbox);
+		PONG.ballPinch(this, playerRight, arena.hitbox);
 
-		// AntiBlock system
-		if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
-			this.direction.x = 0.2;
-		} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
-			this.direction.x = -0.2;
-		}
+		PONG.ballAntiBlockSystem(this, playerLeft);
+		PONG.ballAntiBlockSystem(this, playerRight);
 
 		// Setup the director vector
 		this.direction.normalize();

@@ -16,7 +16,7 @@ class MatchmakingConsumer(WebsocketConsumer):
 		test_data_json = json.loads(text_data)
 		message = test_data_json['message']
 		print(message)
-		self.send_message('Hello, World !')
+		self.send_message(message)
 
 	def waiting_other_player(self, message):
 		pass

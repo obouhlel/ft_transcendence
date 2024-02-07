@@ -1,8 +1,8 @@
 const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
-function send_message() {
-	var message = { "message": "Hello, world!" };
+function send_message(textMessage) {
+	var message = { "message": textMessage };
 	socketMatchmaking.send(JSON.stringify(message));
 	console.log("Sent message: " + JSON.stringify(message));
 }
@@ -31,5 +31,5 @@ export function game()
 
 export function listenerGame() {
     const btn = document.getElementById("matchmaking");
-    btn.addEventListener("click", send_message);
+    btn.addEventListener("click", send_message("request matchmaking"));
 }
