@@ -1,5 +1,4 @@
 // Assurez-vous que le DOM est complètement chargé avant d'ajouter des écouteurs d'événements
-
 function getCookie(name) {
 	var cookieValue = null;
 	if (document.cookie && document.cookie !== '') {
@@ -19,6 +18,7 @@ function getCookie(name) {
 document.addEventListener('DOMContentLoaded', function() {
 	// Obtenez une référence au formulaire
 	var form = document.getElementById('login-form');
+	if (!form) { return; }
 	var csrftoken = getCookie('csrftoken');
 	// Ajoutez un écouteur d'événements "submit" au formulaire
 	form.addEventListener('submit', function(event) {
@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // logout
 document.addEventListener('DOMContentLoaded', function() {
 	var logoutButton = document.getElementById('logout-button');
+	if (!logoutButton) { return; }
 	logoutButton.addEventListener('click', function(event) {
 		event.preventDefault();
 		fetch('https://localhost:8000/logout/', {

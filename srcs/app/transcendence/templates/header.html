@@ -11,4 +11,8 @@
 			</ul>
 		</nav>
 	</header>
+	{% if session.user %}
+		<p>Welcome {{ session.user.username }}</p>
+		<a href="/logout">Log Out</a>
+	{% endif %}
 {% endblock %}
