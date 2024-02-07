@@ -6,7 +6,7 @@ python manage.py makemigrations
 python manage.py migrate
 
 # Ajouter les utilisateurs par défaut
-# python manage.py add_default_users
+python manage.py add_default_data
 
 python manage.py collectstatic --noinput
 

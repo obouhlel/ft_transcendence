@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
 
-class User(AbstractUser):
+class CustomUser(AbstractUser):
     is_admin = models.BooleanField(default=False)
     sexe = models.CharField(max_length=64, default='Unknow')
     birthdate = models.DateField(default=timezone.now)
@@ -11,8 +11,8 @@ class User(AbstractUser):
     avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
     created_at = models.DateTimeField(auto_now_add=True)
     last_connexion = models.DateTimeField(auto_now=True)
-    list_friends = models.ManyToManyField('User', related_name='friends')
-    list_blocked = models.ManyToManyField('User', related_name='blocked')
+    list_friends = models.ManyToManyField('CustomUser', related_name='friends')
+    list_blocked = models.ManyToManyField('CustomUser', related_name='blocked')
     list_request = models.ManyToManyField('friend_request', related_name='request')
     list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
     stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
@@ -46,17 +46,17 @@ class Party(models.Model):
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(auto_now=True)
 	status = models.CharField(max_length=30, default='Waiting')
-	player1 = models.ForeignKey('User', on_delete=models.CASCADE, related_name='player1')
-	player2 = models.ForeignKey('User', on_delete=models.CASCADE, related_name='player2')
-	id_winner = models.ForeignKey('User', on_delete=models.CASCADE, related_name='winner')
-	id_loser = models.ForeignKey('User', on_delete=models.CASCADE, related_name='loser')
+	player1 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player1')
+	player2 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player2')
+	id_winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner')
+	id_loser = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='loser')
 	def __str__(self):
 		return self.id
 
 class friend_request(models.Model):
 	id = models.AutoField(primary_key=True)
-	id_sender = models.ForeignKey('User', on_delete=models.CASCADE, related_name='sender')
-	id_receiver = models.ForeignKey('User', on_delete=models.CASCADE, related_name='receiver')
+	id_sender = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='sender')
+	id_receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
 	created_at = models.DateTimeField(auto_now_add=True)
 	status = models.CharField(max_length=30, default='Waiting')
 	def __str__(self):
@@ -65,7 +65,7 @@ class friend_request(models.Model):
 
 class Stat_User_by_Game(models.Model):
 	id = models.AutoField(primary_key=True)
-	id_user = models.ForeignKey('User', on_delete=models.CASCADE)
+	id_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	id_game = models.ForeignKey('Game', on_delete=models.CASCADE)
 	nb_played = models.IntegerField(default=0)
 	time_played = models.IntegerField(default=0)

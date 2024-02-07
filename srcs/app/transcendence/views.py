@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from transcendence.models import User # mon propre model
+from transcendence.models import CustomUser # mon propre model
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 from django.utils import timezone
@@ -49,11 +49,11 @@ def signin_user(request):
 			messages.error(request, 'Les données sont trop longues.')
 			return redirect('/signin')
 		# verifier que le username n'est pas déjà utilisé
-		if User.objects.filter(username=username).exists():
+		if CustomUser.objects.filter(username=username).exists():
 			messages.error(request, 'Ce username est déjà utilisé.')
 			return redirect('/signin')
 		# Valider que l'email n'est pas déjà utilisé
-		if User.objects.filter(email=email).exists():
+		if CustomUser.objects.filter(email=email).exists():
 			messages.error(request, 'Cet email est déjà utilisé.')
 			return redirect('/signin')
 		# verifier que le mot de passe est la confirmation du mot de passe sont identiques
@@ -76,7 +76,7 @@ def signin_user(request):
 			return redirect('/signin')
 
 		# Créer l'utilisateur
-		user = User.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
+		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
 		messages.success(request, 'Votre compte a été créé avec succès.')
 		return redirect('/login')
 	else:

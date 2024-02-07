@@ -1,4 +1,4 @@
-DOCKER=django
+DOCKER=web
 
 all: up logs
 

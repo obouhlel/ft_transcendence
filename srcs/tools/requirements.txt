@@ -10,5 +10,3 @@ channels[daphne]
 # cors
 django-cors-headers
 pytz
-# ssl
-django-sslserver

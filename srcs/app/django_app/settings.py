@@ -13,18 +13,6 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 
-# Get IP address of the host
-import socket
-
-def get_ip_address():
-    hostname = socket.gethostname()
-    ip_address = socket.gethostbyname(hostname)
-    return ip_address
-
-print(get_ip_address())
-
-HOST_IP = get_ip_address()
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -46,7 +34,7 @@ INSTALLED_APPS = [
 	'daphne',
 	'transcendence',
     'corsheaders',
-    'sslserver',
+    # 'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -107,7 +95,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = 'transcendence.User'
+AUTH_USER_MODEL = 'transcendence.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -160,8 +148,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:8000",
-    "http://HOST_IP:8000",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+    "https://localhost:8000", # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
 ]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
@@ -176,8 +163,7 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8000",
-    "http://HOST_IP:8000",
+    "https://localhost:8000",
 ]
 
 # Utiliser le header HTTP X-XSS-Protection
