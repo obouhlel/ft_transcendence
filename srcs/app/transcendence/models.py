@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class User(AbstractUser):
     is_admin = models.BooleanField(default=False)
-    sexe = models.CharField(max_length=1, default='N')
+    sexe = models.CharField(max_length=64, default='Unknow')
     birthdate = models.DateField(default=timezone.now)
     token = models.CharField(max_length=128)
     avatar = models.CharField(max_length=128, default='/var/www/static/default_avatar.webp')
