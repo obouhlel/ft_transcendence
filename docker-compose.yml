@@ -15,8 +15,6 @@ services:
     restart: on-failure
     depends_on:
       - db
-    ports:
-      - "9000:8000"
     volumes:
       - app_django:/app/django
       - staticfiles:/var/www/static/
