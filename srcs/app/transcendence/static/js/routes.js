@@ -1,5 +1,3 @@
-// import { login } from './login.js';
-// import { signin } from './signin.js';
 // import { games } from './games.js';
 import { game } from './game.js';
 import { pong3D } from './pong.js';
@@ -7,8 +5,6 @@ import { shooter } from './shooter.js';
 
 const routes = {
 	'/': null,
-	'/login/': null,
-	'/signin/': null,
 	'/games/': null,
 	'/game/': game,
 	'/pong/': pong3D,
@@ -17,13 +13,14 @@ const routes = {
 
 const listeners = {
 	'/': null,
-	'/login/': null,
-	'/signin/': null,
 	'/games/': null,
 	'/game/': null,
 	'/pong/': null,
 	'/shooter/': null
 };
+
+function defaultRoute() {}
+function defaultListener() {}
 
 function route()
 {
@@ -34,22 +31,16 @@ function route()
 	console.log(url);
 	console.log(routeFunc);
 	console.log(listenerFunc);
+
     if (routeFunc)
-	{
-		// Route to the function
-        routeFunc();
-    }
-	// else
-	// {
-	// 	// Default route
-    //     login();
-    // }
+		routeFunc();
+	else
+		defaultRoute();
 
     if (listenerFunc)
-	{
-		// Call the listener function
         listenerFunc();
-    }
+	else
+		defaultListener();
 }
 
 window.addEventListener('popstate', route);

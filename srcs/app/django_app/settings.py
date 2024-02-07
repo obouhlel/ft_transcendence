@@ -13,6 +13,18 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from decouple import config
 
+# Get IP address of the host
+import socket
+
+def get_ip_address():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
+
+print(get_ip_address())
+
+HOST_IP = get_ip_address()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -148,7 +160,8 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
 CSRF_TRUSTED_ORIGINS = [
-    "https://localhost:8000",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+    "http://localhost:8000",
+    "http://HOST_IP:8000",  # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
 ]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
@@ -163,9 +176,9 @@ CORS_ALLOW_HEADERS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "https://localhost:8000"  # Ajoutez cette ligne
+    "http://localhost:8000",
+    "http://HOST_IP:8000",
 ]
-
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True

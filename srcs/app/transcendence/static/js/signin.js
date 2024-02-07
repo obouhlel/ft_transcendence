@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('signin-form');
+    if (!form) { return; }
     var csrftoken = getCookie('csrftoken');
 
     form.addEventListener('submit', function(event) {
