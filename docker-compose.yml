@@ -32,8 +32,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ssl_cert:/etc/nginx/ssl
-      - ssl_key:/etc/nginx/ssl
+      - ssl_cert:/etc/nginx/ssl/transcendance.crt
+      - ssl_key:/etc/nginx/ssl/transcendance.key
       - nginx_conf:/etc/nginx/nginx.conf
       - staticfiles:/var/www/static/
     env_file:
