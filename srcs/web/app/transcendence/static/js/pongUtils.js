@@ -218,3 +218,17 @@ export function createLight(scene, mapSize) {
     scene.add(globalLight);
     return { spot: spot, globalLight: globalLight };
 }
+
+export function isGameStarting(game) {
+    return game.going && !game.memGoing;
+}
+
+export function isGameGoing(game) {
+    return game.going;
+}
+
+export function lightFollowTarget(light, ball) {
+    let spotTarget = new THREE.Vector3();
+    spotTarget.set(ball.position.x, ball.position.y, ball.position.z);
+    light.target.position.copy(spotTarget);
+}

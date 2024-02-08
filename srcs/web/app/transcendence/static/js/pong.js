@@ -118,7 +118,7 @@ class Ball {
 export function pong3D() {
 	// ------------------------------------setup------------------------------------
 	let game = {
-		going: false, 
+		going: false,
 		memGoing: false,
 		textScore: null
 	};
@@ -150,63 +150,21 @@ export function pong3D() {
 	document.addEventListener('keydown', (e) => keys[e.key] = true);
 	document.addEventListener('keyup', (e) => keys[e.key] = false);
 
-	// ------------------------------------functions------------------------------------
-
-	// To delete (cheats for debug)
-	function debug() {
-		if (keys['r']) {
-			playerLeft.score = 0;
-			playerRight.score = 0;
-			ball.reset(scene, playerLeft, playerRight, button, game);
-		}
-		if (keys['4']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerLeft.cube.position.x;
-			ball.cube.position.z = playerLeft.cube.position.z + 2;
-		}
-		if (keys['5']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerRight.cube.position.x;
-			ball.cube.position.z = playerRight.cube.position.z + 2;
-		}
-		if (keys['1']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerLeft.cube.position.x;
-			ball.cube.position.z = playerLeft.cube.position.z - 2;
-		}
-		if (keys['2']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerRight.cube.position.x;
-			ball.cube.position.z = playerRight.cube.position.z - 2;
-		}
-	}
-
 	let lastTime = 0;
 	// ------------------------------------loop------------------------------------
 	function animate(currentTime) {
 		if (lastTime) {
 			let delta = (currentTime - lastTime) / 10;
-			if (game.going) {
+			if (PONG.isGameGoing(game)) {
 				playerLeft.move(keys, arena, delta);
 				playerRight.move(keys, arena, delta);
 			}
-			if (game.going && !game.memGoing) {
+			if (PONG.isGameStarting(game)) {
 				game.memGoing = true;
 				ball.reset(scene, playerLeft, playerRight, button, game);
 			}
-
 			ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
-			light.spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
-			debug();
-
+			PONG.lightFollowTarget(light.spot, ball.cube);
 			display.controls.update();
 			renderer.render(scene, display.camera);
 		}
