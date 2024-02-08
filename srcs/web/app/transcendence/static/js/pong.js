@@ -108,49 +108,32 @@ class Ball {
 	}
 
 	reset(scene, playerLeft, playerRight, button, game) {
-		updateScore(scene, playerLeft, playerRight, button, game);
+		PONG.updateScore(scene, playerLeft, playerRight, button, game);
 		PONG.ballReset(this);
 		playerLeft.reset();
 		playerRight.reset();
 	}
 }
 
-let textScore = new THREE.Mesh(UTILS.doTextGeo("0 - 0", 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-
-function updateScore(scene, playerLeft, playerRight, button, game) {
-	if (scene && textScore) {
-		// If the TextScore already exist, remove it
-		scene.remove(textScore);
-	}
-
-	if (playerLeft.score == 10 || playerRight.score == 10) {
-		// End of the game
-		button.innerHTML = "RESTART";
-		button.style.display = "block";
-		game.going = false;
-		game.memGoing = false;
-	}
-	let scoreString = playerLeft.score.toString() + " - " + playerRight.score.toString();
-	textScore = new THREE.Mesh(UTILS.doTextGeo(scoreString, 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-
-	// Add to the scene and set positions
-	textScore.position.x = -2;
-	textScore.position.z = -11;
-	textScore.position.y = 1;
-	scene.add(textScore);
-}
-
-
-// ------------------------------------setup------------------------------------
 export function pong3D() {
-
+	// ------------------------------------setup------------------------------------
 	let game = {
-		going: false,
+		going: false, 
 		memGoing: false,
-	}
+		textScore: null
+	};
 
 	const scene = UTILS.createScene();
 	const renderer = UTILS.createRenderer();
+	PONG.putTitle(scene);
+	PONG.putFloor(scene, X_SIZE_MAP);
+
+	let display = PONG.createCamera(renderer, X_SIZE_MAP);
+	const arena = new Arena(scene);
+	const ball = new Ball(scene);
+	const playerLeft = new Player("left", scene);
+	const playerRight = new Player("right", scene);
+
 	const button = UTILS.createContainerForGame("pong", renderer);
 	button.addEventListener("click", () => {
 		game.going = true;
@@ -159,65 +142,8 @@ export function pong3D() {
 		playerRight.score = 0;
 	});
 
-	// 3d Title
-	const title = new THREE.Mesh(UTILS.doTextGeo("PONG", 5, true), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-
-	title.position.x = -9;
-	title.position.z = -17;
-	title.position.y = 1.16;
-	title.rotation.x = -0.7;
-
-	scene.add(title);
-
-	// Floor
-	const floor = new THREE.Mesh(new THREE.BoxGeometry(X_SIZE_MAP, 0.1, 20), new THREE.MeshStandardMaterial({ color: 0xffffff }));
-
-	floor.position.y = -0.6;
-	floor.receiveShadow = true;
-	floor.castShadow = true;
-	scene.add(floor);
-
-	// Camera
-	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	camera.position.z = 10;
-	camera.position.y = X_SIZE_MAP - 5;
-
-	let controls = new OrbitControls(camera, renderer.domElement);
-	controls.enableRotate = true;
-	controls.rotateSpeed = 1.0;
-	controls.target.set(0, 0, 0);
-
-	// ------------------------------------blocks------------------------------------
-	const arena = new Arena(scene);
-	const ball = new Ball(scene);
-	const playerLeft = new Player("left", scene);
-	const playerRight = new Player("right", scene);
-
-	// ------------------------------------light------------------------------------
-	// Spot light that follow the ball
-	const spot = new THREE.SpotLight(0xffffff, 50, 100, Math.PI / 8, 0);
-	// Directional light that enlighte all the elements
-	const globalLight = new THREE.DirectionalLight(0xffffff, 1);
-	// Setup the position of both light
-	spot.position.set(0, X_SIZE_MAP / 2, 0);
-	globalLight.position.set(0, 10, 20);
-
-	// Enable shadow casting
-	globalLight.castShadow = true;
-	spot.castShadow = true;
-
-	// Setup the light data and fov
-	globalLight.shadow.camera.left = -(X_SIZE_MAP / 2);
-	globalLight.shadow.camera.right = X_SIZE_MAP / 2;
-	globalLight.shadow.camera.top = 10;
-	globalLight.shadow.camera.bottom = -10;
-	globalLight.shadow.camera.near = 0.5;
-	globalLight.shadow.camera.far = 500;
-
-	scene.add(spot);
-	scene.add(spot.target);
-	scene.add(globalLight);
-	updateScore(scene, playerLeft, playerRight, button, game);
+	const light = PONG.createLight(scene, X_SIZE_MAP);
+	PONG.updateScore(scene, playerLeft, playerRight, button, game);
 
 	// ------------------------------------keys------------------------------------
 	let keys = {};
@@ -278,11 +204,11 @@ export function pong3D() {
 			}
 
 			ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
-			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
+			light.spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
 			debug();
 
-			controls.update();
-			renderer.render(scene, camera);
+			display.controls.update();
+			renderer.render(scene, display.camera);
 		}
 		lastTime = currentTime;
 		requestAnimationFrame(animate);
