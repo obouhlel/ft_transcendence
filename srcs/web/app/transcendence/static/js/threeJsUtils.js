@@ -85,3 +85,8 @@ export function createContainerForGame(gameName, gameRenderer) {
 	container.appendChild(gameRenderer.domElement);
 	return button;
 }
+
+export function addShadowsToMesh(mesh) {
+	mesh.castShadow = true;
+	mesh.receiveShadow = true;
+}

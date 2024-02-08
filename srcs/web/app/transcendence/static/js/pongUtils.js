@@ -1,16 +1,28 @@
 // ---------------------------------------PLAYER---------------------------------------
-export function playerHitTop(player, arenaHitbox) {
-    if (player.hitbox.min.z - player.speed > arenaHitbox.min.z)
+function isPlayerHitTop(player, arenaHitbox) {
+    return player.hitbox.min.z - player.speed > arenaHitbox.min.z;
+}
+
+function isPlayerHitBot(player, arenaHitbox) {
+    return player.hitbox.max.z + player.speed < arenaHitbox.max.z;
+}
+
+export function playerMoveTop(player, arenaHitbox) {
+    if (isPlayerHitTop(player, arenaHitbox))
         player.cube.position.z -= player.speed;
     else
         player.cube.position.z = arenaHitbox.min.z + player.size / 2;
 }
 
-export function playerHitBottom(player, arenaHitbox) {
-    if (player.hitbox.max.z + player.speed < arenaHitbox.max.z)
+export function playerMoveBottom(player, arenaHitbox) {
+    if (isPlayerHitBot(player, arenaHitbox))
         player.cube.position.z += player.speed;
     else
         player.cube.position.z = arenaHitbox.max.z - player.size / 2;
+}
+
+export function playerReset(player) {
+    player.cube.position.z = 0;
 }
 
 // ---------------------------------------BALL---------------------------------------
@@ -81,6 +93,11 @@ export function ballPinch(ball, player, arenaHitbox) {
     }
 }
 
+export function ballSlowSystem(ball) {
+    if (ball.speed > 0.1)
+        ball.speed -= 0.1;
+}
+
 export function ballAntiBlockSystem(ball, player) {
     if (ball.cube.position.x == player.cube.position.x 
         && ball.hitbox.intersectsBox(player.hitbox)) {
@@ -89,4 +106,10 @@ export function ballAntiBlockSystem(ball, player) {
                 newDirectionX *= -1;
             ball.direction.x = newDirectionX;
     }
+}
+
+export function ballReset(ball) {
+    ball.cube.position.x = 0;
+	ball.cube.position.z = 0;
+	ball.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
 }

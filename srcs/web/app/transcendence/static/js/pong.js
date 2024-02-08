@@ -42,9 +42,7 @@ class Player {
 
 		this.cube.position.y = -0.3;
 
-		this.cube.castShadow = true;
-		this.cube.receiveShadow = true;
-
+		UTILS.addShadowsToMesh(this.cube);
 		scene.add(this.cube);
 	}
 
@@ -52,15 +50,15 @@ class Player {
 		this.hitbox.setFromObject(this.cube);
 		this.speed = 0.1 * deltaTime;
 		if (keys[this.keys['up']]) {
-			PONG.playerHitTop(this, arena.hitbox);
+			PONG.playerMoveTop(this, arena.hitbox);
 		}
 		if (keys[this.keys['down']]) {
-			PONG.playerHitBottom(this, arena.hitbox);
+			PONG.playerMoveBottom(this, arena.hitbox);
 		}
 	}
 
 	reset() {
-		this.cube.position.z = 0;
+		PONG.playerReset(this);
 	}
 }
 
@@ -73,20 +71,15 @@ class Ball {
 
 		this.cube.position.y = -0.2;
 
-		this.cube.castShadow = true;
-		this.cube.receiveShadow = true;
+		UTILS.addShadowsToMesh(this.cube);
 		scene.add(this.cube);
 	}
 
 	move(scene, playerLeft, playerRight, button, arena, game, deltaTime) {
 
-		// After pinch (slow systeme)
-		if (this.speed > 0.1) {
-			this.speed -= 0.1;
-		}
+		PONG.ballSlowSystem(this);
 
 		this.hitbox.setFromObject(this.cube);
-
 		PONG.ballHitTopOrBot(this, arena.hitbox);
 
 		if (PONG.ballHitGoal(this, arena.hitbox) == "left") {
@@ -116,9 +109,7 @@ class Ball {
 
 	reset(scene, playerLeft, playerRight, button, game) {
 		updateScore(scene, playerLeft, playerRight, button, game);
-		this.cube.position.x = 0;
-		this.cube.position.z = 0;
-		this.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
+		PONG.ballReset(this);
 		playerLeft.reset();
 		playerRight.reset();
 	}
