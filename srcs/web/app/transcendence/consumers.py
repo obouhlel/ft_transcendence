@@ -1,6 +1,13 @@
 import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
+def parse_message(message):
+	if 'matchmaking' in message:
+		if message['matchmaking'] == 'join':
+			return json.dumps({ 'matchmaking': 'waitlist joined' })
+		elif message['matchmaking'] == 'leave':
+			return json.dumps({ 'matchmaking': 'waitlist leaved' })
+
 class MatchmakingConsumer(WebsocketConsumer):
 	def connect(self):
 		self.accept()
@@ -13,10 +20,9 @@ class MatchmakingConsumer(WebsocketConsumer):
 		self.close(close_code)
 
 	def receive(self, text_data):
-		test_data_json = json.loads(text_data)
-		message = test_data_json['message']
-		print(message)
-		self.send_message(message)
+		message = json.loads(text_data)
+		response = parse_message(message)
+		self.send(response)
 
 	def waiting_other_player(self, message):
 		pass

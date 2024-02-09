@@ -1,15 +1,41 @@
 const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
-function send_message(textMessage) {
-	var message = { "message": textMessage };
+function sendMatchmakingJoin() {
+	var message = { "matchmaking": "join" };
 	socketMatchmaking.send(JSON.stringify(message));
 	console.log("Sent message: " + JSON.stringify(message));
 }
 
+function sendMatchmakingLeave() {
+	var message = { "matchmaking": "leave" };
+	socketMatchmaking.send(JSON.stringify(message));
+	console.log("Sent message: " + JSON.stringify(message));
+}
+
+function doMatchmaking(button) {
+	if (button.innerHTML == "Matchmaking") {
+		sendMatchmakingJoin();
+		button.innerHTML = "Cancel matchmaking";
+
+	} else if (button.innerHTML == "Cancel matchmaking") {
+		sendMatchmakingLeave();
+		button.innerHTML = "Matchmaking";
+	}
+}
+
+function parseMessage(message) {
+	if ('matchmaking' in message) {
+		if (message['matchmaking'] == "waitlist joined") {
+			console.log("Waitlist joined successfully");
+		} else if (message['matchmaking'] == "waitlist leaved") {
+			console.log("Waitlist leaved successfully");
+		}
+	}
+}
+
 export function game()
 {
-	
 	socketMatchmaking.onopen = function(e) {
 		console.log("Connection established");
 	}
@@ -17,6 +43,7 @@ export function game()
 	socketMatchmaking.onmessage = function(e) {
 		let data = JSON.parse(e.data);
 		console.log("Received message: " + e.data);
+		parseMessage(data);
 	}
 	
 	socketMatchmaking.onclose = function(e) {
@@ -31,5 +58,7 @@ export function game()
 
 export function listenerGame() {
     const btn = document.getElementById("matchmaking");
-    btn.addEventListener("click", send_message("request matchmaking"));
+    btn.addEventListener("click", function() {
+		doMatchmaking(btn);
+	});
 }
