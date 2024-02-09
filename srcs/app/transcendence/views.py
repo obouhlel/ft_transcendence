@@ -10,6 +10,9 @@ from django.views.decorators.csrf import csrf_exempt
 import pytz
 import json
 
+def index(request):
+	return render(request, 'index.html')
+
 def logout_user(request):
 	django_logout(request)
 	messages.success(request, 'Vous êtes maintenant déconnecté.')
@@ -33,7 +36,7 @@ def login_user(request):
     form = AuthenticationForm()
     return render(request, 'views/login.html', {'form': form})
 
-def signin_user(request):
+def register_user(request):
 	if request.method == 'POST':
 		username = request.POST['username']
 		password = request.POST['password']
@@ -47,40 +50,41 @@ def signin_user(request):
 		# Valider que les données ne dépassent pas la longueur maximale autorisée
 		if len(username) > 50 or len(password) > 50 or len(email) > 50 or len(firstname) > 50 or len(lastname) > 50:
 			messages.error(request, 'Les données sont trop longues.')
-			return redirect('/signin')
+			return redirect('/register')
 		# verifier que le username n'est pas déjà utilisé
 		if CustomUser.objects.filter(username=username).exists():
 			messages.error(request, 'Ce username est déjà utilisé.')
-			return redirect('/signin')
+			return redirect('/register')
 		# Valider que l'email n'est pas déjà utilisé
 		if CustomUser.objects.filter(email=email).exists():
 			messages.error(request, 'Cet email est déjà utilisé.')
-			return redirect('/signin')
+			return redirect('/register')
 		# verifier que le mot de passe est la confirmation du mot de passe sont identiques
 		if password != password_confirm:
 			messages.error(request, 'Les mots de passe ne correspondent pas.')
-			return redirect('/signin')
+			return redirect('/register')
 		# Valider que le mot de passe contient au moins 8 caractères
 		if len(password) < 8:
 			messages.error(request, 'Le mot de passe doit contenir au moins 8 caractères.')
-			return redirect('/signin')
+			return redirect('/register')
 		# verifier que la date de naissance est valide
 		try:
 			birthdate = timezone.datetime.strptime(birthdate, '%Y-%m-%d').replace(tzinfo=pytz.UTC)
 		except ValueError:
 			messages.error(request, 'La date de naissance est invalide.')
-			return redirect('/signin')
+			return redirect('/register')
 		#verifier que la date de naissance n'est pas dans le futur
 		if birthdate > timezone.now():
 			messages.error(request, 'La date de naissance est dans le futur.')
-			return redirect('/signin')
+			return redirect('/register')
 
 		# Créer l'utilisateur
 		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
 		messages.success(request, 'Votre compte a été créé avec succès.')
 		return redirect('/login')
 	else:
-		return render(request, 'views/signin.html')
+		formregister = UserCreationForm()
+		return render(request, 'views/register.html', {'form': formregister})
 
 def games(request):
 	return render(request, 'views/games.html')

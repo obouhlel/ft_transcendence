@@ -4,9 +4,9 @@ from transcendence import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('', views.login_user, name='login'),
+	path('', views.index),
 	path('login/', views.login_user, name='login'),
-	path('signin/', views.signin_user, name='signin'),
+	path('register/', views.register_user, name='register'),
     path('logout/', views.logout_user, name='logout'),
 	path('games/', views.games),
 	path('game/', views.game),

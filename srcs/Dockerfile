@@ -3,8 +3,13 @@ FROM alpine:latest
 LABEL key='[Django]'
 
 RUN apk update && apk add --no-cache \
-	python3 \
-	py3-pip
+    python3 \
+    py3-pip \
+    gcc \
+    musl-dev \
+    python3-dev \
+    libffi-dev \
+    openssl-dev
 
 RUN mkdir -p /app /var/www
 

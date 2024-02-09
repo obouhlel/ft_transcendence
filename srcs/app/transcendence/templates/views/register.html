@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 
 {% load static %}
 
 {% block title %}Sign In{% endblock %}
 
 {% block extra_head %}
-    <link rel="stylesheet" href="{% static 'css/signin.css' %}">
+    <link rel="stylesheet" href="{% static 'css/register.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -38,7 +38,11 @@
             <input type="text" id="lastname" name="lastname">
             <br>
             <label for="sexe">Sexe</label>
-            <input type="text" id="sexe" name="sexe">
+            <select id="sexe" name="sexe">
+                <option value="F">F</option>
+                <option value="M">M</option>
+                <option value="N">N</option>
+            </select>
             <br>
             <label for="birthdate">Birthdate</label>
             <input type="date" id="birthdate" name="birthdate">

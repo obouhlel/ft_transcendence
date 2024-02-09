@@ -1,7 +1,8 @@
+import { doRequest, SERVER_URL } from './fetch.js';
+
 document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('signin-form');
+    var form = document.getElementById('register-form');
     if (!form) { return; }
-    var csrftoken = getCookie('csrftoken');
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -27,22 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
         data.append('birthdate', birthdate);
         data.append('sexe', sex);
 
-        fetch('https://localhost:8000/signin/', {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-            },
-            credentials: 'include',
-            body: data
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            console.log('INSCRIPTION REUSSIE');
-        })
-        .catch(error => {
-            console.log('ERREUR D\'INSCRIPTION');
-            console.error(error);
-        });
+        doRequest.Fetch(`${SERVER_URL}/register/`, 'POST', data, doRequest.callbackRegister);
     });
 });

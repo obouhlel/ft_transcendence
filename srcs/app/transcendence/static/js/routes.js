@@ -28,9 +28,9 @@ function route()
     const routeFunc = routes[url];
     const listenerFunc = listeners[url];
 
-	console.log(url);
-	console.log(routeFunc);
-	console.log(listenerFunc);
+	// console.log(url);
+	// console.log(routeFunc);
+	// console.log(listenerFunc);
 
     if (routeFunc)
 		routeFunc();

@@ -16,8 +16,10 @@ class Command(BaseCommand):
             password=make_password('adminadmin'),
             first_name='admin',
             last_name='admin',
-            sex='M',
-            birthday=timezone.now() - timezone.timedelta(days=25*365),  # Remplacez par la date de naissance réelle
+            sexe='M',
+            birthdate=timezone.now() - timezone.timedelta(days=25*365),  # Remplacez par la date de naissance réelle
+            is_superuser=True,
+            is_staff=True
         )
 
         user2 = CustomUser.objects.create(
@@ -26,10 +28,8 @@ class Command(BaseCommand):
             password=make_password('password2'),
             first_name='User',
             last_name='Two',
-            sex='F',
-            birthday=timezone.now() - timezone.timedelta(days=30*365),  # Remplacez par la date de naissance réelle
-            date_joined=timezone.now(),
-            last_login=timezone.now(),
+            sexe='F',
+            birthdate=timezone.now() - timezone.timedelta(days=30*365),  # Remplacez par la date de naissance réelle
         )
 
         # stat_game1 = Stat_Game()
