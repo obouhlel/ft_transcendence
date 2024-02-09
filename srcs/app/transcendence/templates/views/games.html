@@ -8,13 +8,9 @@
 	<link rel="stylesheet" href="{% static 'css/login.css' %}">
 {% endblock %}
 
-{% block content %}
+{% block game %}
 	<main>
-		<a href="/pong/">
-			<div id="pong"></div>
-		</a>
-		<a href="/shooter/">
-			<div id="shooter"></div>
-		</a>
+		<button id="test-btn" >GAME1</button>
 	</main>
+	<script type="module" src="{% static 'js/games.js' %}"></script>
 {% endblock %}

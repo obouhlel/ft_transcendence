@@ -87,6 +87,10 @@ def register_user(request):
 		return render(request, 'views/register.html', {'form': formregister})
 
 def games(request):
+	if request.accepts("text/html"):
+		return render(request, 'views/games.html')
+	elif request.accepts("application/json"):
+		 return JsonResponse({'status': 'ok', 'message': 'Hello'})
 	return render(request, 'views/games.html')
 
 def game(request):

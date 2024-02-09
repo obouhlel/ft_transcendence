@@ -6,6 +6,12 @@ services:
     restart: always
     env_file:
       - .env
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+ 
 
   web:
     container_name: web
@@ -14,7 +20,8 @@ services:
       dockerfile: Dockerfile
     restart: on-failure
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - app_django:/app/django
       - staticfiles:/var/www/static/
