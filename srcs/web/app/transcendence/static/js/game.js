@@ -1,14 +1,21 @@
 const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
+let username = null;
+const gameName = "pong";
+
 function sendMatchmakingJoin() {
-	var message = { "matchmaking": "join" };
+	const message = { "matchmaking": "join",
+					"game": gameName, 
+					"username": username };
 	socketMatchmaking.send(JSON.stringify(message));
 	console.log("Sent message: " + JSON.stringify(message));
 }
 
 function sendMatchmakingLeave() {
-	var message = { "matchmaking": "leave" };
+	const message = { "matchmaking": "leave",
+					"game": gameName, 
+					"username": username };
 	socketMatchmaking.send(JSON.stringify(message));
 	console.log("Sent message: " + JSON.stringify(message));
 }
@@ -59,6 +66,10 @@ export function game()
 export function listenerGame() {
     const btn = document.getElementById("matchmaking");
     btn.addEventListener("click", function() {
+		if (username == null) {
+			console.log("username is null");
+			username = document.getElementById("username").value;
+		}
 		doMatchmaking(btn);
 	});
 }
