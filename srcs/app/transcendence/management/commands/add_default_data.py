@@ -32,12 +32,12 @@ class Command(BaseCommand):
             birthdate=timezone.now() - timezone.timedelta(days=30*365),  # Remplacez par la date de naissance réelle
         )
 
-        stat_game1 = Stat_Game()
-        stat_game1.save()
+        # stat_game1 = Stat_Game()
+        # stat_game1.save()
 
-        game1 = Game.objects.create( name='game1',description='description1',genre='genre1',stat=stat_game1)
+        # game1 = Game.objects.create( name='game1',description='description1',genre='genre1',stat=stat_game1)
 
-        stat_game2 = Stat_Game()
-        stat_game2.save()
+        # stat_game2 = Stat_Game()
+        # stat_game2.save()
 
-        game2 = Game.objects.create( name='game2',description='description2',genre='genre2',stat=stat_game2)
+        # game2 = Game.objects.create( name='game2',description='description2',genre='genre2',stat=stat_game2)

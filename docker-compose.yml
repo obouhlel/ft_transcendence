@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   db:
     container_name: db
@@ -11,7 +11,7 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
-
+      
   web:
     container_name: web
     build:
@@ -21,6 +21,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+        
     volumes:
       - app_django:/app/django
       - staticfiles:/var/www/static/

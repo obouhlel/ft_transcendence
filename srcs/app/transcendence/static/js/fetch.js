@@ -23,7 +23,7 @@ export const doRequest = {
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrftoken,
-				'Accept': 'application/json'
+				'Accept': 'application/json',
 			},
 			credentials: 'include',
 			body: ['HEAD', 'GET'].includes(method.toUpperCase())  ? undefined : JSON.stringify(data)

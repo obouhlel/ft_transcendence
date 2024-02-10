@@ -22,17 +22,14 @@
 <<<<<<< HEAD
 		{% if user.is_authenticated %}
 			{% block nav %}{% include 'nav.html' %}{% endblock %}
-            {% block game %}
-            {% endblock %}
 		{% else %}
-                {% block content %}
-        
+			{% block content %}
 				<h1>Bienvenue sur Transcendence!</h1>
 				<p>
 					<a href="{% url 'login' %}">Se connecter</a> |
 					<a href="{% url 'register' %}">S'inscrire</a>
 				</p>
-                {% endblock %}
+			{% endblock %}
 		{% endif %}
 		<div id="message"></div>
 =======
