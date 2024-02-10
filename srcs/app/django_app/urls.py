@@ -4,12 +4,16 @@ from transcendence import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('', views.index),
+	path('', views.index, name='index'),
+	path('sections/<str:section>/', views.section, name='section'),
+	path('home/', views.home, name='home'),
 	path('login/', views.login_user, name='login'),
 	path('register/', views.register_user, name='register'),
     path('logout/', views.logout_user, name='logout'),
-	path('games/', views.games),
-	path('game/', views.game),
-    path('pong/', views.pong),
-	path('shooter/', views.shooter),
+	path('profile/', views.profile, name='profile'),
+	path('edit_profile/', views.edit_profile, name='edit_profile'),
+	path('games/', views.games, name='games'),
+	path('game/', views.game, name='game'),
+    path('pong/', views.pong, name='pong'),
+	path('shooter/', views.shooter, name='shooter'),
 ]

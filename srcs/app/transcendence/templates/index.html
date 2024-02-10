@@ -5,6 +5,8 @@
         <meta charset="utf-8">
         <title>{% block title %}Transcendence{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'css/base.css' %}">
+        <link rel="stylesheet" href="{% static 'css/login.css' %}">
+        <link rel="stylesheet" href="{% static 'css/register.css' %}">
         <script src="https://unpkg.com/three@v0.160.1/build/three.min.js"></script>
         <script type="importmap">
             {
@@ -17,6 +19,7 @@
         {% block extra_head %}{% endblock %}
     </head>
     <body>
+<<<<<<< HEAD
 		{% if user.is_authenticated %}
 			{% block nav %}{% include 'nav.html' %}{% endblock %}
             {% block game %}
@@ -32,8 +35,30 @@
                 {% endblock %}
 		{% endif %}
 		<div id="message"></div>
+=======
+        <div id="content">
+                <h1>Bienvenue sur Transcendence!</h1>
+                <ul id="nav-links">
+                        <li><a href="#login">Se connecter</a></li>
+                        <li><a href="#register">S'inscrire</a></li>
+                </ul>
+        </div>
+        <div id="section">
+            <template id="home-template">
+                {% include 'home.html' %}
+            </template>
+            <template id="login-template">
+                {% include 'views/login.html' %}
+            </template>
+            <template id="register-template">
+                {% include 'views/register.html' %}
+            </template>
+        </div>
+        <div id="message"></div>
+
         {% block footer %}{% include 'footer.html' %}{% endblock %}
     </body>
     <script type="module" src="{% static 'js/routes.js' %}"></script>
     <script type="module" src="{% static 'js/login.js' %}"></script>
+    <script type="module" src="{% static 'js/load.js' %}"></script>
 </html>

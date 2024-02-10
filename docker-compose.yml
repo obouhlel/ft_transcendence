@@ -11,7 +11,6 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
- 
 
   web:
     container_name: web
@@ -39,7 +38,6 @@ services:
     volumes:
       - ./srcs/tools/ssl/transcendance.crt:/etc/nginx/ssl/transcendance.crt
       - ./srcs/tools/ssl/transcendance.key:/etc/nginx/ssl/transcendance.key
-      - ./srcs/tools/nginx.conf:/etc/nginx/nginx.conf
       - staticfiles:/var/www/static/
     env_file:
       - .env
