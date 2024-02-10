@@ -2,42 +2,75 @@ const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
 let username = null;
+let matchmakingAsked = false;
 const gameName = "pong";
+
+function sendMatchmakingMessage(message) {
+	socketMatchmaking.send(JSON.stringify(message));
+	console.log("Sent message: " + JSON.stringify(message));
+}
 
 function sendMatchmakingJoin() {
 	const message = { "matchmaking": "join",
 					"game": gameName, 
 					"username": username };
-	socketMatchmaking.send(JSON.stringify(message));
-	console.log("Sent message: " + JSON.stringify(message));
+	matchmakingAsked = true;
+	sendMatchmakingMessage(message);
 }
 
 function sendMatchmakingLeave() {
 	const message = { "matchmaking": "leave",
 					"game": gameName, 
 					"username": username };
-	socketMatchmaking.send(JSON.stringify(message));
-	console.log("Sent message: " + JSON.stringify(message));
+	matchmakingAsked = false;
+	sendMatchmakingMessage(message);
+}
+
+function sendMatchmakingStatus() {
+	const message = { "matchmaking": "status",
+					"game": gameName, 
+					"username": username };
+	sendMatchmakingMessage(message);
 }
 
 function doMatchmaking(button) {
 	if (button.innerHTML == "Matchmaking") {
 		sendMatchmakingJoin();
-		button.innerHTML = "Cancel matchmaking";
-
 	} else if (button.innerHTML == "Cancel matchmaking") {
 		sendMatchmakingLeave();
-		button.innerHTML = "Matchmaking";
+	}
+}
+
+async function checkMatchmakingStatus() {
+	const timeToSleep = 1000;
+	while (true) {
+		await new Promise(r => setTimeout(r, timeToSleep));
+		if (matchmakingAsked == false) {
+			return;
+		}
+		sendMatchmakingStatus();
 	}
 }
 
 function parseMessage(message) {
 	if ('matchmaking' in message) {
+		const button = document.getElementById("matchmaking");
+		console.log("matchmaking: " + message['matchmaking']);
 		if (message['matchmaking'] == "waitlist joined") {
-			console.log("Waitlist joined successfully");
-		} else if (message['matchmaking'] == "waitlist leaved") {
-			console.log("Waitlist leaved successfully");
+			button.innerHTML = "Cancel matchmaking";
+			checkMatchmakingStatus();
+		} 
+		else if (message['matchmaking'] == "waitlist leaved") {
+			button.innerHTML = "Matchmaking";
 		}
+		else if (message['matchmaking'] == "match found") {
+			const url = window.location.href;
+			let segments = url.split('/');
+			segments[segments.length - 2] = message['game'];
+			const gameURL = segments.join('/');
+			window.location.href = gameURL;
+		}
+
 	}
 }
 

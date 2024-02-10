@@ -2,24 +2,60 @@ import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
 playersPong = []
-playerShooter = []
+playersShooter = []
+
+playersGameObj = []
+
+def matchmakingJoined(message):
+	if message['game'] == 'pong':
+		playersPong.append(message['username'])
+	elif message['game'] == 'shooter':
+		playersShooter.append(message['username'])
+	return json.dumps({ 'matchmaking': 'waitlist joined', 'username': message['username'], 'players': playersPong})
+
+def matchmakingLeaved(message):
+	if message['game'] == 'pong':
+		playersPong.remove(message['username'])
+	elif message['game'] == 'shooter':
+		playersShooter.remove(message['username'])
+	return json.dumps({ 'matchmaking': 'waitlist leaved', 'username': message['username'], 'players': playersPong})
+
+def matchmakingStatus(message):
+	needToBeRedirect = False
+	for gameObj in playersGameObj:
+		if message['username'] == gameObj['player1'] or message['username'] == gameObj['player2']:
+			if message['username'] == gameObj['player1']:
+				gameObj['player1'] = "assigned"
+			elif message['username'] == gameObj['player2']:
+				gameObj['player2'] = "assigned"
+			needToBeRedirect = True
+		elif gameObj['player1'] == "assigned" and gameObj['player2'] == "assigned":
+			playersGameObj.remove(gameObj)
+	if needToBeRedirect == True:
+		return json.dumps({ 'matchmaking': 'match found', 'game': gameObj['game'], 'socketPath': 'ws/pong/room'})
+
+	if message['game'] == 'pong':
+		if len(playersPong) >= 2 and message['username'] in playersPong:
+			gameObj = { 'game': 'pong', 'player1': playersPong.pop(0), 'player2': playersPong.pop(0) }
+			playersGameObj.append(gameObj)
+	elif message['game'] == 'shooter':
+		if len(playersShooter) >= 2 and message['username'] in playersShooter:
+			gameObj = { 'game': 'shooter', 'player1': playersShooter.pop(0), 'player2': playersShooter.pop(0) }
+			playersGameObj.append(gameObj)
+
+	return json.dumps({ 'matchmaking': 'on waitlist', 'game': message['game']})
 
 def parse_message(message):
 	if 'matchmaking' in message:
 		if 'username' in message:
 			if 'game' in message:
 				if message['matchmaking'] == 'join':
-					if message['game'] == 'pong':
-						playersPong.append(message['username'])
-					elif message['game'] == 'shooter':
-						playerShooter.append(message['username'])
-					return json.dumps({ 'matchmaking': 'waitlist joined', 'username': message['username'], 'players': playersPong})
+					return matchmakingJoined(message)
 				elif message['matchmaking'] == 'leave':
-					if message['game'] == 'pong':
-						playersPong.remove(message['username'])
-					elif message['game'] == 'shooter':
-						playerShooter.remove(message['username'])
-					return json.dumps({ 'matchmaking': 'waitlist leaved', 'username': message['username'], 'players': playersPong})
+					return matchmakingLeaved(message)
+				elif message['matchmaking'] == 'status':
+					return matchmakingStatus(message)
+				return json.dumps({ 'error': 'Invalid matchmaking keyword' })
 			return json.dumps({ 'error': 'no game for matchmaking' })
 		return json.dumps({ 'error': 'no username for matchmaking' })
 	return json.dumps({ 'error': 'Invalid token' })
@@ -39,7 +75,7 @@ class MatchmakingConsumer(WebsocketConsumer):
 		response = parse_message(message)
 		self.send(response)
 
-	def waiting_other_player(self, message):
+	def createGame(self, message):
 		pass
 
 	def send_message(self, message):
