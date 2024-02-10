@@ -1,19 +1,14 @@
-{% extends 'index.html' %}
-
-{% load static %}
-
-{% block title %}Login{% endblock %}
-
-{% block extra_head %}
-	<link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock %}
-
 {% block content %}
 	<main>
 		<div id="message"></div>
 		<form method="post" id="login-form" >
 			{% csrf_token %}
-			{{ form.as_p }}
+			<label for="username">Nom d'utilisateur:</label>
+			<input type="text" id="username" name="username" required>
+			<br>
+			<label for="password">Mot de passe:</label>
+			<input type="password" id="password" name="password" required>
+			<br>
 			<input type="submit" value="Se connecter">
 			<br>
 			<button type="button" id="Auth42">42</button>

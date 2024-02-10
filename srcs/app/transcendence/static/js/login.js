@@ -7,13 +7,18 @@ document.addEventListener('DOMContentLoaded', function() {
 		event.preventDefault();
 		var username, password, data;
 
-		username = document.getElementById('id_username').value;
-		password = document.getElementById('id_password').value;
+		username = document.getElementById('username').value;
+		password = document.getElementById('password').value;
 		data = {
 			'username': username,
 			'password': password
 		};
-		doRequest.Fetch(`${SERVER_URL}/login/`, 'POST', data, doRequest.callbackLogin);
+		console.log('data:', data);
+		// try {
+        //     doRequest.Fetch(`${SERVER_URL}/login/`, 'POST', data, doRequest.callbackLogin);
+        // } catch (error) {
+        //     console.error('Une erreur est survenue lors de la connexion :', error);
+        // }
 	});
 });
 

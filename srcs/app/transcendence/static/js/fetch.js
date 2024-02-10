@@ -27,7 +27,7 @@ export const doRequest = {
 			credentials: 'include',
 			body: JSON.stringify(data)
 		})
-		.then(response => response.json())
+		.then(response => method === 'GET' ? response.text() : response.json())
 		.then(data => {
 			callback(data);
 		})
@@ -43,14 +43,15 @@ export const doRequest = {
 		var messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('CONNEXION REUSSIE');
-			messageElement.textContent = data.message;
-			messageElement.style.color = 'green';
-			window.location.reload();
+			this.Fetch(`${SERVER_URL}/home/`, 'GET', null, this.callbackHome);
 		} else if (data.status === 'error') {
 			console.log('ERREUR DE CONNEXION');
-			messageElement.textContent = data.message;
-			messageElement.style.color = 'red';
+			document.getElementById('message').textContent = data.message;
 		}
+	},
+
+	callbackHome: function(data) {
+		document.getElementById('content2').innerHTML = data;
 	},
 
 	callbackLogout: function(data) {
@@ -59,7 +60,6 @@ export const doRequest = {
 			console.log('DECONNEXION REUSSIE');
 			messageElement.textContent = data.message;
 			messageElement.style.color = 'green';
-			window.location.reload();
 		} else if (data.status === 'error') {
 			console.log('ERREUR DE DECONNEXION');
 			messageElement.textContent = data.message;

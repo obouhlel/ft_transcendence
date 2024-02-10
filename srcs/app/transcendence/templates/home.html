@@ -1,0 +1,26 @@
+{% block content %}
+<header>
+    <nav>
+        <ul id="nav-links">
+            <li><a href="#games">Games</a></li>
+            <li><a href="#game">Game</a></li>
+            <li><a href="#pong">Pong</a></li>
+            <li><a href="#shooter">Shooter</a></li>
+            <li><a href="#profile">Profile</a></li>
+        </ul>
+    </nav>
+    <button type="button" id="logout-button">Logout</button>
+    <script>
+        document.getElementById('nav-links').addEventListener('click', function(event) {
+            if (event.target.tagName === 'A') {
+                event.preventDefault();
+                fetch(event.target.href)
+                    .then(response => response.text())
+                    .then(data => {
+                        document.getElementById('section').innerHTML = data;
+                    });
+            }
+        });
+    </script>
+</header>
+{% endblock %}
