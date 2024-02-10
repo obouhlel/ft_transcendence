@@ -19,20 +19,6 @@
         {% block extra_head %}{% endblock %}
     </head>
     <body>
-<<<<<<< HEAD
-		{% if user.is_authenticated %}
-			{% block nav %}{% include 'nav.html' %}{% endblock %}
-		{% else %}
-			{% block content %}
-				<h1>Bienvenue sur Transcendence!</h1>
-				<p>
-					<a href="{% url 'login' %}">Se connecter</a> |
-					<a href="{% url 'register' %}">S'inscrire</a>
-				</p>
-			{% endblock %}
-		{% endif %}
-		<div id="message"></div>
-=======
         <div id="content">
                 <h1>Bienvenue sur Transcendence!</h1>
                 <ul id="nav-links">
@@ -52,7 +38,6 @@
             </template>
         </div>
         <div id="message"></div>
-
         {% block footer %}{% include 'footer.html' %}{% endblock %}
     </body>
     <script type="module" src="{% static 'js/routes.js' %}"></script>

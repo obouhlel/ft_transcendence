@@ -21,7 +21,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-        
+    ports:
+      - "8000:8000"
+    
     volumes:
       - app_django:/app/django
       - staticfiles:/var/www/static/
@@ -34,8 +36,8 @@ services:
     restart: on-failure
     depends_on:
       - web
-    ports:
-      - "8000:443"
+    # ports:
+    #   - "8000:443"
     volumes:
       - ./srcs/tools/ssl/transcendance.crt:/etc/nginx/ssl/transcendance.crt
       - ./srcs/tools/ssl/transcendance.key:/etc/nginx/ssl/transcendance.key
