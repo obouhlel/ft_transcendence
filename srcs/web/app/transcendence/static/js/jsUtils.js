@@ -1,3 +1,8 @@
+export function sendMessageToSocket(socket, message) {
+    socket.send(JSON.stringify(message));
+    console.log("Sent message: " + JSON.stringify(message));
+}
+
 export function createCookie(name, value, days) {
     let expires = "";
     if (days) {
@@ -17,7 +22,6 @@ export function readCookie(name) {
             cookie = cookie.substring(1, cookie.length);
         }
         if (cookie.indexOf(cherchName) == 0) {
-            console.log(cookie.substring(cherchName.length, cookie.length));
             return cookie.substring(cherchName.length, cookie.length);
         }
     }

@@ -8,6 +8,16 @@ import * as JS_UTILS from './jsUtils.js';
 
 const X_SIZE_MAP = 20;
 
+let side = "not assigned";
+const socketPath = JS_UTILS.readCookie("roomID");
+JS_UTILS.eraseCookie("roomID");
+let socket;
+if (socketPath != undefined) {
+	const url = `wss://${window.location.host}/${socketPath}`;
+	socket = new WebSocket(url);
+	socketListener(socket);
+}
+
 // ------------------------------------classes------------------------------------
 class Arena {
 	constructor(scene) {
@@ -26,13 +36,17 @@ class Player {
 		this.type = playerType;
 		this.speed = 0.1;
 		this.size = 2;
-		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, this.size), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
-		this.hitbox = new THREE.Box3().setFromObject(this.cube);
 		this.score = 0;
 		this.keys = {
 			up: "",
 			down: "",
 		};
+		console.log(side);
+		let color = { color: 0xff0000 };
+		if (playerType == side)
+			color = { color: 0x0000ff };
+		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, this.size), new THREE.MeshStandardMaterial(color));
+		this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
 		if (playerType == "left") {
 			this.keys = { up: "w", down: "s" };
@@ -117,33 +131,53 @@ class Ball {
 	}
 }
 
+function parseMessage(message) {
+	if ('game' in message) {
+		if (message['game'] == "starting") {
+			side = message['side'];
+			getSide(socket);
+		}
+	}
+}
+
+async function getSide(socket) {
+	const timeToSleep = 1000;
+	while (side == "not assigned") {
+		await new Promise(r => setTimeout(r, timeToSleep));
+		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": JS_UTILS.readCookie("username") });
+	}
+}
+
 function socketListener(socket) {
-	socket.onopen = function(e) {
+	socket.onopen = function (e) {
 		console.log("Connection established");
 	}
-	
-	socket.onmessage = function(e) {
+
+	socket.onmessage = function (e) {
 		let data = JSON.parse(e.data);
 		console.log("Received message: " + e.data);
+		parseMessage(data);
 	}
-	
-	socket.onclose = function(e) {
+
+	socket.onclose = function (e) {
 		console.log("Connection closed");
 	}
-	
-	socket.onerror = function(error) {
+
+	socket.onerror = function (error) {
 		console.log(`socket error: ${event}`);
 		console.error(event);
 	}
 }
 
 export function pong3D() {
-	const socketPath = JS_UTILS.readCookie("roomID");
-	JS_UTILS.eraseCookie("roomID");
-	console.log(`socketPath: ${socketPath}`);
-	const url = `wss://${window.location.host}/${socketPath}`;
-	const socket = new WebSocket(url);
-	socketListener(socket);
+	let socketOpen = new Promise(resolve => {
+		socket.addEventListener("open", function (event) {
+			resolve();
+		});
+	});
+	socketOpen.then(() => {
+		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": JS_UTILS.readCookie("username") });
+	});
 
 	let game = {
 		going: false,
@@ -159,46 +193,57 @@ export function pong3D() {
 	let display = PONG.createCamera(renderer, X_SIZE_MAP);
 	const arena = new Arena(scene);
 	const ball = new Ball(scene);
-	const playerLeft = new Player("left", scene);
-	const playerRight = new Player("right", scene);
 
-	const button = UTILS.createContainerForGame("pong", renderer);
-	button.addEventListener("click", () => {
-		game.going = true;
-		button.style.display = "none";
-		playerLeft.score = 0;
-		playerRight.score = 0;
+	let sideDefined = new Promise(resolve => {
+		let checkInterval = setInterval(() => {
+			if (side != "not assigned") {
+				clearInterval(checkInterval);
+				resolve();
+			}
+		}, 100);
 	});
+	sideDefined.then(() => {
+		const playerLeft = new Player("left", scene);
+		const playerRight = new Player("right", scene);
 
-	const light = PONG.createLight(scene, X_SIZE_MAP);
-	PONG.updateScore(scene, playerLeft, playerRight, button, game);
+		const button = UTILS.createContainerForGame("pong", renderer);
+		button.addEventListener("click", () => {
+			game.going = true;
+			button.style.display = "none";
+			playerLeft.score = 0;
+			playerRight.score = 0;
+		});
 
-	// ------------------------------------keys------------------------------------
-	let keys = {};
-	document.addEventListener('keydown', (e) => keys[e.key] = true);
-	document.addEventListener('keyup', (e) => keys[e.key] = false);
+		const light = PONG.createLight(scene, X_SIZE_MAP);
+		PONG.updateScore(scene, playerLeft, playerRight, button, game);
 
-	let lastTime = 0;
-	// ------------------------------------loop------------------------------------
-	function animate(currentTime) {
-		if (lastTime) {
-			let delta = (currentTime - lastTime) / 10;
-			if (PONG.isGameGoing(game)) {
-				playerLeft.move(keys, arena, delta);
-				playerRight.move(keys, arena, delta);
+		// ------------------------------------keys------------------------------------
+		let keys = {};
+		document.addEventListener('keydown', (e) => keys[e.key] = true);
+		document.addEventListener('keyup', (e) => keys[e.key] = false);
+
+		let lastTime = 0;
+		// ------------------------------------loop------------------------------------
+		function animate(currentTime) {
+			if (lastTime) {
+				let delta = (currentTime - lastTime) / 10;
+				if (PONG.isGameGoing(game)) {
+					playerLeft.move(keys, arena, delta);
+					playerRight.move(keys, arena, delta);
+				}
+				if (PONG.isGameStarting(game)) {
+					game.memGoing = true;
+					ball.reset(scene, playerLeft, playerRight, button, game);
+				}
+				ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
+				PONG.lightFollowTarget(light.spot, ball.cube);
+				display.controls.update();
+				renderer.render(scene, display.camera);
 			}
-			if (PONG.isGameStarting(game)) {
-				game.memGoing = true;
-				ball.reset(scene, playerLeft, playerRight, button, game);
-			}
-			ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
-			PONG.lightFollowTarget(light.spot, ball.cube);
-			display.controls.update();
-			renderer.render(scene, display.camera);
+			lastTime = currentTime;
+			requestAnimationFrame(animate);
 		}
-		lastTime = currentTime;
-		requestAnimationFrame(animate);
-	}
 
-	animate();
+		animate();
+	});
 }

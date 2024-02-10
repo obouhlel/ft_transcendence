@@ -7,17 +7,12 @@ let username = null;
 let matchmakingAsked = false;
 const gameName = "pong";
 
-function sendMatchmakingMessage(message) {
-	socketMatchmaking.send(JSON.stringify(message));
-	console.log("Sent message: " + JSON.stringify(message));
-}
-
 function sendMatchmakingJoin() {
 	const message = { "matchmaking": "join",
 					"game": gameName, 
 					"username": username };
 	matchmakingAsked = true;
-	sendMatchmakingMessage(message);
+	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
 }
 
 function sendMatchmakingLeave() {
@@ -25,14 +20,14 @@ function sendMatchmakingLeave() {
 					"game": gameName, 
 					"username": username };
 	matchmakingAsked = false;
-	sendMatchmakingMessage(message);
+	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
 }
 
 function sendMatchmakingStatus() {
 	const message = { "matchmaking": "status",
 					"game": gameName, 
 					"username": username };
-	sendMatchmakingMessage(message);
+	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
 }
 
 function doMatchmaking(button) {
@@ -105,6 +100,7 @@ export function listenerGame() {
 		if (username == null) {
 			console.log("username is null");
 			username = document.getElementById("username").value;
+			JS_UTILS.createCookie("username", username, 1);
 		}
 		doMatchmaking(btn);
 	});
