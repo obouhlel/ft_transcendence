@@ -173,8 +173,8 @@ function placeTextScore(textScore) {
     textScore.position.y = 1;
 }
 
-function createTextScore(scene, playerLeftScore, playerRightScore) {
-    let scoreString = playerLeftScore.toString() + " - " + playerRightScore.toString();
+function createTextScore(scene, playerLocalScore, playerSocketScore) {
+    let scoreString = playerLocalScore.toString() + " - " + playerSocketScore.toString();
     let textGeometry = UTILS.doTextGeo(scoreString, 1.5);
     let meshMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     let textScore = new THREE.Mesh(textGeometry, meshMaterial);
@@ -183,16 +183,14 @@ function createTextScore(scene, playerLeftScore, playerRightScore) {
     return textScore;
 }
 
-export function updateScore(scene, playerLeft, playerRight, button, game) {
-    if (playerLeft.score == 10 || playerRight.score == 10) {
+export function updateScore(scene, playerLocal, playerSocket, game) {
+    if (playerLocal.score == 10 || playerSocket.score == 10) {
         // End of the game
-        button.innerHTML = "RESTART";
-        button.style.display = "block";
         game.going = false;
         game.memGoing = false;
     }
     scene.remove(game.textScore);
-    game.textScore = createTextScore(scene, playerLeft.score, playerRight.score);
+    game.textScore = createTextScore(scene, playerLocal.score, playerSocket.score);
 }
 
 function placeLight(spot, globalLight, mapSize) {
@@ -211,7 +209,7 @@ export function createLight(scene, mapSize) {
     const globalLight = new THREE.DirectionalLight(0xffffff, 1);
 
     globalLight.castShadow = true;
-    spot.castShadow = true;   
+    spot.castShadow = true;
     placeLight(spot, globalLight, mapSize);
     scene.add(spot);
     scene.add(spot.target);

@@ -41,18 +41,20 @@ class Player {
 			up: "",
 			down: "",
 		};
-		console.log(side);
 		let color = { color: 0xff0000 };
-		if (playerType == side)
+		if (playerType == side) {
 			color = { color: 0x0000ff };
+			this.keys = {
+				up: "ArrowUp",
+				down: "ArrowDown",
+			};
+		}
 		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, this.size), new THREE.MeshStandardMaterial(color));
 		this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
 		if (playerType == "left") {
-			this.keys = { up: "w", down: "s" };
 			this.cube.position.x = -(X_SIZE_MAP / 2) + 1;
 		} else if (playerType == "right") {
-			this.keys = { up: "ArrowUp", down: "ArrowDown" };
 			this.cube.position.x = X_SIZE_MAP / 2 - 1;
 		}
 
@@ -91,7 +93,7 @@ class Ball {
 		scene.add(this.cube);
 	}
 
-	move(scene, playerLeft, playerRight, button, arena, game, deltaTime) {
+	move(scene, playerLocal, playerSocket, arena, game, deltaTime) {
 
 		PONG.ballSlowSystem(this);
 
@@ -99,23 +101,23 @@ class Ball {
 		PONG.ballHitTopOrBot(this, arena.hitbox);
 
 		if (PONG.ballHitGoal(this, arena.hitbox) == "left") {
-			playerLeft.score += 1;
-			this.reset(scene, playerLeft, playerRight, button, game);
+			playerLocal.score += 1;
+			this.reset(scene, playerLocal, playerSocket, game);
 		} else if (PONG.ballHitGoal(this, arena.hitbox) == "right") {
-			playerRight.score += 1;
-			this.reset(scene, playerLeft, playerRight, button, game);
+			playerSocket.score += 1;
+			this.reset(scene, playerLocal, playerSocket, game);
 		}
 
-		playerLeft.hitbox.setFromObject(playerLeft.cube);
-		playerRight.hitbox.setFromObject(playerRight.cube);
-		PONG.ballHitPlayer(this, playerLeft);
-		PONG.ballHitPlayer(this, playerRight);
+		playerLocal.hitbox.setFromObject(playerLocal.cube);
+		playerSocket.hitbox.setFromObject(playerSocket.cube);
+		PONG.ballHitPlayer(this, playerLocal);
+		PONG.ballHitPlayer(this, playerSocket);
 
-		PONG.ballPinch(this, playerLeft, arena.hitbox);
-		PONG.ballPinch(this, playerRight, arena.hitbox);
+		PONG.ballPinch(this, playerLocal, arena.hitbox);
+		PONG.ballPinch(this, playerSocket, arena.hitbox);
 
-		PONG.ballAntiBlockSystem(this, playerLeft);
-		PONG.ballAntiBlockSystem(this, playerRight);
+		PONG.ballAntiBlockSystem(this, playerLocal);
+		PONG.ballAntiBlockSystem(this, playerSocket);
 
 		// Setup the director vector
 		this.direction.normalize();
@@ -123,11 +125,11 @@ class Ball {
 		this.cube.position.add(this.direction);
 	}
 
-	reset(scene, playerLeft, playerRight, button, game) {
-		PONG.updateScore(scene, playerLeft, playerRight, button, game);
+	reset(scene, playerLocal, playerSocket, game) {
+		PONG.updateScore(scene, playerLocal, playerSocket, game);
 		PONG.ballReset(this);
-		playerLeft.reset();
-		playerRight.reset();
+		playerLocal.reset();
+		playerSocket.reset();
 	}
 }
 
@@ -187,8 +189,17 @@ export function pong3D() {
 
 	const scene = UTILS.createScene();
 	const renderer = UTILS.createRenderer();
+	UTILS.createContainerForGame("pong", renderer);
 	PONG.putTitle(scene);
 	PONG.putFloor(scene, X_SIZE_MAP);
+
+	const light = PONG.createLight(scene, X_SIZE_MAP);
+
+	// ------------------------------------keys------------------------------------
+	let keys = {};
+	document.addEventListener('keydown', (e) => keys[e.key] = true);
+	document.addEventListener('keyup', (e) => keys[e.key] = false);
+
 
 	let display = PONG.createCamera(renderer, X_SIZE_MAP);
 	const arena = new Arena(scene);
@@ -203,24 +214,13 @@ export function pong3D() {
 		}, 100);
 	});
 	sideDefined.then(() => {
-		const playerLeft = new Player("left", scene);
-		const playerRight = new Player("right", scene);
-
-		const button = UTILS.createContainerForGame("pong", renderer);
-		button.addEventListener("click", () => {
-			game.going = true;
-			button.style.display = "none";
-			playerLeft.score = 0;
-			playerRight.score = 0;
-		});
-
-		const light = PONG.createLight(scene, X_SIZE_MAP);
-		PONG.updateScore(scene, playerLeft, playerRight, button, game);
-
-		// ------------------------------------keys------------------------------------
-		let keys = {};
-		document.addEventListener('keydown', (e) => keys[e.key] = true);
-		document.addEventListener('keyup', (e) => keys[e.key] = false);
+		const playerLocal = new Player(side, scene);
+		let otherSide = "left";
+		if (side == otherSide)
+			otherSide = "right";
+		const playerSocket = new Player(otherSide, scene);
+		PONG.updateScore(scene, playerLocal, playerSocket, game);
+		game.going = true;
 
 		let lastTime = 0;
 		// ------------------------------------loop------------------------------------
@@ -228,14 +228,14 @@ export function pong3D() {
 			if (lastTime) {
 				let delta = (currentTime - lastTime) / 10;
 				if (PONG.isGameGoing(game)) {
-					playerLeft.move(keys, arena, delta);
-					playerRight.move(keys, arena, delta);
+					playerLocal.move(keys, arena, delta);
+					playerSocket.move(keys, arena, delta);
 				}
 				if (PONG.isGameStarting(game)) {
 					game.memGoing = true;
-					ball.reset(scene, playerLeft, playerRight, button, game);
+					ball.reset(scene, playerLocal, playerSocket, game);
 				}
-				ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
+				ball.move(scene, playerLocal, playerSocket, arena, game, delta);
 				PONG.lightFollowTarget(light.spot, ball.cube);
 				display.controls.update();
 				renderer.render(scene, display.camera);
