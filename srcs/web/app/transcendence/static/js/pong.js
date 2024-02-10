@@ -4,6 +4,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import * as UTILS from './threeJsUtils.js';
 import * as PONG from './pongUtils.js';
 
+import * as JS_UTILS from './jsUtils.js';
+
 const X_SIZE_MAP = 20;
 
 // ------------------------------------classes------------------------------------
@@ -117,6 +119,30 @@ class Ball {
 
 export function pong3D() {
 	// ------------------------------------setup------------------------------------
+	const socketPath = JS_UTILS.readCookie("roomID");
+	JS_UTILS.eraseCookie("roomID");
+	console.log(`socketPath: ${socketPath}`);
+	const url = `wss://${window.location.host}/${socketPath}`;
+	const socket = new WebSocket(url);
+
+	socket.onopen = function(e) {
+		console.log("Connection established");
+	}
+	
+	socket.onmessage = function(e) {
+		let data = JSON.parse(e.data);
+		console.log("Received message: " + e.data);
+	}
+	
+	socket.onclose = function(e) {
+		console.log("Connection closed");
+	}
+	
+	socket.onerror = function(error) {
+		console.log(`socket error: ${event}`);
+		console.error(event);
+	}
+
 	let game = {
 		going: false,
 		memGoing: false,

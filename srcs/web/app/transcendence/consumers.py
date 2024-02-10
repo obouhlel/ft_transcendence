@@ -1,10 +1,19 @@
 import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
+import uuid
+from . import routing
+from . import consumersForPong
+
 playersPong = []
 playersShooter = []
 
 playersGameObj = []
+
+def createUrlPattern(roomID):
+	newPattern = r"^" + roomID + "$"
+	newConsumer = consumersForPong.PongConsumer.as_asgi()
+	routing.add_urlpattern(newPattern, newConsumer)
 
 def matchmakingJoined(message):
 	if message['game'] == 'pong':
@@ -32,16 +41,20 @@ def matchmakingStatus(message):
 		elif gameObj['player1'] == "assigned" and gameObj['player2'] == "assigned":
 			playersGameObj.remove(gameObj)
 	if needToBeRedirect == True:
-		return json.dumps({ 'matchmaking': 'match found', 'game': gameObj['game'], 'socketPath': 'ws/pong/room'})
+		return json.dumps({ 'matchmaking': 'match found', 'game': gameObj['game'], 'socketPath': gameObj['roomID']})
 
 	if message['game'] == 'pong':
 		if len(playersPong) >= 2 and message['username'] in playersPong:
-			gameObj = { 'game': 'pong', 'player1': playersPong.pop(0), 'player2': playersPong.pop(0) }
+			roomID = 'ws/pong/' + str(uuid.uuid4())
+			gameObj = { 'game': 'pong', 'roomID': roomID, 'player1': playersPong.pop(0), 'player2': playersPong.pop(0) }
 			playersGameObj.append(gameObj)
+			createUrlPattern(roomID)
 	elif message['game'] == 'shooter':
 		if len(playersShooter) >= 2 and message['username'] in playersShooter:
-			gameObj = { 'game': 'shooter', 'player1': playersShooter.pop(0), 'player2': playersShooter.pop(0) }
+			roomID = 'ws/shooter/' + str(uuid.uuid4())
+			gameObj = { 'game': 'shooter', 'roomID': roomID, 'player1': playersShooter.pop(0), 'player2': playersShooter.pop(0) }
 			playersGameObj.append(gameObj)
+			createUrlPattern(roomID)
 
 	return json.dumps({ 'matchmaking': 'on waitlist', 'game': message['game']})
 

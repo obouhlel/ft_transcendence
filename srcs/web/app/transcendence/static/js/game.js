@@ -1,3 +1,5 @@
+import * as JS_UTILS from './jsUtils.js';
+
 const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
@@ -64,6 +66,7 @@ function parseMessage(message) {
 			button.innerHTML = "Matchmaking";
 		}
 		else if (message['matchmaking'] == "match found") {
+			JS_UTILS.createCookie("roomID", message['socketPath'], 1);
 			const url = window.location.href;
 			let segments = url.split('/');
 			segments[segments.length - 2] = message['game'];
@@ -104,5 +107,9 @@ export function listenerGame() {
 			username = document.getElementById("username").value;
 		}
 		doMatchmaking(btn);
+	});
+	window.addEventListener("beforeunload", function() {
+		sendMatchmakingLeave();
+		socketMatchmaking.close();
 	});
 }
