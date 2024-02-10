@@ -117,14 +117,7 @@ class Ball {
 	}
 }
 
-export function pong3D() {
-	// ------------------------------------setup------------------------------------
-	const socketPath = JS_UTILS.readCookie("roomID");
-	JS_UTILS.eraseCookie("roomID");
-	console.log(`socketPath: ${socketPath}`);
-	const url = `wss://${window.location.host}/${socketPath}`;
-	const socket = new WebSocket(url);
-
+function socketListener(socket) {
 	socket.onopen = function(e) {
 		console.log("Connection established");
 	}
@@ -142,6 +135,15 @@ export function pong3D() {
 		console.log(`socket error: ${event}`);
 		console.error(event);
 	}
+}
+
+export function pong3D() {
+	const socketPath = JS_UTILS.readCookie("roomID");
+	JS_UTILS.eraseCookie("roomID");
+	console.log(`socketPath: ${socketPath}`);
+	const url = `wss://${window.location.host}/${socketPath}`;
+	const socket = new WebSocket(url);
+	socketListener(socket);
 
 	let game = {
 		going: false,
