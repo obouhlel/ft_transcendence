@@ -8,7 +8,12 @@ import * as JS_UTILS from './jsUtils.js';
 
 const X_SIZE_MAP = 20;
 
+let username = JS_UTILS.readCookie("username");
+JS_UTILS.eraseCookie("username");
 let side = "not assigned";
+
+let enemyPosition = 0;
+
 const socketPath = JS_UTILS.readCookie("roomID");
 JS_UTILS.eraseCookie("roomID");
 let socket;
@@ -16,6 +21,10 @@ if (socketPath != undefined) {
 	const url = `wss://${window.location.host}/${socketPath}`;
 	socket = new WebSocket(url);
 	socketListener(socket);
+}
+
+function sendPlayerPosition(player) {
+	JS_UTILS.sendMessageToSocket(socket, { "game": "position", "username": username, "position": player.cube.position.z });
 }
 
 // ------------------------------------classes------------------------------------
@@ -139,6 +148,9 @@ function parseMessage(message) {
 			side = message['side'];
 			getSide(socket);
 		}
+		if (message['game'] == "position") {
+			enemyPosition = message['position'];
+		}
 	}
 }
 
@@ -146,7 +158,7 @@ async function getSide(socket) {
 	const timeToSleep = 1000;
 	while (side == "not assigned") {
 		await new Promise(r => setTimeout(r, timeToSleep));
-		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": JS_UTILS.readCookie("username") });
+		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": username });
 	}
 }
 
@@ -169,6 +181,11 @@ function socketListener(socket) {
 		console.log(`socket error: ${event}`);
 		console.error(event);
 	}
+
+	window.addEventListener("beforeunload", function() {
+		JS_UTILS.sendMessageToSocket(socket, { "game": "leaved", "username": username });
+		socket.close();
+	});
 }
 
 export function pong3D() {
@@ -178,7 +195,7 @@ export function pong3D() {
 		});
 	});
 	socketOpen.then(() => {
-		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": JS_UTILS.readCookie("username") });
+		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": username });
 	});
 
 	let game = {
@@ -229,16 +246,17 @@ export function pong3D() {
 				let delta = (currentTime - lastTime) / 10;
 				if (PONG.isGameGoing(game)) {
 					playerLocal.move(keys, arena, delta);
-					playerSocket.move(keys, arena, delta);
+					playerSocket.cube.position.z = enemyPosition;
 				}
 				if (PONG.isGameStarting(game)) {
 					game.memGoing = true;
 					ball.reset(scene, playerLocal, playerSocket, game);
 				}
-				ball.move(scene, playerLocal, playerSocket, arena, game, delta);
+				// ball.move(scene, playerLocal, playerSocket, arena, game, delta);
 				PONG.lightFollowTarget(light.spot, ball.cube);
 				display.controls.update();
 				renderer.render(scene, display.camera);
+				sendPlayerPosition(playerLocal);
 			}
 			lastTime = currentTime;
 			requestAnimationFrame(animate);
