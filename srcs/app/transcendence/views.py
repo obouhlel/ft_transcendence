@@ -255,3 +255,46 @@ def request_friend(request):
 			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
 	else:
 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+#remove friend
+# POST: REMOVE FRIEND
+# PARAMS: username
+def remove_friend(request):
+	data = json.loads(request.body)
+	username = data['username']
+	if request.method == 'POST':
+		if request.user.is_authenticated:
+			try:
+				friend = CustomUser.objects.get(username=username)
+				request.user.friends.remove(friend)
+				return JsonResponse({'status': 'ok', 'message': 'Ami retiré avec succès.'})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+#  get friend requests
+# GET: RETURN ALL FRIEND REQUESTS
+# PARAMS: username
+def get_friend_requests(request):
+	if request.method == 'GET':
+		if request.user.is_authenticated:
+			friend_requests = request.user.friend_requests.all()
+			data = []
+			for friend in friend_requests:
+				data += [{
+					'username': friend.username,
+					'email': friend.email,
+					'first_name': friend.first_name,
+					'last_name': friend.last_name,
+					'sexe': friend.sexe,
+					'birthdate': friend.birthdate.isoformat(),
+					'avatar': friend.avatar.url if friend.avatar else None,
+				}]
+			return JsonResponse({'status': 'ok', 'friend_requests': data})
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
