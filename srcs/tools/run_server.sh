@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Attendez que la base de données soit prête
-./wait-for-it.sh db:5432 --timeout=0 --strict -- 
+# # Attendez que la base de données soit prête
+# ./wait-for-it.sh db:5432 --timeout=0 --strict -- 
 
 python manage.py makemigrations --noinput
 python manage.py migrate --noinput
