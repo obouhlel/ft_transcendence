@@ -83,6 +83,7 @@ def register_user(request):
 		if birthdate > timezone.now():
 			return JsonResponse({'status': 'error', 'message': 'La date de naissance est dans le futur.'}, status=400)
 
+
 		# Créer l'utilisateur
 		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
 		return JsonResponse({'status': 'ok', 'message': 'Votre compte a été créé avec succès.'})
@@ -122,10 +123,10 @@ def home(request):
 	return HttpResponse(html)
 
 def games(request):
-	data = {
-		'message': 'Bienvenue sur la page des jeux!',
-	}
-	return JsonResponse(data)
+	if section == 'pong':
+		return HttpResponse(render_to_string('views/pong.html', request=request))
+	elif section == 'shooter':
+		return HttpResponse(render_to_string('views/shooter.html', request=request))
 
 def game(request):
 	data = {
@@ -133,14 +134,25 @@ def game(request):
 	}
 	return JsonResponse(data)
 
+def getUserName(request):
+	if request.user.is_authenticated:
+		data = {
+			'username': request.user.username,
+			'email': request.user.email,
+			'first_name': request.user.first_name,
+			'last_name': request.user.last_name,
+			'sexe': request.user.sexe,
+			'birthdate': request.user.birthdate.isoformat(),
+			'is_staff': request.user.is_staff,
+			'is_superuser': request.user.is_superuser,
+			'csrf_token': request.META['CSRF_COOKIE'],
+		}
+		return JsonResponse(data)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'Not authenticated'}, status=401)
+
 def pong(request):
-	data = {
-		'message': 'Bienvenue sur la page du jeu Pong!',
-	}
-	return JsonResponse(data)
+	return getUserName(request)
 
 def shooter(request):
-	data = {
-		'message': 'Bienvenue sur la page du jeu Shooter!',
-	}
-	return JsonResponse(data)
+	return getUserName(request)
