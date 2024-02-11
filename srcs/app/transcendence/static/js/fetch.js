@@ -2,11 +2,11 @@ export const SERVER_URL = 'https://localhost:8000';
 
 export const doRequest = {
 	getCookie : function getCookie(name) {
-		var cookieValue = null;
+		let cookieValue = null;
 		if (document.cookie && document.cookie !== '') {
-			var cookies = document.cookie.split(';');
-			for (var i = 0; i < cookies.length; i++) {
-				var cookie = cookies[i].trim();
+			let cookies = document.cookie.split(';');
+			for (let i = 0; i < cookies.length; i++) {
+				let cookie = cookies[i].trim();
 				if (cookie.substring(0, name.length + 1) === (name + '=')) {
 					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
 					break;
@@ -17,20 +17,26 @@ export const doRequest = {
 	},
 
 	Fetch: function(url, method, data, callback) {
-		var csrftoken = this.getCookie('csrftoken');
-		fetch(url, {
+		const csrftoken = this.getCookie('csrftoken');
+		const options = {
 			method: method,
 			headers: {
 				'Content-Type': 'application/json',
 				'X-CSRFToken': csrftoken,
 				'Accept': 'application/json',
 			},
-			credentials: 'include',
-			body: ['HEAD', 'GET'].includes(method.toUpperCase())  ? undefined : JSON.stringify(data)
-		})
+			credentials: 'include'
+		};
+		if (method !== 'GET' && method !== 'HEAD') {
+			options.body = JSON.stringify(data);
+		}
+		fetch(url, options)
 		.then(response => method === 'GET' ? response.text() : response.json())
 		.then(data => {
 			callback(data);
+			setTimeout(function() {
+				document.getElementById('message').textContent = '';
+			}, 5000);
 		})
 		.catch(error => {
 			console.error(error);
@@ -41,22 +47,24 @@ export const doRequest = {
 
 
 	callbackLogin: function(data) {
-		var messageElement = document.getElementById('message');
+		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('CONNEXION REUSSIE');
-			this.Fetch(`${SERVER_URL}/home/`, 'GET', null, this.callbackHome);
+			doRequest.Fetch(`${SERVER_URL}/home/`, 'GET', null, doRequest.callbackHome);
+			messageElement.textContent = "Connexion réussie !";
+			messageElement.style.color = 'green';
 		} else if (data.status === 'error') {
 			console.log('ERREUR DE CONNEXION');
-			document.getElementById('message').textContent = data.message;
+			document.getElementById('message').textContent = "Erreur de connexion !";
 		}
 	},
 
 	callbackHome: function(data) {
-		document.getElementById('content2').innerHTML = data;
+		document.getElementById('section').innerHTML = data;
 	},
 
 	callbackLogout: function(data) {
-		var messageElement = document.getElementById('message');
+		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('DECONNEXION REUSSIE');
 			messageElement.textContent = data.message;
@@ -69,7 +77,7 @@ export const doRequest = {
 	},
 
 	callbackRegister: function(data) {
-		var messageElement = document.getElementById('message');
+		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('INSCRIPTION REUSSIE');
 			messageElement.textContent = data.message;

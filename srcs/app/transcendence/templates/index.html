@@ -21,10 +21,13 @@
     <body>
         <div id="content">
                 <h1>Bienvenue sur Transcendence!</h1>
-                <ul id="nav-links">
-                        <li><a href="#login">Se connecter</a></li>
-                        <li><a href="#register">S'inscrire</a></li>
-                </ul>
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
         </div>
         <div id="section">
             <template id="home-template">
