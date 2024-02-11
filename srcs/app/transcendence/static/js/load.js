@@ -27,7 +27,9 @@ function showSection(section) {
             handleRegisterFormSubmit();
         } else if (section === 'logout') {
 			handleLogoutFormSubmit();
-		}
+        } else if (section === 'games') {
+            getGames();
+        }
     })
     .catch(error => {
         console.error(error);

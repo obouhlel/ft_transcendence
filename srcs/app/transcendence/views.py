@@ -157,7 +157,42 @@ def pong(request):
 def shooter(request):
 	return getUserName(request)
 
-
+def list_games(request):
+	if request.method == 'GET':
+		if request.user.is_authenticated:
+			games = Game.objects.all()
+			data = []
+			for game in games:
+				data += [{
+					'id': game.id,
+					'name': game.name,
+					'created_at': game.created_at.isoformat(),
+				}]
+			return JsonResponse({'status': 'ok', 'games': data})
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Not authenticated.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'Invalid method.'}, status=405)
+		
+# add stats after a game to the user
+# POST: ADD STATS
+# PARAMS: score, game
+# def add_stats(request):
+# 	if request.method == 'POST':
+# 		data = json.loads(request.body)
+# 		if request.user.is_authenticated:
+# 			if game == 'pong':
+# 				request.user.pong_score = score
+# 			elif game == 'shooter':
+# 				request.user.shooter_score = score
+# 			else:
+# 				return JsonResponse({'status': 'error', 'message': 'Jeu inconnu.'}, status=400)
+# 			request.user.save()
+# 			return JsonResponse({'status': 'ok', 'message': 'Statistiques mises à jour avec succès.'})
+# 		else:
+# 			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+# 	else:
+# 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 # friends
 # GET: RETURN ALL FRIENDS
 # POST: ADD FRIEND OR REMOVE FRIEND
@@ -233,11 +268,6 @@ def request_friend(request):
 			for friend in friend_requests:
 				data += [{
 					'username': friend.username,
-					'email': friend.email,
-					'first_name': friend.first_name,
-					'last_name': friend.last_name,
-					'sexe': friend.sexe,
-					'birthdate': friend.birthdate.isoformat(),
 					'avatar': friend.avatar.url if friend.avatar else None,
 				}]
 			return JsonResponse({'status': 'ok', 'friend_requests': data})
@@ -286,11 +316,6 @@ def get_friend_requests(request):
 			for friend in friend_requests:
 				data += [{
 					'username': friend.username,
-					'email': friend.email,
-					'first_name': friend.first_name,
-					'last_name': friend.last_name,
-					'sexe': friend.sexe,
-					'birthdate': friend.birthdate.isoformat(),
 					'avatar': friend.avatar.url if friend.avatar else None,
 				}]
 			return JsonResponse({'status': 'ok', 'friend_requests': data})
@@ -298,3 +323,5 @@ def get_friend_requests(request):
 			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
 	else:
 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+
