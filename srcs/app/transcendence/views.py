@@ -17,9 +17,11 @@ def index(request):
 
 def section(request, section):
 	if section == 'home':
-		return HttpResponse(render_to_string('views/home.html', request=request))
+		return HttpResponse(render_to_string('home.html', request=request))
 	elif section == 'login':
 		return HttpResponse(render_to_string('views/login.html', request=request))
+	elif section == 'logout':
+		return JsonResponse({'message': 'Deconnexion en cours..'})
 	elif section == 'register':
 		return HttpResponse(render_to_string('views/register.html', request=request))
 	elif section == 'profile':
@@ -35,7 +37,6 @@ def section(request, section):
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Section inconnue.'}, status=404)
 
-@csrf_exempt
 def login_user(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
@@ -46,7 +47,6 @@ def login_user(request):
 			django_login(request, user)
 			return JsonResponse({'status': 'ok', 'message': 'Vous êtes maintenant connecté en tant que ' + username})
 
-@csrf_exempt
 def register_user(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
@@ -59,7 +59,29 @@ def register_user(request):
 		sexe = data['sexe']
 		birthdate = data['birthdate']
 
-		# Vos validations ici...
+		# Valider que les données ne dépassent pas la longueur maximale autorisée
+		if len(username) > 50 or len(password) > 50 or len(email) > 50 or len(firstname) > 50 or len(lastname) > 50:
+			return JsonResponse({'status': 'error', 'message': 'Les données sont trop longues.'}, status=400)
+		# verifier que le username n'est pas déjà utilisé
+		if CustomUser.objects.filter(username=username).exists():
+			return JsonResponse({'status': 'error', 'message': 'Ce username est déjà utilisé.'}, status=400)
+		# Valider que l'email n'est pas déjà utilisé
+		if CustomUser.objects.filter(email=email).exists():
+			return JsonResponse({'status': 'error', 'message': 'Cet email est déjà utilisé.'}, status=400)
+		# verifier que le mot de passe est la confirmation du mot de passe sont identiques
+		if password != password_confirm:
+			return JsonResponse({'status': 'error', 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
+		# Valider que le mot de passe contient au moins 8 caractères
+		if len(password) < 8:
+			return JsonResponse({'status': 'error', 'message': 'Le mot de passe doit contenir au moins 8 caractères.'}, status=400)
+		# verifier que la date de naissance est valide
+		try:
+			birthdate = timezone.datetime.strptime(birthdate, '%Y-%m-%d').replace(tzinfo=pytz.UTC)
+		except ValueError:
+			return JsonResponse({'status': 'error', 'message': 'La date de naissance est invalide.'}, status=400)
+		#verifier que la date de naissance n'est pas dans le futur
+		if birthdate > timezone.now():
+			return JsonResponse({'status': 'error', 'message': 'La date de naissance est dans le futur.'}, status=400)
 
 		# Créer l'utilisateur
 		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
@@ -72,9 +94,6 @@ def edit_profile(request):
 	if request.method == 'POST':
 		data = json.loads(request.body)
 		user = CustomUser.objects.get(username=request.user.username)
-
-		# Vos validations et mises à jour ici...
-
 		user.save()
 		return JsonResponse({'status': 'ok', 'message': 'Votre profil a été mis à jour avec succès !'})
 	else:
@@ -99,7 +118,7 @@ def profile(request):
 		return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
 
 def home(request):
-	html = render_to_string('views/home.html', request=request)
+	html = render_to_string('home.html', request=request)
 	return HttpResponse(html)
 
 def games(request):

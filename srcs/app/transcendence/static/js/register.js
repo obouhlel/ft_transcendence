@@ -1,33 +1,27 @@
 import { doRequest, SERVER_URL } from './fetch.js';
 
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('register-form');
+export function handleRegisterFormSubmit() {
+    const form = document.getElementById('register-form');
     if (!form) { return; }
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        var username = document.getElementById('username').value;
-        var firstname = document.getElementById('firstname').value;
-        var lastname = document.getElementById('lastname').value;
-        var email = document.getElementById('email').value;
-        var password = document.getElementById('password').value;
-        var password_confirm = document.getElementById('password_confirm').value;
-        var avatar = document.getElementById('avatar').files[0];
-        var birthdate = document.getElementById('birthdate').value;
-        var sex = document.getElementById('sexe').value;
+        const fields = ['username', 'firstname', 'lastname', 'email', 'password', 'password_confirm', 'avatar', 'birthdate', 'sexe'];
+        let data = new FormData();
 
-        var data = new FormData();
-        data.append('username', username);
-        data.append('firstname', firstname);
-        data.append('lastname', lastname);
-        data.append('email', email);
-        data.append('password', password);
-        data.append('password_confirm', password_confirm);
-        data.append('avatar', avatar);
-        data.append('birthdate', birthdate);
-        data.append('sexe', sex);
-
-        doRequest.Fetch(`${SERVER_URL}/register/`, 'POST', data, doRequest.callbackRegister);
+        fields.forEach(field => {
+            let value = field === 'avatar' ? document.getElementById(field).files[0] : document.getElementById(field).value;
+            data.append(field, value);
+        });
+        try {
+            console.log('data register:', data);
+            doRequest.Fetch(`${SERVER_URL}/register/`, 'POST', data, doRequest.callbackRegister);
+            window.location.hash = 'login';
+        }
+        catch (error) {
+            console.error('Une erreur est survenue lors de l\'inscription :', error);
+            window.location.hash = 'register';
+        }
     });
-});
+};
