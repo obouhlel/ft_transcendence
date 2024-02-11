@@ -26,6 +26,8 @@ def section(request, section):
 		return HttpResponse(render_to_string('views/register.html', request=request))
 	elif section == 'profile':
 		return HttpResponse(render_to_string('views/profile.html', request=request))
+	elif section == 'edit_profile':
+		return HttpResponse(render_to_string('views/edit_profile.html', request=request))
 	elif section == 'games':
 		return HttpResponse(render_to_string('views/games.html', request=request))
 	elif section == 'game':

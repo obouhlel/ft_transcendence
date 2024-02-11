@@ -49,7 +49,7 @@ export const doRequest = {
 		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('CONNEXION REUSSIE');
-			doRequest.Fetch(`${SERVER_URL}/home/`, 'GET', null, doRequest.callbackHome);
+			// doRequest.Fetch(`${SERVER_URL}/home/`, 'GET', null, doRequest.callbackHome);
 			messageElement.textContent = "Connexion réussie !";
 			messageElement.style.color = 'green';
 		} else if (data.status === 'error') {
