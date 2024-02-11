@@ -156,3 +156,102 @@ def pong(request):
 
 def shooter(request):
 	return getUserName(request)
+
+
+# friends
+# GET: RETURN ALL FRIENDS
+# POST: ADD FRIEND OR REMOVE FRIEND
+# PARAMS: username, action
+# FORMATS: 
+# 
+def friends(request):
+	if request.method == 'GET':
+		if request.user.is_authenticated:
+			friends = request.user.friends.all()
+			data = []
+			for friend in friends:
+				data += [{
+					'username': friend.username,
+					'email': friend.email,
+					'first_name': friend.first_name,
+					'last_name': friend.last_name,
+					'sexe': friend.sexe,
+					'birthdate': friend.birthdate.isoformat(),
+					'avatar': friend.avatar.url if friend.avatar else None,
+					'is_authenticated': friend.is_authenticated,
+				}]
+			return JsonResponse({'status': 'ok', 'friends': data})
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+
+# friend_requests
+# POST: ACCEPT FRIEND REQUEST OR DECLINE FRIEND REQUEST
+# PARAMS: username, action
+# FORMATS: 
+# 
+def respond_to_friend_request(request):
+	data = json.loads(request.body)
+	username = data['username']
+	action = data['action']
+	if request.user.is_authenticated:
+		if action == 'accept':
+			try:
+				friend = CustomUser.objects.get(username=username)
+				request.user.friend_requests.remove(friend)
+				request.user.friends.add(friend)
+				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami acceptée avec succès.'})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
+		elif action == 'decline':
+			try:
+				friend = CustomUser.objects.get(username=username)
+				request.user.friend_requests.remove(friend)
+				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami refusée avec succès.'})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Action inconnue.'}, status=400)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+
+# friend_requests
+# GET: RETURN ALL FRIEND REQUESTS
+# POST: SEND FRIEND REQUEST
+# PARAMS: username, action
+# FORMATS: 
+def request_friend(request):
+	data = json.loads(request.body)
+	username = data['username']
+	action = data['action']
+	if request.method == 'GET':
+		if request.user.is_authenticated:
+			friend_requests = request.user.friend_requests.all()
+			data = []
+			for friend in friend_requests:
+				data += [{
+					'username': friend.username,
+					'email': friend.email,
+					'first_name': friend.first_name,
+					'last_name': friend.last_name,
+					'sexe': friend.sexe,
+					'birthdate': friend.birthdate.isoformat(),
+					'avatar': friend.avatar.url if friend.avatar else None,
+				}]
+			return JsonResponse({'status': 'ok', 'friend_requests': data})
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+	elif request.method == 'POST':
+		if request.user.is_authenticated:
+			try:
+				friend = CustomUser.objects.get(username=username)
+				request.user.friend_requests.add(friend)
+				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami envoyée avec succès.'})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)

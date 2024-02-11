@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
 	if (!btn) { return; }
 	btn.addEventListener('click', function(event) {
 		event.preventDefault();
-
 		doRequest.Fetch(`${SERVER_URL}/games/`, 'GET', null, console.log);
 	});
 });
