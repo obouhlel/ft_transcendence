@@ -13,7 +13,7 @@ urlpatterns = [
 	path('profile/', views.profile, name='profile'),
 	path('edit_profile/', views.edit_profile, name='edit_profile'),
 	path('games/', views.games, name='games'),
-	path('game/', views.game, name='game'),
+	path('game/<int:game_id>/', views.game, name='game'),
     path('pong/', views.pong, name='pong'),
 	path('shooter/', views.shooter, name='shooter'),
 ]

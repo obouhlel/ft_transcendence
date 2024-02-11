@@ -1,5 +1,6 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit } from './register.js';
+import { getGames } from './games.js';
 
 window.addEventListener('hashchange', function() {
     const section = window.location.hash.substring(1); // Supprime le '#'

@@ -1,6 +1,6 @@
 import { SERVER_URL, doRequest } from './fetch.js';
 
 export function getGames() {
-	return doRequest(`${SERVER_URL}/games`);
+	doRequest.Fetch(`${SERVER_URL}/games/`, 'GET', null, console.log);
 }
 

@@ -160,7 +160,7 @@ def shooter(request):
 def list_games(request):
 	if request.method == 'GET':
 		if request.user.is_authenticated:
-			games = Game.objects.all()
+			games = list(Game.objects.values())
 			data = []
 			for game in games:
 				data += [{

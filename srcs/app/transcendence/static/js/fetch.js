@@ -86,5 +86,6 @@ export const doRequest = {
 			messageElement.textContent = data.message;
 			messageElement.style.color = 'red';
 		}
-	}
+	},
+
 };
