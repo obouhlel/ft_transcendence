@@ -34,7 +34,6 @@ INSTALLED_APPS = [
 	'daphne',
 	'transcendence',
     'corsheaders',
-    # 'sslserver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -72,7 +71,6 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'django_app.wsgi.application'
 ASGI_APPLICATION = 'django_app.asgi.application'
 
 CHANNEL_LAYERS = {

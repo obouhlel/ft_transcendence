@@ -14,6 +14,6 @@ document.addEventListener('DOMContentLoaded', function() {
 			data.append(field, value);
 		});
 
-		doRequest.Fetch(`${SERVER_URL}/edit_profile/`, 'POST', data, doRequest.callbackProfile);
+		doRequest.Fetch(`${SERVER_URL}/api/edit_profile/`, 'POST', data, doRequest.callbackProfile);
 	});
 });

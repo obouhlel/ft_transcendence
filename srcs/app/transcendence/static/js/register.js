@@ -16,7 +16,7 @@ export function handleRegisterFormSubmit() {
         });
         try {
             console.log('data register:', data);
-            doRequest.Fetch(`${SERVER_URL}/register/`, 'POST', data, doRequest.callbackRegister);
+            doRequest.Fetch(`${SERVER_URL}/api/register/`, 'POST', data, doRequest.callbackRegister);
             window.location.hash = 'login';
         }
         catch (error) {
