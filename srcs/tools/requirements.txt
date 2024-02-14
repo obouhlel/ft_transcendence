@@ -1,0 +1,15 @@
+# backend
+Django
+# db
+psycopg2-binary
+python-decouple
+# utils
+tzdata
+# websocket
+channels[daphne]
+# cors
+django-cors-headers
+#timezone
+pytz
+# Images
+Pillow

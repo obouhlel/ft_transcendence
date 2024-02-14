@@ -1,0 +1,20 @@
+{% extends 'index.html' %}
+
+{% load static %}
+
+{% block title %}Games{% endblock %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+	<main>
+		<a href="/pong/">
+			<div id="pong"></div>
+		</a>
+		<a href="/shooter/">
+			<div id="shooter"></div>
+		</a>
+	</main>
+{% endblock %}
