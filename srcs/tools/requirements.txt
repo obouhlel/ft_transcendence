@@ -13,3 +13,5 @@ django-cors-headers
 pytz
 # Images
 Pillow
+# Authentication
+requests

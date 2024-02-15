@@ -191,4 +191,4 @@ SECURE_HSTS_PRELOAD = True
 
 API_42_UID = config('CLIENT_ID')
 API_42_SECRET = config('CLIENT_SECRET')
-API_42_REDIRECT_URI = 'https://localhost:8000/api/login42'
+API_42_REDIRECT_URI = 'https://localhost:8000/api/login42/'
