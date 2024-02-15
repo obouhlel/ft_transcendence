@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login as django_login, logout as d
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
 from transcendence.models import CustomUser
+from django.conf import settings
 
 def login_user(request):
 	if request.method == 'POST':
@@ -20,6 +21,23 @@ def login_user(request):
 			return JsonResponse({'status': 'ok', 'message': 'Vous êtes maintenant connecté en tant que ' + username})
 		else:
 			return JsonResponse({'status': 'error', 'message': 'Nom d\'utilisateur ou mot de passe incorrect.'}, status=401)
+
+def login_42(request):
+	if request.method == 'GET':
+		client_id = settings.API_42_UID
+		secret_key = settings.API_42_SECRET
+		redirect_uri = settings.API_42_REDIRECT_URI
+
+		data = {
+			'client_id': client_id,
+			'client_secret': secret_key,
+			'redirect_uri': redirect_uri,
+		}
+		return JsonResponse(data)
+	elif request.method == 'POST':
+		pass
+	else:
+		return JsonResponse({'status': 'error', 'message': 'Cette méthode n\'est pas autorisée.'}, status=405)
 
 def register_user(request):
 	if request.method == 'POST':

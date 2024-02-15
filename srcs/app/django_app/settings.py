@@ -148,6 +148,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 CORS_ALLOW_ALL_ORIGINS = False
 CSRF_TRUSTED_ORIGINS = [
     "https://localhost:8000", # Assurez-vous que c'est exactement l'origine à partir de laquelle vous faites la requête
+	"https://api.intra.42.fr"
 ]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
@@ -163,6 +164,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://localhost:8000",
+	"https://api.intra.42.fr"
 ]
 
 # Utiliser le header HTTP X-XSS-Protection
@@ -184,3 +186,9 @@ CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
+
+# Auth
+
+API_42_UID = config('CLIENT_ID')
+API_42_SECRET = config('CLIENT_SECRET')
+API_42_REDIRECT_URI = 'https://localhost:8000/api/login42'
