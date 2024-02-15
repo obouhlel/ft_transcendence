@@ -198,7 +198,7 @@ def get_all_games(request):
 def get_game_by_name(request, name):
 	if request.method == 'GET':
 		if request.user.is_authenticated:
-			try:methode.'}, status=405)
+			try:
 				game = Game.objects.get(name=name)
 				data = {
 					'id': game.id,
@@ -275,48 +275,43 @@ def get_all_users(request):
 # get user by username
 def get_user_by_username(request, username):
 	if request.method == 'GET':
-		if request.user.is_authenticated
-		try:
-			user = CustomUser.objects.get(username=username)
-			data = {
-				'username': user.username,
-				'email': user.email,
-				'first_name': user.first_name,
-				'last_name': user.last_name,
-				'sexe': user.sexe,
-				'birthdate': user.birthdate.isoformat(),
-				'avatar': user.avatar.url if user.avatar else None,
-				'is_authenticated': user.is_authenticated,
-			}
-			return JsonResponse({'status': 'ok', 'user': data})
-		except CustomUser.DoesNotExist:
-			return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
+		if request.user.is_authenticated:
+			try:
+				user = CustomUser.objects.get(username=username)
+				data = {
+					'username': user.username,
+					'email': user.email,
+					'first_name': user.first_name,
+					'last_name': user.last_name,
+					'sexe': user.sexe,
+					'birthdate': user.birthdate.isoformat(),
+					'avatar': user.avatar.url if user.avatar else None,
+					'is_authenticated': user.is_authenticated,
+				}
+				return JsonResponse({'status': 'ok', 'user': data})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
 # get user by id
 def get_user_by_id(request, id):
 	if request.method == 'GET':
-		if request.user.is_authenticated
-		try:
-			user = CustomUser.objects.get(id=id)
-			data = {
-				'username': user.username,
-				'email': user.email,
-				'first_name': user.first_name,
-				'last_name': user.last_name,
-				'sexe': user.sexe,
-				'birthdate': user.birthdate.isoformat(),
-				'avatar': user.avatar.url if user.avatar else None,
-				'is_authenticated': user.is_authenticated,
-			}
-			return JsonResponse({'status': 'ok', 'user': data})
-		except CustomUser.DoesNotExist:
-			return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
+		if request.user.is_authenticated:
+			try:
+				user = CustomUser.objects.get(id=id)
+				data = {
+					'username': user.username,
+					'email': user.email,
+					'first_name': user.first_name,
+					'last_name': user.last_name,
+					'sexe': user.sexe,
+					'birthdate': user.birthdate.isoformat(),
+					'avatar': user.avatar.url if user.avatar else None,
+					'is_authenticated': user.is_authenticated,
+				}
+				return JsonResponse({'status': 'ok', 'user': data})
+			except CustomUser.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'Cet utilisateur n\'existe pas.'}, status=404)
+			else:
+				return JsonResponse({'status': 'error', 'message': 'Non authentifié.'}, status=401)
 	else:
 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
@@ -334,7 +329,7 @@ def get_all_user_in_lobby(request, id_game):
 						'username': user.username,
 						'avatar': user.avatar.url if user.avatar else None,
 						'stat': {
-							'nb_played': stat_user_by_game.nb_played,': stat_user_by_game.time_played,
+							'nb_played': stat_user_by_game.nb_played,
 							'nb_win': stat_user_by_game.nb_win,
 							'nb_lose': stat_user_by_game.nb_lose,
 							'ratio': stat_user_by_game.win / stat_user_by_game.nb_played if stat_user_by_game.nb_played > 0 else 0,
