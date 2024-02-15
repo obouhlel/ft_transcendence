@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     sexe = models.CharField(max_length=64, default='Unknow')
     birthdate = models.DateField(default=timezone.now)
     token = models.CharField(max_length=128)
-    avatar = models.ImageField(upload_to='avatars/', default='default_avatar.webp')
+    avatar = models.ImageField(upload_to='avatars/')
     created_at = models.DateTimeField(default=timezone.now)
     last_connexion = models.DateTimeField(default=timezone.now)
     list_friends = models.ManyToManyField('CustomUser', related_name='friends')

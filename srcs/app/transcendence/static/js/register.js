@@ -10,12 +10,17 @@ export function handleRegisterFormSubmit() {
         const fields = ['username', 'firstname', 'lastname', 'email', 'password', 'password_confirm', 'avatar', 'birthdate', 'sexe'];
         let data = new FormData();
 
-        fields.forEach(field => {
-            let value = field === 'avatar' ? document.getElementById(field).files[0] : document.getElementById(field).value;
-            data.append(field, value);
-        });
+		fields.forEach(field => {
+			let element = document.getElementById(field);
+			if (element) {
+				let value = field === 'avatar' ? element.files[0] : element.value;
+				data.append(field, value);
+			} else {
+				console.log(`Element with ID ${field} not found`);
+			}
+		});
         try {
-            console.log('data register:', data);
+            console.log('data register:', Object.fromEntries(data.entries()));
             doRequest.Fetch(`${SERVER_URL}/api/register/`, 'POST', data, doRequest.callbackRegister);
             window.location.hash = 'login';
         }

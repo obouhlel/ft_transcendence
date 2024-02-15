@@ -24,15 +24,15 @@ def login_user(request):
 
 def register_user(request):
 	if request.method == 'POST':
-		data = json.loads(request.body)
-		username = data['username']
-		password = data['password']
-		password_confirm = data['password_confirm']
-		email = data['email']
-		firstname = data['firstname']
-		lastname = data['lastname']
-		sexe = data['sexe']
-		birthdate = data['birthdate']
+		data = request.POST
+		username = data.get('username')
+		password = data.get('password')
+		password_confirm = data.get('password_confirm')
+		email = data.get('email')
+		firstname = data.get('firstname')
+		lastname = data.get('lastname')
+		sexe = data.get('sexe')
+		birthdate = data.get('birthdate')
 
 		# Valider que les données ne dépassent pas la longueur maximale autorisée
 		data_list = [username, password, email, firstname, lastname]
@@ -62,49 +62,67 @@ def register_user(request):
 
 		# Créer l'utilisateur
 		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
+		if 'avatar' in request.FILES:
+			user.avatar = request.FILES['avatar']
+		else :
+			user.avatar = 'no_avatar.png'
+		user.save()
 		return JsonResponse({'status': 'ok', 'message': 'Votre compte a été créé avec succès.'})
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Cette méthode n\'est pas autorisée.'}, status=405)
 
-@csrf_exempt
 def edit_profile(request):
 	if request.method == 'POST':
 		data = request.POST
-		user = CustomUser.objects.get(username=request.user.username)
-		if 	data['username']:
-			username = data['username']
+		try:
+			user = CustomUser.objects.get(username=request.user.username)
+		except CustomUser.DoesNotExist:
+			return JsonResponse({'status': 'error', 'message': 'Utilisateur non trouvé.'}, status=404)
+
+		username = data.get('username')
+		if username and username != user.username:
 			if CustomUser.objects.filter(username=username).exists():
 				return JsonResponse({'status': 'error', 'message': 'Ce username est déjà utilisé.'}, status=400)
 			user.username = username
-		if data['email']:
-			email = data['email']
+
+		email = data.get('email')
+		if email and email != user.email:
 			if CustomUser.objects.filter(email=email).exists():
 				return JsonResponse({'status': 'error', 'message': 'Cet email est déjà utilisé.'}, status=400)
 			user.email = email
-		if 	data['firstnammethodse']:
-			user.first_name = data['firstname']
-		if 	data['lastname']:
-			user.last_name = data['lastname']
-		if 	data['sexe']:
-			user.sexe = data['sexe']
-		if 	data['birthdate']:
+
+		first_name = data.get('firstname', user.first_name)
+		if first_name:
+			user.first_name = first_name
+		last_name = data.get('lastname', user.last_name)
+		if last_name:
+			user.last_name = last_name
+		sexe = data.get('sexe', user.sexe)
+		if sexe:
+			user.sexe = data.get('sexe', user.sexe)
+
+		birthdate = data.get('birthdate')
+		if birthdate:
 			try:
-				birthdate = timezone.datetime.strptime(data['birthdate'], '%Y-%m-%d').replace(tzinfo=pytz.UTC)
+				birthdate = timezone.datetime.strptime(birthdate, '%Y-%m-%d').replace(tzinfo=pytz.UTC)
+				if birthdate > timezone.now():
+					return JsonResponse({'status': 'error', 'message': 'La date de naissance est dans le futur.'}, status=400)
+				user.birthdate = birthdate
 			except ValueError:
 				return JsonResponse({'status': 'error', 'message': 'La date de naissance est invalide.'}, status=400)
-			if birthdate > timezone.now():
-				return JsonResponse({'status': 'error', 'message': 'La date de naissance est dans le futur.'}, status=400)
-			user.birthdate = birthdate
-		if 'avatar' in request.FILES and request.FILES['avatar']:
+
+		if 'avatar' in request.FILES:
 			user.avatar = request.FILES['avatar']
-		if 	data['password'] and data['password_confirm']:
-			password = data['password']
-			password_confirm = data['password_confirm']
+
+		password = data.get('password')
+		password_confirm = data.get('password_confirm')
+		if password and password_confirm:
 			if password != password_confirm:
 				return JsonResponse({'status': 'error', 'message': 'Les mots de passe ne correspondent pas.'}, status=400)
 			if len(password) < 8:
 				return JsonResponse({'status': 'error', 'message': 'Le mot de passe doit contenir au moins 8 caractères.'}, status=400)
 			user.password = make_password(password)
+
 		user.save()
 		return JsonResponse({'status': 'ok', 'message': 'Votre profil a été mis à jour avec succès !'})
 	else:
@@ -127,10 +145,6 @@ def profile(request):
 		}})
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-
-def home(request):
-	html = render_to_string('home.html', request=request)
-	return HttpResponse(html)
 
 def games(request):
 	if request.user.is_authenticated:
@@ -374,7 +388,7 @@ def get_user_in_lobby(request, id_game, id_lobby):
 		else:
 			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
 	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)	
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
 
 #get_user_in_party

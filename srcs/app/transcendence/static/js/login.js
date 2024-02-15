@@ -25,7 +25,5 @@ export function handleLogoutFormSubmit() {
 		event.preventDefault();
 		const data = {};
 		doRequest.Fetch(`${SERVER_URL}/api/logout/`, 'POST', data, doRequest.callbackLogout);
-		window.location.hash = 'home';
 	});
-	logoutButton.click();
 }

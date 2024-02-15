@@ -9,7 +9,7 @@ def index(request):
 
 def page(request, page):
 	# tableau avec les pages autorisées
-	allowed_pages = ['home', 'login', 'register', 'profile', 'edit_profile', 'games', 'game', 'pong', 'shooter', '']
+	allowed_pages = ['home', 'welcome', 'login', 'register', 'profile', 'edit_profile', 'games', 'game', 'pong', 'shooter', '']
 	if page not in allowed_pages:
 		return JsonResponse({'status': 'error', 'page': 'page inconnue.'}, status=404)
 	elif page == '' or page == 'home':
