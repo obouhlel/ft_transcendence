@@ -27,7 +27,9 @@ class Game(models.Model):
 	genre = models.CharField(max_length=30)
 	created_at = models.DateTimeField(auto_now_add=True)
 	# updated_at = models.DateTimeField(auto_now=True)
+	point_to_win = models.IntegerField(default=10)
 	stat = models.ForeignKey('Stat_Game', on_delete=models.CASCADE)
+	lobby_game = models.ManyToManyField('Lobby', related_name='lobby')
 	def __str__(self):
 		return self.name
 
@@ -36,11 +38,13 @@ class Stat_Game(models.Model):
 	nb_played = models.IntegerField(default=0)
 	time_played = models.IntegerField(default=0)
 	nb_party = models.IntegerField(default=0)
+	id_party = models.ManyToManyField('Party', related_name='party')
 
-class Game_Lobby(models.Model):
+class Lobby(models.Model):
 	id = models.AutoField(primary_key=True)
+	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
 	id_game = models.ForeignKey('Game', on_delete=models.CASCADE)
-	id_user = models.ManyToManyField('CustomUser', related_name='user')
+	user = models.ManyToManyField('CustomUser', related_name='user')
 	def __str__(self):
 		return self.id
 
@@ -54,6 +58,8 @@ class Party(models.Model):
 	# status = models.CharField(max_length=30, default='Waiting')
 	player1 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player1')
 	player2 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player2')
+	score1 = models.IntegerField(default=0)
+	score2 = models.IntegerField(default=0)
 	id_winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner')
 	id_loser = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='loser')
 	def __str__(self):

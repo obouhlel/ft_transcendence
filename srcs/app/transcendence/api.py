@@ -15,4 +15,12 @@ urlpatterns = [
 	path('get_all_games/', methods.get_all_games, name='get_all_games'),
 	path('get_game_by_name/<str:name>', methods.get_game_by_name, name='get_all_games'),
 	path('get_game_by_id/<int:id>', methods.get_game_by_id, name='get_all_games'),
+	path('get_all_users/', methods.get_all_users, name='get_all_users'),
+	path('get_user_by_id/<int:id>', methods.get_user_by_id, name='get_user_by_id'),
+	path('get_user_by_username/<str:username>', methods.get_user_by_username, name='get_user_by_username'),
+	path('get_user_in_lobby/<int:id_game>', methods.get_all_user_in_all_lobby, name='get_user_in_lobby'),
+	path('get_user_in_lobby/<int:id_game>/<int:id_lobby>', methods.get_user_in_lobby, name='get_user_in_lobby'),
+	path('get_all_friends/', methods.get_all_friends, name='get_all_friends'),
+	path('get_all_blocked/', methods.get_all_blocked, name='get_all_blocked'),
+	path('get_all_request/', methods.get_all_request, name='get_all_request'),
 ]

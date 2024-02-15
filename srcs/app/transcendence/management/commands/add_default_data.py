@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from transcendence.models import CustomUser  # Remplacez 'transcendence' par le nom de votre application
 from transcendence.models import Game  # Remplacez 'transcendence' par le nom de votre application
-from transcendence.models import Stat_Game
+from transcendence.models import Stat_Game, Lobby  # Remplacez 'transcendence' par le nom de votre application
 
 class Command(BaseCommand):
     help = 'Add default users to the database'
@@ -38,6 +38,13 @@ class Command(BaseCommand):
         game1 = Game.objects.create( name='game1',description='description1',genre='genre1',stat=stat_game1)
 
         stat_game2 = Stat_Game()
+
         stat_game2.save()
 
         game2 = Game.objects.create( name='game2',description='description2',genre='genre2',stat=stat_game2)
+
+        lobby = Lobby.objects.create(type='Public',id_game=game1)
+        lobby.user.add(user1)
+        lobby.user.add(user2)
+        game1.lobby_game.add(lobby)
+        lobby.save()
