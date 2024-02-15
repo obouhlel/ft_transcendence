@@ -4,71 +4,85 @@ const url = `wss://${window.location.host}/ws/matchmaking/`;
 const socketMatchmaking = new WebSocket(url);
 
 let username = null;
-let matchmakingAsked = false;
+
+let registered = false;
 const gameName = "pong";
 
+function sendRegister() {
+	const message = {
+		"register": "in",
+		"username": username
+	};
+	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
+}
+
+function sendUnregister() {
+	const message = {
+		"register": "out",
+		"username": username
+	};
+	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
+}
+
 function sendMatchmakingJoin() {
-	const message = { "matchmaking": "join",
-					"game": gameName, 
-					"username": username };
-	matchmakingAsked = true;
+	const message = { 
+		"matchmaking": "join",
+		"game": gameName, 
+		"username": username 
+	};
 	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
 }
 
 function sendMatchmakingLeave() {
-	const message = { "matchmaking": "leave",
-					"game": gameName, 
-					"username": username };
-	matchmakingAsked = false;
-	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
-}
-
-function sendMatchmakingStatus() {
-	const message = { "matchmaking": "status",
-					"game": gameName, 
-					"username": username };
+	const message = { 
+		"matchmaking": "leave",
+		"game": gameName, 
+		"username": username 
+	};
 	JS_UTILS.sendMessageToSocket(socketMatchmaking, message);
 }
 
 function doMatchmaking(button) {
 	if (button.innerHTML == "Matchmaking") {
-		sendMatchmakingJoin();
+		if (!registered)
+			sendRegister();
+		else
+			sendMatchmakingJoin();
 	} else if (button.innerHTML == "Cancel matchmaking") {
-		sendMatchmakingLeave();
-	}
-}
-
-async function checkMatchmakingStatus() {
-	const timeToSleep = 1000;
-	while (true) {
-		await new Promise(r => setTimeout(r, timeToSleep));
-		if (matchmakingAsked == false) {
-			return;
-		}
-		sendMatchmakingStatus();
+		if (registered)
+			sendUnregister();
+		else
+			sendMatchmakingLeave();
 	}
 }
 
 function parseMessage(message) {
+	if ('register' in message) {
+		if (message['register'] == "connected") {
+			registered = true;
+			sendMatchmakingJoin();
+		}
+		else if (message['register'] == "disconnected") {
+			registered = false;
+			sendMatchmakingLeave();
+		}
+	}
 	if ('matchmaking' in message) {
 		const button = document.getElementById("matchmaking");
-		console.log("matchmaking: " + message['matchmaking']);
 		if (message['matchmaking'] == "waitlist joined") {
 			button.innerHTML = "Cancel matchmaking";
-			checkMatchmakingStatus();
 		} 
 		else if (message['matchmaking'] == "waitlist leaved") {
 			button.innerHTML = "Matchmaking";
 		}
 		else if (message['matchmaking'] == "match found") {
-			JS_UTILS.createCookie("roomID", message['socketPath'], 1);
+			JS_UTILS.createCookie("url", message['url'], 1);
 			const url = window.location.href;
 			let segments = url.split('/');
 			segments[segments.length - 2] = message['game'];
 			const gameURL = segments.join('/');
 			window.location.href = gameURL;
 		}
-
 	}
 }
 
@@ -95,10 +109,9 @@ export function game()
 }	
 
 export function listenerGame() {
-    const btn = document.getElementById("matchmaking");
-    btn.addEventListener("click", function() {
+	const btn = document.getElementById("matchmaking");
+	btn.addEventListener("click", function() {
 		if (username == null) {
-			console.log("username is null");
 			username = document.getElementById("username").value;
 			JS_UTILS.createCookie("username", username, 1);
 		}

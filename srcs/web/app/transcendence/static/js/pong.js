@@ -14,8 +14,8 @@ let side = "not assigned";
 
 let enemyPosition = 0;
 
-const socketPath = JS_UTILS.readCookie("roomID");
-JS_UTILS.eraseCookie("roomID");
+const socketPath = JS_UTILS.readCookie("url");
+JS_UTILS.eraseCookie("url");
 let socket;
 if (socketPath != undefined) {
 	const url = `wss://${window.location.host}/${socketPath}`;
