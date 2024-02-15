@@ -78,7 +78,7 @@ def matchmakingLeaved(message):
                     	'username': message['username'],
                      	'players': getPlayersConnectedForSend() })
 
-def parse_message(self, message):
+def parseMessage(self, message):
 	if 'register' in message:
 		if 'username' in message:
 			if message['register'] == 'in':
@@ -109,5 +109,5 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		message = json.loads(text_data)
-		response = parse_message(self, message)
+		response = parseMessage(self, message)
 		await self.send(response)
