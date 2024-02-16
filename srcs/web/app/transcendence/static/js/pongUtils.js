@@ -116,7 +116,7 @@ export function ballAntiBlockSystem(ball, player) {
 export function ballReset(ball) {
     ball.cube.position.x = 0;
     ball.cube.position.z = 0;
-    ball.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
+    ball.direction.set(0, 0, 0);
 }
 
 // ---------------------------------------UTILS---------------------------------------

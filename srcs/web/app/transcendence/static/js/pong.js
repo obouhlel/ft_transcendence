@@ -13,6 +13,7 @@ JS_UTILS.eraseCookie("username");
 let side = "not assigned";
 
 let enemyPosition = 0;
+let ballStartDir = 0;
 
 const socketPath = JS_UTILS.readCookie("url");
 JS_UTILS.eraseCookie("url");
@@ -21,10 +22,6 @@ if (socketPath != undefined) {
 	const url = `wss://${window.location.host}/${socketPath}`;
 	socket = new WebSocket(url);
 	socketListener(socket);
-}
-
-function sendPlayerPosition(player) {
-	JS_UTILS.sendMessageToSocket(socket, { "game": "position", "username": username, "position": player.cube.position.z });
 }
 
 // ------------------------------------classes------------------------------------
@@ -92,7 +89,7 @@ class Player {
 class Ball {
 	constructor(scene) {
 		this.speed = 0.1;
-		this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
+		this.direction = new THREE.Vector3(0, 0, 0);
 		this.cube = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshStandardMaterial({ color: 0x00ff00 }));
 		this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
@@ -103,6 +100,10 @@ class Ball {
 	}
 
 	move(scene, playerLocal, playerSocket, arena, game, deltaTime) {
+		if (ballStartDir != 0) {
+			this.direction.x = ballStartDir;
+			ballStartDir = 0;
+		}
 
 		PONG.ballSlowSystem(this);
 
@@ -168,13 +169,20 @@ function socketListener(socket) {
 	});
 }
 
+function sendPlayerPosition(player) {
+	JS_UTILS.sendMessageToSocket(socket, { "game": "player position", "username": username, "position": player.cube.position.z });
+}
+
 function parseMessage(message) {
 	if ('game' in message) {
 		if (message['game'] == "starting") {
 			side = message['side'];
 		}
-		if (message['game'] == "position") {
+		if (message['game'] == "player position") {
 			enemyPosition = message['position'];
+		}
+		if (message['game'] == "start ball") {
+			ballStartDir = message['direction'];
 		}
 	}
 }
@@ -243,7 +251,7 @@ export function pong3D() {
 					game.memGoing = true;
 					ball.reset(scene, playerLocal, playerSocket, game);
 				}
-				// ball.move(scene, playerLocal, playerSocket, arena, game, delta);
+				ball.move(scene, playerLocal, playerSocket, arena, game, delta);
 				PONG.lightFollowTarget(light.spot, ball.cube);
 				display.controls.update();
 				renderer.render(scene, display.camera);
