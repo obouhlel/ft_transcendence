@@ -142,26 +142,6 @@ class Ball {
 	}
 }
 
-function parseMessage(message) {
-	if ('game' in message) {
-		if (message['game'] == "starting") {
-			side = message['side'];
-			getSide(socket);
-		}
-		if (message['game'] == "position") {
-			enemyPosition = message['position'];
-		}
-	}
-}
-
-async function getSide(socket) {
-	const timeToSleep = 1000;
-	while (side == "not assigned") {
-		await new Promise(r => setTimeout(r, timeToSleep));
-		JS_UTILS.sendMessageToSocket(socket, { "game": "starting", "username": username });
-	}
-}
-
 function socketListener(socket) {
 	socket.onopen = function (e) {
 		console.log("Connection established");
@@ -178,14 +158,25 @@ function socketListener(socket) {
 	}
 
 	socket.onerror = function (error) {
-		console.log(`socket error: ${event}`);
-		console.error(event);
+		console.log(`socket error: ${error}`);
+		console.error(error);
 	}
 
 	window.addEventListener("beforeunload", function() {
 		JS_UTILS.sendMessageToSocket(socket, { "game": "leaved", "username": username });
 		socket.close();
 	});
+}
+
+function parseMessage(message) {
+	if ('game' in message) {
+		if (message['game'] == "starting") {
+			side = message['side'];
+		}
+		if (message['game'] == "position") {
+			enemyPosition = message['position'];
+		}
+	}
 }
 
 export function pong3D() {

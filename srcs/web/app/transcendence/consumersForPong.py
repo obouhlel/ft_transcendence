@@ -1,36 +1,46 @@
 import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
+import asyncio
 import random
 
 playersPong = []
 
-def starting(message):
-    if len(playersPong) != 2:
-        playersPong.append({'player': message['username'], 'side': 'not assigned', "position": 0, 'score': 0})
-    elif len(playersPong) == 2 and playersPong[0]['side'] == 'not assigned' and playersPong[1]['side'] == 'not assigned':
-        playersPong[1]['side'] = 'left'
-        playersPong[0]['side'] = 'right'
-        for player in playersPong:
-            if player['player'] == message['username']:
-                return json.dumps({ 'game': 'starting', 'side': player['side'] })
-    return json.dumps({ 'game': 'wait other player' })
+isLeftAdded = False
 
-def position(message):
-    if message['username'] == playersPong[0]['player']:
-        playersPong[0]['position'] = message['position']
-        return json.dumps({ 'game': 'position', 'position': playersPong[1]['position'] })
-    elif message['username'] == playersPong[1]['player']:
-        playersPong[1]['position'] = message['position']
-        return json.dumps({ 'game': 'position', 'position': playersPong[0]['position'] })
+def createSelf(self, message):
+    global isLeftAdded
+    self.username = message['username']
+    self.position = 0
+    self.score = 0
+    if not isLeftAdded:
+        self.side = 'left'
+        isLeftAdded = True
+    else:
+        self.side = 'right'
+
+def starting(self, message):
+    createSelf(self, message)
+    return json.dumps({ 'game': 'starting',
+                        'side': self.side })
+
+def position(self, message):
+    self.position = message['position']
+    if playersPong[0].username == message['username']:
+        return json.dumps({ 'game': 'position',
+                            'position': playersPong[1].position })
+    elif playersPong[1].username == message['username']:
+        return json.dumps({ 'game': 'position',
+                            'position': playersPong[0].position })
+    return json.dumps({ 'error': 'Username doesnt exist' })
             
-def parseMessage(message):
+def parseMessage(self, message):
     if 'game' in message:
         if 'username' in message:
             if message['game'] == 'starting':
-                return starting(message)
+                return starting(self, message)
             elif message['game'] == 'position':
-                return position(message)
+                return position(self, message)
             elif message['game'] == 'score':
                 return
             elif message['game'] == 'end':
@@ -40,14 +50,15 @@ def parseMessage(message):
 
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.accept()
+        playersPong.append(self)
+        await self.accept()
         data = { 'message': 'Pong connection etablished !' }
-        self.send(text_data=json.dumps(data))
+        await self.send(text_data=json.dumps(data))
 
     async def disconnect(self, close_code):
-        self.close(close_code)
+        await self.close(close_code)
 
     async def receive(self, text_data):
         message = json.loads(text_data)
-        response = parseMessage(message)
-        self.send(response)
+        response = parseMessage(self, message)
+        await self.send(response)

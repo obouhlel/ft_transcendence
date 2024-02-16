@@ -103,8 +103,8 @@ export function game()
 	}
 	
 	socketMatchmaking.onerror = function(error) {
-		console.log(`socketMatchmaking error: ${event}`);
-		console.error(event);
+		console.log(`socketMatchmaking error: ${error}`);
+		console.error(error);
 	}
 }	
 
