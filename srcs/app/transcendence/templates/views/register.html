@@ -7,7 +7,7 @@
 			{% endfor %}
 		</ul>
 		{% endif %}
-        <form method="post" id="register-form" enctype="multipart/form-data">
+        <form method="post" id="register-form">
             {% csrf_token %}
             <label for="username">username</label>
             <input type="text" id="username" name="username" required>

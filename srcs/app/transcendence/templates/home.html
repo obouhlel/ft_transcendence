@@ -1,13 +1,11 @@
 {% block content %}
     {% if user.is_authenticated %}
-        <p>Bienvenue {{ user.username }}!</p>
-        {% include 'nav.html' %}
-        <button type="button" id="logout-button" onclick="window.location.hash = 'logout'">Logout</button>
+        <main>
+            <p>Bienvenue {{ user.username }}!</p>
+            {% include 'nav.html' %}
+            <button type="button" id="logout-button">Logout</button>
+        </main>
     {% else %}
-        <p>Bienvenue, veuillez vous connecter ou vous inscrire pour accéder au site.</p>
-        <ul id="nav-links">
-                <li><a href="#login">Se connecter</a></li>
-                <li><a href="#register">S'inscrire</a></li>
-        </ul>
+        {% include 'views/welcome.html' %}
     {% endif %}
 {% endblock %}

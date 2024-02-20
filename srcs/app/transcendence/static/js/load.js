@@ -26,15 +26,14 @@ function showPage(page) {
             handleLoginFormSubmit();
         } else if (page === 'register') {
             handleRegisterFormSubmit();
-        } else if (page === 'logout') {
-			handleLogoutFormSubmit();
-		}
+        }
         else if (page === 'edit_profile') {
             handleEditProfileFormSubmit();
         }
-        else if (section === 'games') {
+        else if (page === 'games') {
             getGames();
         }
+        handleLogoutFormSubmit();
     })
     .catch(error => {
         console.error(error);

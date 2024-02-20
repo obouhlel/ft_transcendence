@@ -66,7 +66,7 @@ export const doRequest = {
 		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('DECONNEXION REUSSIE');
-			window.location.hash = 'home';
+			window.location.hash = 'welcome';
 			messageElement.textContent = data.message;
 			messageElement.style.color = 'green';
 		} else if (data.status === 'error') {
