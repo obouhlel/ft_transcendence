@@ -11,6 +11,7 @@ from transcendence.models import CustomUser
 from django.conf import settings
 from django.shortcuts import redirect
 import requests
+from django.core.files.base import ContentFile
 from .models import Game, Party, Stat_Game, Lobby
 
 def login_user(request):
@@ -57,6 +58,11 @@ def login_42(request):
 					email = user_data['email']
 					firstname = user_data['first_name']
 					lastname = user_data['last_name']
+					avatar_url = user_data.get('image', {}).get('link')
+					response = requests.get(avatar_url)
+				if response.status_code == 200:
+					avatar_file = ContentFile(response.content)
+					avatar_file.name = username + '.jpg'
 					if CustomUser.objects.filter(token=access_token).exists():
 						user = CustomUser.objects.get(username=username)
 						django_login(request, user)
@@ -64,7 +70,7 @@ def login_42(request):
 					else:
 						if CustomUser.objects.filter(username=username).exists():
 							return JsonResponse({'status': 'error', 'message': 'Ce username est déjà utilisé.'}, status=400)
-						user = CustomUser.objects.create(username=username, email=email, first_name=firstname, last_name=lastname, token=access_token, date_joined=timezone.now())
+						user = CustomUser.objects.create(username=username, email=email, first_name=firstname, last_name=lastname, avatar=avatar_file, token=access_token, date_joined=timezone.now())
 						django_login(request, user)
 						return redirect('/')
 				else:
