@@ -7,8 +7,10 @@ from django.utils import timezone
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 from transcendence.models import CustomUser
-from .models import Game, Party, Stat_Game, Lobby
+from .models import Game, Party, Stat_Game, Lobby, Tournament, Stat_User_by_Game, friend_request, UserInLobby, PartyInTournament
 
 def login_user(request):
 	if request.method == 'POST':
@@ -127,6 +129,619 @@ def profile(request):
 		}})
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
+############################################################################
+	
+# def require_GET(func):
+# 	def wrapper(request, *args, **kwargs):
+# 		if request.method == 'GET':
+# 			return func(request, *args, **kwargs)
+# 		else:
+# 			return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+# 	return wrapper
+
+# def require_POST(func):
+# 	def wrapper(request, *args, **kwargs):
+# 		if request.method == 'POST':
+# 			return func(request, *args, **kwargs)
+# 		else:
+# 			return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+# 	return wrapper
+
+#@require_http_methods(['GET'])
+#@require_authenticated
+
+
+def stat_game_data(stat_game):
+	data = {
+		'nb_played': stat_game.nb_played,
+		'time_played': stat_game.time_played,
+		'nb_party': stat_game.nb_party,
+	}
+	return data
+
+def stat_user_by_game_data(stat_user):
+	data = {
+		'nb_played': stat_user.nb_played,
+		'time_played': stat_user.time_played,
+		'nb_win': stat_user.nb_win,
+		'nb_lose': stat_user.nb_lose,
+	}
+	return data
+
+def user_data(user):
+	data = {
+		'username': user.username,
+		'email': user.email,
+		'first_name': user.first_name,
+		'last_name': user.last_name,
+		'sexe': user.sexe,
+		'birthdate': user.birthdate.isoformat(),
+		'avatar': user.avatar.url if user.avatar else None,
+		'is_authenticated': user.is_authenticated,
+		'stat': stat_user_by_game_data(user.stat),
+		'friends': [friend.username for friend in user.friends.all()],
+		'blocked': [blocked.username for blocked in user.list_blocked.all()],
+		'friend_request': [friend_request.id for friend_request in user.friend_request.all()]
+	}
+	return data
+
+def game_data(game):
+	data = {
+		'id': game.id,
+		'name': game.name,
+		'description': game.description,
+		'genre': game.genre,
+		'image': game.image,
+		'created_at': game.created_at.isoformat(),
+		'point_to_win': game.point_to_win,
+		'stat': stat_game_data(game.stat),
+		'lobby': [lobby_data(lobby) for lobby in game.lobby_game.all()],
+		'party': [party_data(party) for party in game.party_game.all()],
+		'tournament': [tournament_data(tournament) for tournament in game.tournament_game.all()]
+	}
+	return data
+
+def UserInLobby_data(userInLobby):
+	data = {
+		'id': userInLobby.id,
+		'id_user': user_data(userInLobby.id_user),
+		'id_lobby': lobby_data(userInLobby.id_lobby),
+		'entry_at': userInLobby.entry_at.isoformat(),
+	}
+	return data
+
+def lobby_data(lobby):
+	data = {
+		'id': lobby.id,
+		'type': lobby.type,
+		'id_game': lobby.id_game,
+		'user': [UserInLobby_data(userInLobby) for userInLobby in lobby.user.all()]
+	}
+	return data
+
+def party_data(party):
+	data = {
+		'id': party.id,
+		'id_game': party.id_game,
+		'player1': user_data(party.player1),
+		'player2': user_data(party.player2),
+		'score1': party.score1,
+		'score2': party.score2,
+		'id_winner': party.id_winner,
+		'id_loser': party.id_loser,
+		'started_at': party.started_at.isoformat(),
+		'ended_at': party.ended_at.isoformat(),
+		'time_played': party.time_played,
+		'type': party.type,
+	}
+	return data
+
+def tournament_data(tournament):
+	data = {
+		'id': tournament.id,
+		'type': tournament.type,
+		'id_game': tournament.id_game,
+		'lobby': lobby_data(tournament.lobby_tournament),
+		'party': [party_data(party) for party in tournament.party_tournament.all()]
+	}
+	return data
+
+
+def friend_request_data(friend_request):
+	data = {
+		'id': friend_request.id,
+		'id_sender': user_data(friend_request.id_sender),
+		'id_receiver': user_data(friend_request.id_receiver),
+		'created_at': friend_request.created_at.isoformat(),
+		'status': friend_request.status,
+	}
+	return data
+
+def user_in_lobby_data(user_in_lobby):
+	data = {
+		'id': user_in_lobby.id,
+		'id_user': user_data(user_in_lobby.id_user),
+		'id_lobby': lobby_data(user_in_lobby.id_lobby),
+	}
+	return data
+
+def party_in_tournament_data(party_in_tournament):
+	data = {
+		'id': party_in_tournament.id,
+		'match': party_data(party_in_tournament.match),
+		'round_nb': party_in_tournament.round_nb,
+		'id_tournament': tournament_data(party_in_tournament.id_tournament),
+	}
+	return data
+
+#---------------------------------GET---------------------------------#
+# -------------------------------GET USER-----------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getUserName(request):
+	return JsonResponse({'username': request.user.username})
+
+@login_required
+@require_http_methods(['GET'])
+def getUserByName(request, username):
+	try:
+		user = CustomUser.objects.get(username=username)
+		data = user_data(user)
+		return JsonResponse({'status': 'ok', 'user': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
+def getUserById(request, id):
+	try:
+		user = CustomUser.objects.get(id=id)
+		data = user_data(user)
+		return JsonResponse({'status': 'ok', 'user': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
+def getAllUsers(request):
+	users = CustomUser.objects.all()
+	data = []
+	for user in users:
+		data += [user_data(user)]
+	return JsonResponse({'status': 'ok', 'users': data})
+
+# -------------------------------GET GAME-----------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getGameByName(request, name):
+	try:
+		game = Game.objects.get(name=name)
+		data = game_data(game)
+		return JsonResponse({'status': 'ok', 'game': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getGameById(request, id):
+	try:
+		game = Game.objects.get(id=id)
+		data = game_data(game)
+		return JsonResponse({'status': 'ok', 'game': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getAllGames(request):
+	games = Game.objects.all()
+	data = []
+	for game in games:
+		data += [game_data(game)]
+	return JsonResponse({'status': 'ok', 'games': data})
+
+#---------------------------------GET LOBBY---------------------------------#
+
+@login_required
+@require_http_methods(['GET'])
+def getLobbyById(request, id):
+	try:
+		lobby = Lobby.objects.get(id=id)
+		data = lobby_data(lobby)
+		return JsonResponse({'status': 'ok', 'lobby': data})
+	except Lobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getAllLobbies(request):
+	lobbies = Lobby.objects.all()
+	data = []
+	for lobby in lobbies:
+		data += [lobby_data(lobby)]
+	return JsonResponse({'status': 'ok', 'lobbies': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getLobbyByGame(request, id_game):
+	try:
+		game = Game.objects.get(id=id_game)
+		lobbies = game.lobby_game.all()
+		data = [lobby_data(lobby) for lobby in lobbies]
+		return JsonResponse({'status': 'ok', 'lobbies': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getUserInLobby(request, id_lobby):
+	try:
+		lobby = Lobby.objects.get(id=id_lobby)
+		users = lobby.user.all()
+		data = [UserInLobby_data(userInLobby) for userInLobby in users]
+		return JsonResponse({'status': 'ok', 'lobby': data})
+	except Lobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
+
+#---------------------------------GET PARTY---------------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getPartyById(request, id):
+	try:
+		party = Party.objects.get(id=id)
+		data = party_data(party)
+		return JsonResponse({'status': 'ok', 'party': data})
+	except Party.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
+def getAllParties(request):
+	parties = Party.objects.all()
+	data = []
+	for party in parties:
+		data += [party_data(party)]
+	return JsonResponse({'status': 'ok', 'parties': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getPartyByGame(request, id_game):
+	try:
+		game = Game.objects.get(id=id_game)
+		parties = game.party_game.all()
+		data = [party_data(party) for party in parties]
+		return JsonResponse({'status': 'ok', 'parties': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	except Party.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
+
+
+@login_required
+@require_http_methods(['GET'])
+def getUserInParty(request, id_party):
+	try:
+		party = Party.objects.get(id=id_party)
+		users = [party.player1, party.player2]
+		data = [user_data(user) for user in users]
+		return JsonResponse({'status': 'ok', 'party': data})
+	except Party.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
+#---------------------------------GET TOURNAMENT---------------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getTournamentById(request, id):
+	try:
+		tournament = Tournament.objects.get(id=id)
+		data = tournament_data(tournament)
+		return JsonResponse({'status': 'ok', 'tournament': data})
+	except Tournament.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getAllTournaments(request):
+	tournaments = Tournament.objects.all()
+	data = []
+	for tournament in tournaments:
+		data += [tournament_data(tournament)]
+	return JsonResponse({'status': 'ok', 'tournaments': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getTournamentByGame(request, id_game):
+	try:
+		game = Game.objects.get(id=id_game)
+		tournaments = game.tournament_game.all()
+		data = [tournament_data(tournament) for tournament in tournaments]
+		return JsonResponse({'status': 'ok', 'tournaments': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	except Tournament.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getLobbyInTournament(request, id_tournament):
+	try:
+		tournament = Tournament.objects.get(id=id_tournament)
+		lobby = tournament.lobby_tournament
+		data = lobby_data(lobby)
+		return JsonResponse({'status': 'ok', 'lobby': data})
+	except Tournament.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
+#---------------------------------GET STAT---------------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getStatByUser(request, id_user):
+	try:
+		user = CustomUser.objects.get(id=id_user)
+		data = stat_user_by_game_data(user.stat)
+		return JsonResponse({'status': 'ok', 'stat': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getStatByGame(request, id_game):
+	try:
+		game = Game.objects.get(id=id_game)
+		data = stat_game_data(game.stat)
+		return JsonResponse({'status': 'ok', 'stat': data})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+
+#---------------------------------GET FRIEND---------------------------------#
+@login_required
+@require_http_methods(['GET'])
+def getAllFriendsofUser(request, id_user):
+	try:
+		user = CustomUser.objects.get(id=id_user)
+		data = [user_data(friend) for friend in user.friends.all()]
+		return JsonResponse({'status': 'ok', 'friends': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+	
+@login_required
+@require_http_methods(['GET'])
+def getAllFriendRequestofUser(request, id_user):
+	try:
+		user = CustomUser.objects.get(id=id_user)
+		data = [friend_request_data(friend_request) for friend_request in user.friend_request.all()]
+		return JsonResponse({'status': 'ok', 'friend_request': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+	
+
+
+#---------------------------------POST---------------------------------#
+# -------------------------------POST LOBBY-----------------------------#
+	
+def newLobby(id_game, type, name):
+	lobby = Lobby.objects.create(id_game=id_game, type=type, name=name)
+	return lobby
+
+#when User click on Play button of a game, 
+#it will create a lobby if there is no lobby for this game
+# method POST
+#in request body: id_game
+#return: id_lobby
+#create a UserInLobby for the user with entry_at = now
+@login_required
+@require_http_methods(['POST'])
+def joinLobby(request):
+	data = json.loads(request.body)
+	id_game = data['id_game']
+	try:
+		game = Game.objects.get(id=id_game)
+		lobby = game.lobby_game.all()
+		if len(lobby) == 0:
+			lobby = newLobby(game, 'Public', 'Lobby')
+		else:
+			lobby = lobby[0]
+		user = request.user
+		userInLobby = UserInLobby.objects.create(id_user=user, id_lobby=lobby)
+		Lobby.objects.get(id=lobby.id).user.add(userInLobby)
+		return JsonResponse({'status': 'ok', 'id_lobby': lobby.id})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	
+
+
+#when User click on Quit the waiting room,
+#it will delete the UserInLobby for the user
+# method POST
+#in request body: id_lobby
+@login_required
+@require_http_methods(['POST'])
+def quitLobby(request):
+	data = json.loads(request.body)
+	id_lobby = data['id_lobby']
+	try:
+		lobby = Lobby.objects.get(id=id_lobby)
+		userInLobby = UserInLobby.objects.get(id_user=request.user, id_lobby=lobby)
+		Lobby.objects.get(id=lobby.id).user.remove(userInLobby)
+		userInLobby.delete()
+		return JsonResponse({'status': 'ok', 'message': 'You have left the lobby.'})
+	except Lobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
+	except UserInLobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'You are not in this lobby.'}, status=400)
+
+
+def find_user_with_most_compatible_ratio(users, current_user):
+	if len(users) == 0:
+		return None
+	compatible = None
+	current_user_stat = current_user.stat
+	ratio = 0
+	for user in users:
+		if user != current_user:
+			user_stat = user.stat
+			if compatible == None:
+				compatible = user
+			else:
+				ratio = abs(user_stat.nb_win/user_stat.nb_played - current_user_stat.nb_win/current_user_stat.nb_played)
+
+	
+
+def find_compatibles_users(users, current_user):
+	compatible = None
+	now = timezone.now()
+	waiting_time = now - current_user.entry_at
+	#example: if the player wait for 1 second, the tolerance is 10%
+	#if the player wait for 2 seconds, the tolerance is 20%
+	#if the player wait for 3 seconds, the tolerance is 30%
+
+	toleance =  waiting_time.seconds / 10
+
+	#find the most compatible users with the acceptable tolerance
+	current_user_stat = current_user.stat
+	for user in users:
+		if user != current_user:
+			user_stat = user.stat
+			if abs(user_stat.nb_win/user_stat.nb_played - current_user_stat.nb_win/current_user_stat.nb_played) <= toleance:
+				compatible = user
+				break
+		else:
+			pass
+	#how to prevent the user to wait for too long
+	if compatible == None and waiting_time.seconds > 30:
+		compatible = find_user_with_most_compatible_ratio(users, current_user)
+		if compatible == None:
+			return None
+	return compatible
+
+#after joining the lobby, if client receive a id_lobby,
+#it will make a request to find a compatible user every 2 seconds
+# method POST
+#in request body: id_lobby
+#return: id_party
+#if return id_party, it will create a party with the user and the user found
+#and delete the UserInLobby for the user
+#if return nothing, it will continue to wait
+
+@login_required
+@require_http_methods(['POST'])
+def findCompatiblesUsers(request):
+	#find the most compatible users with the acceptable tolerance
+	#the more the player wait, the toleance increases
+	#example: if the player wait for 2 seconds, the tolerance is 10%
+	#if the player wait for 30 seconds, the tolerance is 100%
+	#the tolerance is the difference between the ratio of win/played of the users
+
+	data = json.loads(request.body)
+	id_lobby = data['id_lobby']
+	try:
+		lobby = Lobby.objects.get(id=id_lobby)
+		AllUserInLobby = lobby.user.all()
+		if len(AllUserInLobby) < 2:
+			return JsonResponse({'status': 'ok', 'id_party': None})
+		current_user = request.user
+		user_found = find_compatibles_users(AllUserInLobby, current_user, lobby.id_game)
+		if user_found:
+			party = Party.objects.create(id_game=lobby.id_game, player1=current_user, player2=user_found, started_at=timezone.now())
+			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).delete()
+			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).delete()
+			return JsonResponse({'status': 'ok', 'id_party': party.id})
+			#send a notification to the user found ????????????????????
+		else:
+			return JsonResponse({'status': 'ok', 'id_party': None})
+	except Lobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
+	except UserInLobby.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'You are not in this lobby.'}, status=400)
+
+# -------------------------------POST PARTY-----------------------------#
+@login_required
+@require_http_methods(['POST'])
+def createParty(request):
+	data = json.loads(request.body)
+	id_game = data['id_game']
+	id_user1 = data['id_user1']
+	id_user2 = data['id_user2']
+	try:
+		game = Game.objects.get(id=id_game)
+		user1 = CustomUser.objects.get(id=id_user1)
+		user2 = CustomUser.objects.get(id=id_user2)
+		party = Party.objects.create(id_game=game, player1=user1, player2=user2,
+							   started_at=timezone.now())
+		return JsonResponse({'status': 'ok', 'message': 'Party created successfully.'})
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+
+@login_required
+@require_http_methods(['POST'])
+def addUserToParty(request, id_party):
+	data = json.loads(request.body)
+	id_party = data['id_party']
+	id_user = data['id_user']
+	try:
+		party = Party.objects.get(id=id_party)
+		user = CustomUser.objects.get(id=id_user)
+		party.player2 = user
+		party.save()
+		return JsonResponse({'status': 'ok', 'message': 'User added successfully.'})
+	except Party.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+	
+
+@login_required
+@require_http_methods(['POST'])
+def addPointToParty(request, id_party):
+	try:
+		party = Party.objects.get(id=id_party)
+		if party.player1 == request.user:
+			party.score1 += 1
+		elif party.player2 == request.user:
+			party.score2 += 1
+		else:
+			return JsonResponse({'status': 'error', 'message': 'This user is not in this party.'}, status=400)
+		party.save()
+		if (party.score1 == party.id_game.point_to_win or party.score2 == party.id_game.point_to_win):
+			return (endParty(request, id_party))
+		return JsonResponse({'status': 'ok', 'message': 'Point added successfully.'})
+	except Party.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
+
+
+
+# MATCHMAKER: FIND THE MOST COMPATIBLE USERS WITH THE SAME RATIO OF WIN/PLAYED
+# THE MORE THE PLAYER WAIT, THE TOLEANCE INCREASES
+# EXAMPLE: IF THE PLAYER WAIT FOR 10 SECONDS, THE TOLERANCE IS 10%
+# IF THE PLAYER WAIT FOR 1 MINUTE, THE TOLERANCE IS 100%
+#THE TOLERENCE IS THE DIFFERENCE BETWEEN THE RATIO OF WIN/PLAYED OF THE USERS
+#MAXIMUM TOLERANCE IS 100%
+	
+
+def find_compatibles_users(users, current_user, game):
+	compatible = None
+	
+
+	return compatible
+
+@login_required
+@require_http_methods(['POST'])
+def FindMatch(request, id_game, id_lobby):
+	try:
+		game = Game.objects.get(id=id_game)
+		lobby = Lobby.objects.get(id=id_lobby)
+		users = lobby.user.all()
+		current_user = request.user
+		found = find_compatibles_users(users, current_user, game)
+
+
+
+
+
+
+
+
+
 
 def home(request):
 	html = render_to_string('home.html', request=request)
@@ -146,22 +761,6 @@ def game(request):
 	}
 	return JsonResponse(data)
 
-def getUserName(request):
-	if request.user.is_authenticated:
-		data = {
-			'username': request.user.username,
-			'email': request.user.email,
-			'first_name': request.user.first_name,
-			'last_name': request.user.last_name,
-			'sexe': request.user.sexe,
-			'birthdate': request.user.birthdate.isoformat(),
-			'is_staff': request.user.is_staff,
-			'is_superuser': request.user.is_superuser,
-			'csrf_token': request.META['CSRF_COOKIE'],
-		}
-		return JsonResponse(data)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'Not authenticated'}, status=401)
 
 def pong(request):
 	return getUserName(request)
@@ -169,355 +768,6 @@ def pong(request):
 def shooter(request):
 	return getUserName(request)
 
-def get_all_games(request):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			games = Game.objects.all()
-			data = []
-			for game in games:
-				data += [{
-					'id': game.id,
-					'name': game.name,
-					'description': game.description,
-					'genre': game.genre,
-					'image': game.image,
-					'created_at': game.created_at.isoformat(),
-					'stat': {
-						'nb_played': game.stat.nb_played,
-						'time_played': game.stat.time_played,
-						'nb_party': game.stat.nb_party,
-					}
-				}]
-			return JsonResponse({'status': 'ok', 'games': data})
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authenticated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'Invalid method.'}, status=405)
-
-# get game by name
-def get_game_by_name(request, name):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(name=name)
-				data = {
-					'id': game.id,
-					'name': game.name,
-					'description': game.description,
-					'genre': game.genre,
-					'image': game.image,
-					'created_at': game.created_at.isoformat(),
-					'stat': {
-						'nb_played': game.stat.nb_played,
-						'time_played': game.stat.time_played,
-						'nb_party': game.stat.nb_party,
-					}
-				}
-				return JsonResponse({'status': 'ok', 'game': data})
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authenticated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'Invalid method.'}, status=405)
-
-# get game by id
-def get_game_by_id(request, id):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id)
-				data = {
-					'id': game.id,
-					'name': game.name,
-					'description': game.description,
-					'genre': game.genre,
-					'image': game.image,
-					'created_at': game.created_at.isoformat(),
-					'stat': {
-						'nb_played': game.stat.nb_played,
-						'time_played': game.stat.time_played,
-						'nb_party': game.stat.nb_party,
-					}
-				}
-				return JsonResponse({'status': 'ok', 'game': data})
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authenticated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'Invalid method.'}, status=405)
-
-
-# get all users
-def get_all_users(request):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			users = CustomUser.objects.all()
-			data = []
-			for user in users:
-				data += [{
-					'username': user.username,
-					'email': user.email,
-					'first_name': user.first_name,
-					'last_name': user.last_name,
-					'sexe': user.sexe,
-					'birthdate': user.birthdate.isoformat(),
-					'avatar': user.avatar.url if user.avatar else None,
-					'is_authenticated': user.is_authenticated,
-				}]
-			return JsonResponse({'status': 'ok', 'users': data})
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-# get user by username
-def get_user_by_username(request, username):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				user = CustomUser.objects.get(username=username)
-				data = {
-					'username': user.username,
-					'email': user.email,
-					'first_name': user.first_name,
-					'last_name': user.last_name,
-					'sexe': user.sexe,
-					'birthdate': user.birthdate.isoformat(),
-					'avatar': user.avatar.url if user.avatar else None,
-					'is_authenticated': user.is_authenticated,
-				}
-				return JsonResponse({'status': 'ok', 'user': data})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
-# get user by id
-def get_user_by_id(request, id):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				user = CustomUser.objects.get(id=id)
-				data = {
-					'username': user.username,
-					'email': user.email,
-					'first_name': user.first_name,
-					'last_name': user.last_name,
-					'sexe': user.sexe,
-					'birthdate': user.birthdate.isoformat(),
-					'avatar': user.avatar.url if user.avatar else None,
-					'is_authenticated': user.is_authenticated,
-				}
-				return JsonResponse({'status': 'ok', 'user': data})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
-			else:
-				return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-# get lobby users
-def get_all_user_in_all_lobby(request, id_game):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				lobbies = game.lobby_game.all()
-				# get all users in the lobby
-				data = []
-				for lobby in lobbies:
-					users = lobby.user.all()
-					for user in users:
-						data += [{
-							'username': user.username,
-							'email': user.email,
-							'first_name': user.first_name,
-							'last_name': user.last_name,
-							'sexe': user.sexe,
-							'birthdate': user.birthdate.isoformat(),
-							'avatar': user.avatar.url if user.avatar else None,
-							'is_authenticated': user.is_authenticated,
-						}]
-				return JsonResponse({'status': 'ok', 'lobby': data})
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-
-#get user in a lobby of a game
-def get_user_in_lobby(request, id_game, id_lobby):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				lobby = game.lobby_game.get(id=id_lobby)
-				users = lobby.user.all()
-				data = []
-				for user in users:
-					data += [{
-						'username': user.username,
-						'email': user.email,
-						'first_name': user.first_name,
-						'last_name': user.last_name,
-						'sexe': user.sexe,
-						'birthdate': user.birthdate.isoformat(),
-						'avatar': user.avatar.url if user.avatar else None,
-						'is_authenticated': user.is_authenticated,
-					}]
-				return JsonResponse({'status': 'ok', 'lobby': data})
-			except Lobby.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This lobby doesn\'t exist.'}, status=404)
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)	
-
-
-#get_user_in_party
-def get_user_in_party(request, id_party):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				party = Party.objects.get(id=id_party)
-				data = {
-					'id': party.id,
-					'id_game': party.id_game,
-					'name': party.name,
-					'started_at': party.started_at.isoformat(),
-					'ended_at': party.ended_at.isoformat(),
-					'score1': party.score1,
-					'score2': party.score2,
-					'id_winner': party.id_winner,
-					'id_loser': party.id_loser,
-				}
-				return JsonResponse({'status': 'ok', 'party': data})
-			except Party.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This party doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-
-#put user in lobby
-def put_user_in_lobby(request, id_game, id_lobby):
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				lobby = game.lobby_game.get(id=id_lobby)
-				lobby.user.add(request.user)
-				return JsonResponse({'status': 'ok', 'message': 'Utilisateur ajouté avec succès.'})
-			except Lobby.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This lobby doesn\'t exist.'}, status=404)
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-#remove user from lobby
-def remove_user_from_lobby(request, id_game):
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				game.lobby.remove(request.user)
-				return JsonResponse({'status': 'ok', 'message': 'Utilisateur retiré avec succès.'})
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-# put user in party : pick 2 users that are in the lobby and put them in a party
-# take the most compatible users with the same ratio of win/played
-def put_user_in_party(request, id_game):
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				lobby = game.lobby.all()
-				if len(lobby) < 2:
-					return JsonResponse({'status': 'error', 'message': 'Pas assez de joueurs dans le lobby.'}, status=400)
-				else:
-					# get the most compatible users
-					most_compatible = None
-					for user1 in lobby:
-						for user2 in lobby:
-							if user1 != user2:
-								stat_user1 = user1.stat.get(game=game)
-								stat_user2 = user2.stat.get(game=game)
-								ratio1 = stat_user1.nb_win / stat_user1.nb_played if stat_user1.nb_played > 0 else 0
-								ratio2 = stat_user2.nb_win / stat_user2.nb_played if stat_user2.nb_played > 0 else 0
-								if most_compatible is None or abs(ratio1 - ratio2) < most_compatible[0]:
-									most_compatible = (abs(ratio1 - ratio2), user1, user2)
-					# create the party
-					party = Party.objects.create(id_game=game, player1=most_compatible[1], player2=most_compatible[2],\
-					 started_at=timezone.now())
-					# remove the users from the lobby
-					game.lobby.remove(most_compatible[1])
-					game.lobby.remove(most_compatible[2])
-					return JsonResponse({'status': 'ok', 'message': 'Partie créée avec succès.'})
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-
-#add points to the user in the party
-def add_point(request, id_party):
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				party = Party.objects.get(id=id_party)
-				if party.player1 == request.user:
-					party.score1 += 1
-				elif party.player2 == request.user:
-					party.score2 += 1
-				else:
-					return JsonResponse({'status': 'error', 'message': 'This user is not in this party.'}, status=400)
-				if (party.score1 == party.id_game.point_to_win or party.score2 == party.id_game.point_to_win):
-					return (end_party(request, id_party))
-				return JsonResponse({'status': 'ok', 'message': 'Point ajouté avec succès.'})
-			except Party.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This party doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
-
-
-#end party
-def end_party(request, id_party):
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				party = Party.objects.get(id=id_party)
-				if party.score1 > party.score2:
-					party.id_winner = party.player1
-					party.id_loser = party.player2
-				else:
-					party.id_winner = party.player2
-					party.id_loser = party.player1
-				party.ended_at = timezone.now()
-				party.time_played = (party.ended_at - party.started_at).seconds
-				party.save()
-				return JsonResponse({'status': 'ok', 'message': 'Partie terminée avec succès.'})
-			except Party.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This party doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
 
 # add stats after a game to the user
@@ -594,30 +844,6 @@ def get_all_friends(request):
 	else:
 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
-# get_all_blocked
-# GET: RETURN ALL BLOCKED USERS
-# PARAMS: username
-def get_all_blocked(request):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			blocked = request.user.list_blocked.all()
-			data = []
-			for user in blocked:
-				data += [{
-					'username': user.username,
-					'email': user.email,
-					'first_name': user.first_name,
-					'last_name': user.last_name,
-					'sexe': user.sexe,
-					'birthdate': user.birthdate.isoformat(),
-					'avatar': user.avatar.url if user.avatar else None,
-					'is_authenticated': user.is_authenticated,
-				}]
-			return JsonResponse({'status': 'ok', 'blocked': data})
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
 #get_all_request
 # GET: RETURN ALL FRIEND REQUESTS
@@ -727,3 +953,23 @@ def remove_friend(request):
 			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
 	else:
 		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+
+
+
+# put user in tournament
+# POST: PUT USER IN TOURNAMENT
+# PARAMS: id_game, id_tournament
+# 
+
+#make a party in a tournament
+# POST: MAKE A PARTY IN TOURNAMENT
+# PARAMS: id_game, id_tournament
+#Generate matches for a list of players
+
+# powers of two always have exactly one bit set to 1. When you subtract 1 from a power of two, 
+# all the bits to the right of the set bit become 1. 
+# Therefore, performing a bitwise AND operation with the original number and 
+# the number minus one will always result in zero for powers of two 5.
+def is_power_of_two(n):
+	return n > 0 and (n & (n - 1)) == 0
