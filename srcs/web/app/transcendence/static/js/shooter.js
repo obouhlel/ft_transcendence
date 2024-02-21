@@ -213,12 +213,6 @@ export function shooter() {
 
 	const scene = UTILS.createScene(0xFF0000);
 	const renderer = UTILS.createRenderer();
-	const button = UTILS.createContainerForGame("shooter", renderer);
-
-	button.addEventListener("click", () => {
-		going = true;
-		button.style.display = "none";
-	});
 
 	// Player
 	let player = new Player("test", 10, 10, scene);

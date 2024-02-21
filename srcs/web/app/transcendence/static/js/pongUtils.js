@@ -13,17 +13,13 @@ function isPlayerHitBot(player, arenaHitbox) {
 }
 
 export function playerMoveTop(player, arenaHitbox) {
-    if (isPlayerHitTop(player, arenaHitbox))
-        player.cube.position.z -= player.speed;
-    else
-        player.cube.position.z = arenaHitbox.min.z + player.size / 2;
+    if (isPlayerHitTop(player, arenaHitbox)) player.cube.position.z -= player.speed;
+    else player.cube.position.z = arenaHitbox.min.z + player.size / 2;
 }
 
 export function playerMoveBottom(player, arenaHitbox) {
-    if (isPlayerHitBot(player, arenaHitbox))
-        player.cube.position.z += player.speed;
-    else
-        player.cube.position.z = arenaHitbox.max.z - player.size / 2;
+    if (isPlayerHitBot(player, arenaHitbox)) player.cube.position.z += player.speed;
+    else player.cube.position.z = arenaHitbox.max.z - player.size / 2;
 }
 
 export function playerReset(player) {
@@ -32,15 +28,12 @@ export function playerReset(player) {
 
 // ---------------------------------------BALL---------------------------------------
 export function ballHitTopOrBot(ball, arenaHitbox) {
-    if (ball.hitbox.max.z >= arenaHitbox.max.z || ball.hitbox.min.z <= arenaHitbox.min.z)
-        ball.direction.z *= -1
+    if (ball.hitbox.max.z >= arenaHitbox.max.z || ball.hitbox.min.z <= arenaHitbox.min.z) ball.direction.z *= -1;
 }
 
 export function ballHitGoal(ball, arenaHitbox) {
-    if (ball.hitbox.min.x <= arenaHitbox.min.x)
-        return "left";
-    else if (ball.hitbox.max.x >= arenaHitbox.max.x)
-        return "right";
+    if (ball.hitbox.min.x <= arenaHitbox.min.x) return 'left';
+    else if (ball.hitbox.max.x >= arenaHitbox.max.x) return 'right';
 }
 
 export function ballHitPlayer(ball, player) {
@@ -54,61 +47,54 @@ export function ballHitPlayer(ball, player) {
 }
 
 function isBallBetwinArenaPlayerTop(ball, player, arenaHitbox) {
-    if (ball.hitbox.max.z >= arenaHitbox.max.z && ball.hitbox.min.z <= player.hitbox.max.z)
-        return true;
+    if (ball.hitbox.max.z >= arenaHitbox.max.z && ball.hitbox.min.z <= player.hitbox.max.z) return true;
     return false;
 }
 
 function isbBallBetwinArenaPlayerBot(ball, player, arenaHitbox) {
-    if (ball.hitbox.min.z <= arenaHitbox.min.z && ball.hitbox.max.z >= player.hitbox.min.z)
-        return true;
+    if (ball.hitbox.min.z <= arenaHitbox.min.z && ball.hitbox.max.z >= player.hitbox.min.z) return true;
     return false;
 }
 
 function isBallBehindPlayer(ball, player) {
-    if (player.type == "left") {
-        if ((ball.hitbox.min.x >= player.hitbox.min.x && ball.hitbox.min.x <= player.hitbox.max.x)
-            || (ball.cube.position.x >= player.hitbox.min.x && ball.cube.position.x <= player.hitbox.max.x))
+    if (player.type == 'left') {
+        if (
+            (ball.hitbox.min.x >= player.hitbox.min.x && ball.hitbox.min.x <= player.hitbox.max.x) ||
+            (ball.cube.position.x >= player.hitbox.min.x && ball.cube.position.x <= player.hitbox.max.x)
+        )
             return true;
-    }
-    else if (player.type == "right") {
-        if ((ball.hitbox.max.x >= player.hitbox.min.x && ball.hitbox.max.x <= player.hitbox.max.x)
-            || (ball.cube.position.x >= player.hitbox.min.x && ball.cube.position.x <= player.hitbox.max.x))
+    } else if (player.type == 'right') {
+        if (
+            (ball.hitbox.max.x >= player.hitbox.min.x && ball.hitbox.max.x <= player.hitbox.max.x) ||
+            (ball.cube.position.x >= player.hitbox.min.x && ball.cube.position.x <= player.hitbox.max.x)
+        )
             return true;
     }
     return false;
 }
 
 export function ballPinch(ball, player, arenaHitbox) {
-    if (isBallBetwinArenaPlayerTop(ball, player, arenaHitbox)
-        && isBallBehindPlayer(ball, player)) {
+    if (isBallBetwinArenaPlayerTop(ball, player, arenaHitbox) && isBallBehindPlayer(ball, player)) {
         let newDirection = new THREE.Vector3(1, 0, -0.5);
-        if (player.type == "right")
-            newDirection.x *= -1;
+        if (player.type == 'right') newDirection.x *= -1;
         ball.direction = newDirection;
         ball.speed = 2;
-    }
-    else if (isbBallBetwinArenaPlayerBot(ball, player, arenaHitbox)
-        && isBallBehindPlayer(ball, player)) {
+    } else if (isbBallBetwinArenaPlayerBot(ball, player, arenaHitbox) && isBallBehindPlayer(ball, player)) {
         let newDirection = new THREE.Vector3(1, 0, 0.5);
-        if (player.type == "right")
-            newDirection.x *= -1;
+        if (player.type == 'right') newDirection.x *= -1;
         ball.direction = newDirection;
         ball.speed = 2;
     }
 }
 
 export function ballSlowSystem(ball) {
-    if (ball.speed > 0.1)
-        ball.speed -= 0.1;
+    if (ball.speed > 0.1) ball.speed -= 0.1;
 }
 
 export function ballAntiBlockSystem(ball, player) {
-    if (ball.cube.position.x == player.cube.position.x
-        && ball.hitbox.intersectsBox(player.hitbox)) {
+    if (ball.cube.position.x == player.cube.position.x && ball.hitbox.intersectsBox(player.hitbox)) {
         let newDirectionX = 0.2;
-        if (player.type == "right")
-            newDirectionX *= -1;
+        if (player.type == 'right') newDirectionX *= -1;
         ball.direction.x = newDirectionX;
     }
 }
@@ -128,7 +114,7 @@ function placeTitle(title) {
 }
 
 export function putTitle(scene) {
-    let textGeometry = UTILS.doTextGeo("PONG", 5, true);
+    let textGeometry = UTILS.doTextGeo('PONG', 5, true);
     let meshMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
     const title = new THREE.Mesh(textGeometry, meshMaterial);
     placeTitle(title);
@@ -173,8 +159,7 @@ function placeTextScore(textScore) {
     textScore.position.y = 1;
 }
 
-function createTextScore(scene, playerLocalScore, playerSocketScore) {
-    let scoreString = playerLocalScore.toString() + " - " + playerSocketScore.toString();
+function createTextScore(scene, scoreString) {
     let textGeometry = UTILS.doTextGeo(scoreString, 1.5);
     let meshMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     let textScore = new THREE.Mesh(textGeometry, meshMaterial);
@@ -183,14 +168,9 @@ function createTextScore(scene, playerLocalScore, playerSocketScore) {
     return textScore;
 }
 
-export function updateScore(scene, playerLocal, playerSocket, game) {
-    if (playerLocal.score == 10 || playerSocket.score == 10) {
-        // End of the game
-        game.going = false;
-        game.memGoing = false;
-    }
+export function updateScore(scene, scoreString, game) {
     scene.remove(game.textScore);
-    game.textScore = createTextScore(scene, playerLocal.score, playerSocket.score);
+    game.textScore = createTextScore(scene, scoreString);
 }
 
 function placeLight(spot, globalLight, mapSize) {

@@ -6,96 +6,136 @@ import uuid
 from . import routing
 from . import consumersForPong
 
-playersConnected = []
+# -----------------------------Classes--------------------------------
+class Player():
+	def __init__(self, username, mmr, websocket):
+		self.username = username
+		self.mmr = mmr
+		self.socket = websocket
 
-playersPong = []
-playersShooter = []
+class Game():
+	def __init__(self):
+		self.__players = []
+  
+	def getPlayersUsername(self):
+		return [player.username for player in self.__players]
+		
+	def getPlayer(self, username):
+		for player in self.__players:
+			if player.username == username:
+				return player
+		return None
+ 
+	def __sort (self):
+		self.__players = sorted(self.__players, key=lambda player: player.mmr)
+ 
+	def getLen(self):
+		return len(self.__players)
 
-def createUrlPattern(url):
+	def append(self, player):
+		self.__players.append(player)
+		self.__sort()
+	
+	def pop(self, index):
+		return self.__players.pop(index)
+
+	def remove(self, username):
+		self.__players = [player for player in self.__players if player.username != username]
+
+	def doDuo(self):
+		duoPlayers = []
+		duoPlayers.append(self.pop(0))
+		duoPlayers.append(self.pop(0))
+		return duoPlayers
+
+playersConnected = Game()
+playersPong = Game()
+playersShooter = Game()
+
+# -----------------------------Json Message--------------------------------
+def getMatchFoundJson(game, url):
+	return json.dumps({ 'matchmaking': 'match found',
+						'game': game,
+						'url': url })
+ 
+def getRegisterJson(username):
+	return json.dumps({ 'register': 'connected',
+						'username': username })
+ 
+def getUnregisterJson(username):
+	return json.dumps({ 'register': 'disconnected',
+						'username': username })
+ 
+def getMatchmackingJoinJson(username, game):
+	players = playersConnected.getPlayersUsername()
+	return json.dumps({ 'matchmaking': 'waitlist joined',
+						'username': username,
+						'game': game,
+      					'players': players })
+ 
+def getMatchmackingLeaveJson(username, game):
+	players = playersConnected.getPlayersUsername()
+	return json.dumps({ 'matchmaking': 'waitlist leaved',
+						'username': username,
+						'game': game,
+						'players': players })
+
+# -----------------------------Matchmaking--------------------------------
+def createUrlPattern(game):
+	url = "ws/" + game + "/" + str(uuid.uuid4())
 	newPattern = r"^" + url + "$"
 	newConsumer = consumersForPong.PongConsumer.as_asgi()
 	routing.add_urlpattern(newPattern, newConsumer)
+	return url
 
-def getPlayersConnectedForSend():
-    tmp = []
-    for player in playersConnected:
-        tmp.append(player.username)
-    return tmp
-
-def getPlayerSocket(username):
-	for player in playersConnected:
-		if player.username == username:
-			return player
-	return None
 
 async def matchmakingPong():
 	while True:
-		if len(playersPong) == 0:
+		if playersPong.getLen() == 0:
 			return
-		if len(playersPong) >= 2:
-			duoPlayers = []
-			duoPlayers.append(playersPong.pop(0))
-			duoPlayers.append(playersPong.pop(0))
-			url = "ws/pong/" + str(uuid.uuid4())
-			createUrlPattern(url)
+		if playersPong.getLen() >= 2:
+			duoPlayers = playersPong.doDuo()
+			url = createUrlPattern("pong")
 			for player in duoPlayers:
-				playerSocket = getPlayerSocket(player)
-				playersConnected.remove(playerSocket)
-				await playerSocket.send(json.dumps({ 'matchmaking': 'match found',
-													'game': 'pong',
-													'url': url }))
+				await player.socket.send(getMatchFoundJson("pong", url))
 		await asyncio.sleep(1)
 
-def register(self, message):
-	self.username = message['username']
-	playersConnected.append(self)
-	return json.dumps({ 'register': 'connected',
-						'username': self.username })
+# -----------------------------Parser--------------------------------
+def register(socket, message):
+	newPlayer = Player(message['username'], 0, socket)
+	playersConnected.append(newPlayer)
+	return getRegisterJson(newPlayer.username)
  
-def unregister(self, message):
-	username = self.username
-	playersConnected.remove(self)
-	return json.dumps({ 'register': 'disconnected',
-						'username': username })
+def unregister(message):
+	playersConnected.remove(message['username'])
+	return getUnregisterJson(message['username'])
 
 def matchmakingJoined(message):
 	if message['game'] == 'pong':
-		playersPong.append(message['username'])
-		if len(playersPong) == 1:
+		player = playersConnected.getPlayer(message['username'])
+		player.mmr = message['mmr']
+		playersPong.append(player)
+		if playersPong.getLen() == 1:
 			asyncio.create_task(matchmakingPong())
-	elif message['game'] == 'shooter':
-		playersShooter.append(message['username'])
-	return json.dumps({ 'matchmaking': 'waitlist joined',
-                    	'username': message['username'],
-                     	'players': getPlayersConnectedForSend() })
+	return getMatchmackingJoinJson(message['username'], message['game'])
 
 def matchmakingLeaved(message):
 	if message['game'] == 'pong':
 		playersPong.remove(message['username'])
-	elif message['game'] == 'shooter':
-		playersShooter.remove(message['username'])
-	return json.dumps({ 'matchmaking': 'waitlist leaved',
-                    	'username': message['username'],
-                     	'players': getPlayersConnectedForSend() })
+	return getMatchmackingLeaveJson(message['username'], message['game'])
 
 def parseMessage(self, message):
 	if 'register' in message:
-		if 'username' in message:
-			if message['register'] == 'in':
-				return register(self, message)
-			elif message['register'] == 'out':
-				return unregister(self, message)
+		if message['register'] == 'in':
+			return register(self, message)
+		elif message['register'] == 'out':
+			return unregister(message)
 
 	if 'matchmaking' in message:
-		if 'username' in message:
-			if 'game' in message:
-				if message['matchmaking'] == 'join':
-					return matchmakingJoined(message)
-				elif message['matchmaking'] == 'leave':
-					return matchmakingLeaved(message)
-				return json.dumps({ 'error': 'Invalid matchmaking keyword' })
-			return json.dumps({ 'error': 'no game for matchmaking' })
-		return json.dumps({ 'error': 'no username for matchmaking' })
+		if message['matchmaking'] == 'join':
+			return matchmakingJoined(message)
+		elif message['matchmaking'] == 'leave':
+			return matchmakingLeaved(message)
 	return json.dumps({ 'error': 'Invalid token' })
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
