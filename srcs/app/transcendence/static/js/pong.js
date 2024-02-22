@@ -1,6 +1,7 @@
 import * as THREE from 'three';
-import * as UTILS from './threeJsUtils.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+import * as UTILS from './threeJsUtils.js';
 
 const X_SIZE_MAP = 20;
 
@@ -349,5 +350,3 @@ export function pong3D() {
 
 	animate();
 }
-
-pong3D();

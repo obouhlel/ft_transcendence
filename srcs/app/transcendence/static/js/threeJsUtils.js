@@ -77,11 +77,10 @@ export function createContainerForGame(gameName, gameRenderer) {
 	container.id = gameName;
 	main.appendChild(container);
 
-	const button = document.createElement("button");
-	gameName = gameName.charAt(0).toUpperCase() + gameName.slice(1);
-	button.id = "button" + gameName;
-	button.innerHTML = "PLAY";
-	container.appendChild(button);
 	container.appendChild(gameRenderer.domElement);
-	return button;
+}
+
+export function addShadowsToMesh(mesh) {
+	mesh.castShadow = true;
+	mesh.receiveShadow = true;
 }
