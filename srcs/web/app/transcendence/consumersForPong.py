@@ -25,8 +25,8 @@ class Ball():
                     'z': playerPos['z'] + 1}
         if self.position['x'] >= topLeft['x'] and self.position['x'] <= botRight['x']:
             if self.position['z'] >= topLeft['z'] and self.position['z'] <= botRight['z']:
-                self.direction['x'] *= self.position['x'] - playerPos['x']
-                self.direction['z'] *= self.position['z'] - playerPos['z']
+                self.direction['x'] = self.position['x'] - playerPos['x']
+                self.direction['z'] = self.position['z'] - playerPos['z']
 
     def isTopBotHitted(self):
         if self.position['z'] >= 10 or self.position['z'] <= -10:
@@ -46,8 +46,8 @@ class Ball():
         if self.direction['x'] == 0:
             self.reset()
         else:
-            self.isPlayerHitted({ 'x': playersPos['left'], 'z': -4 })
-            self.isPlayerHitted({ 'x': playersPos['right'], 'z': 4 })
+            self.isPlayerHitted({ 'z': playersPos['left'], 'x': -9 })
+            self.isPlayerHitted({ 'z': playersPos['right'], 'x': 9 })
             self.isTopBotHitted()
             await self.isScored()
             self.position['x'] += self.direction['x'] / 10

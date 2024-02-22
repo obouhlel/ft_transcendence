@@ -12,6 +12,12 @@ let username = JS_UTILS.readCookie('username');
 JS_UTILS.eraseCookie('username');
 let side = 'not assigned';
 
+let game = {
+    going: false,
+    memGoing: false,
+    textScore: null,
+};
+const scene = UTILS.createScene();
 let scoreString = '0 - 0';
 let enemyPosition = 0;
 let ballPosition = { x: 0, y: -0.2, z: 0 };
@@ -228,13 +234,6 @@ function sideDefinedPromise() {
 }
 
 export async function pong3D() {
-    let game = {
-        going: false,
-        memGoing: false,
-        textScore: null,
-    };
-
-    const scene = UTILS.createScene();
     const renderer = UTILS.createRenderer();
     UTILS.createContainerForGame('pong', renderer);
     PONG.putTitle(scene);
