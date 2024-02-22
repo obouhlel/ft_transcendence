@@ -14,11 +14,10 @@
 			}
 			}
 		</script>
-		{% block extra_head %}{% endblock %}
 	</head>
 	<body>
-		{% include 'header.html' %}
-		<main></main>
+		<div id="message"></div>
+		<div id="page"></div>
 		{% include 'footer.html' %}
 	</body>
 	<script type="module" src="{% static 'js/load.js' %}"></script>
