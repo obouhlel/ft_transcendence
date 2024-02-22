@@ -2,351 +2,287 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import * as UTILS from './threeJsUtils.js';
+import * as PONG from './pongUtils.js';
+
+import * as JS_UTILS from './jsUtils.js';
 
 const X_SIZE_MAP = 20;
 
+let username = JS_UTILS.readCookie('username');
+JS_UTILS.eraseCookie('username');
+let side = 'not assigned';
+
+let game = {
+    going: false,
+    memGoing: false,
+    textScore: null,
+};
+const scene = UTILS.createScene();
+let scoreString = '0 - 0';
+let enemyPosition = 0;
+let ballPosition = { x: 0, y: -0.2, z: 0 };
+
+const socketPath = JS_UTILS.readCookie('url');
+JS_UTILS.eraseCookie('url');
+let socket;
+if (socketPath != undefined) {
+    const url = `wss://${window.location.host}/${socketPath}`;
+    socket = new WebSocket(url);
+    socketListener(socket);
+}
+
 // ------------------------------------classes------------------------------------
 class Arena {
-	constructor(scene) {
-		this.cube = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(X_SIZE_MAP, 1, 20)), new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 }));
-		this.hitbox = new THREE.Box3().setFromObject(this.cube);
+    constructor(scene) {
+        this.cube = new THREE.LineSegments(
+            new THREE.EdgesGeometry(new THREE.BoxGeometry(X_SIZE_MAP, 1, 20)),
+            new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 })
+        );
+        this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
-		// this.cube.castShadow = true;
-		// this.cube.receiveShadow = true;
+        // this.cube.castShadow = true;
+        // this.cube.receiveShadow = true;
 
-		scene.add(this.cube);
-	}
+        scene.add(this.cube);
+    }
 }
 
 class Player {
-	constructor(playerType, scene) {
-		this.type = playerType;
-		this.speed = 0.1;
-		this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 2), new THREE.MeshStandardMaterial({ color: 0xff0000 }));
-		this.hitbox = new THREE.Box3().setFromObject(this.cube);
-		this.score = 0;
+    constructor(playerType, scene) {
+        this.type = playerType;
+        this.speed = 0.1;
+        this.size = 2;
+        this.score = 0;
+        this.keys = {
+            up: '',
+            down: '',
+        };
+        let color = { color: 0xff0000 };
+        if (playerType == side) {
+            color = { color: 0x0000ff };
+            this.keys = {
+                up: 'ArrowUp',
+                down: 'ArrowDown',
+            };
+        }
+        this.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, this.size), new THREE.MeshStandardMaterial(color));
+        this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
-		if (playerType == "left") {
-			this.cube.position.x = -(X_SIZE_MAP / 2) + 1;
-		} else if (playerType == "right") {
-			this.cube.position.x = X_SIZE_MAP / 2 - 1;
-		}
-		this.cube.position.y = -0.3;
+        if (playerType == 'left') {
+            this.cube.position.x = -(X_SIZE_MAP / 2) + 1;
+        } else if (playerType == 'right') {
+            this.cube.position.x = X_SIZE_MAP / 2 - 1;
+        }
 
-		this.cube.castShadow = true;
-		this.cube.receiveShadow = true;
+        this.cube.position.y = -0.3;
 
-		scene.add(this.cube);
-	}
+        UTILS.addShadowsToMesh(this.cube);
+        scene.add(this.cube);
+    }
 
-	move(keys, arena, deltaTime) {
-		this.hitbox.setFromObject(this.cube);
-		this.speed = 0.1 * deltaTime;
-		if (this.type == "left") {
-			if (keys['w']) {
-				if (this.hitbox.min.z - this.speed > arena.hitbox.min.z) {
-					this.cube.position.z -= this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.min.z + 1;
-				}
-			}
-			if (keys['s']) {
-				if (this.hitbox.max.z + this.speed < arena.hitbox.max.z) {
-					this.cube.position.z += this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.max.z - 1;
-				}
-			}
-		} else if (this.type == "right") {
-			if (keys['ArrowUp']) {
-				if (this.hitbox.min.z - this.speed > arena.hitbox.min.z) {
-					this.cube.position.z -= this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.min.z + 1;
-				}
-			}
-			if (keys['ArrowDown']) {
-				if (this.hitbox.max.z + this.speed < arena.hitbox.max.z) {
-					this.cube.position.z += this.speed;
-				} else {
-					this.cube.position.z = arena.hitbox.max.z - 1;
-				}
-			}
-		}
-	}
+    move(keys, arena, deltaTime) {
+        this.hitbox.setFromObject(this.cube);
+        this.speed = 0.1 * deltaTime;
+        if (keys[this.keys['up']]) {
+            PONG.playerMoveTop(this, arena.hitbox);
+        }
+        if (keys[this.keys['down']]) {
+            PONG.playerMoveBottom(this, arena.hitbox);
+        }
+    }
 
-	reset() {
-		this.cube.position.z = 0;
-	}
+    reset() {
+        PONG.playerReset(this);
+    }
 }
 
 class Ball {
-	constructor(scene) {
-		this.speed = 0.1;
-		this.direction = new THREE.Vector3(Math.round(Math.random()) * 2 - 1, 0, 0);
-		this.cube = new THREE.Mesh(new THREE.SphereGeometry(0.4, 32, 32), new THREE.MeshStandardMaterial({ color: 0x00ff00 }));
-		this.hitbox = new THREE.Box3().setFromObject(this.cube);
+    constructor(scene) {
+        this.speed = 0.1;
+        this.direction = new THREE.Vector3(0, 0, 0);
+        this.cube = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4, 32, 32),
+            new THREE.MeshStandardMaterial({ color: 0x00ff00 })
+        );
+        this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
-		this.cube.position.y = -0.2;
+        this.cube.position.y = -0.2;
 
-		this.cube.castShadow = true;
-		this.cube.receiveShadow = true;
-		scene.add(this.cube);
-	}
+        UTILS.addShadowsToMesh(this.cube);
+        scene.add(this.cube);
+    }
 
-	move(scene, playerLeft, playerRight, button, arena, game, deltaTime) {
+    move(scene, playerLocal, playerSocket, arena, game, deltaTime) {
+        PONG.ballSlowSystem(this);
 
-		// After pinch (slow systeme)
-		if (this.speed > 0.1) {
-			this.speed -= 0.1;
-		}
+        this.hitbox.setFromObject(this.cube);
+        PONG.ballHitTopOrBot(this, arena.hitbox);
 
-		// If the ball hit the bottom or top
-		this.hitbox.setFromObject(this.cube);
-		arena.hitbox.setFromObject(arena.cube);
-		if (this.hitbox.max.z >= arena.hitbox.max.z || this.hitbox.min.z <= arena.hitbox.min.z) {
-			this.direction.z *= -1
-		}
+        if (PONG.ballHitGoal(this, arena.hitbox) == 'left') {
+            playerLocal.score += 1;
+            this.reset(scene, playerLocal, playerSocket, game);
+        } else if (PONG.ballHitGoal(this, arena.hitbox) == 'right') {
+            playerSocket.score += 1;
+            this.reset(scene, playerLocal, playerSocket, game);
+        }
 
-		// If the ball go through the player line (scoring)
-		if (this.cube.position.x >= X_SIZE_MAP / 2) {
-			playerLeft.score += 1;
-			this.reset(scene, playerLeft, playerRight, button, game);
-		} else if (this.cube.position.x <= -(X_SIZE_MAP / 2)) {
-			playerRight.score += 1;
-			this.reset(scene, playerLeft, playerRight, button, game);
-		}
+        playerLocal.hitbox.setFromObject(playerLocal.cube);
+        playerSocket.hitbox.setFromObject(playerSocket.cube);
+        PONG.ballHitPlayer(this, playerLocal);
+        PONG.ballHitPlayer(this, playerSocket);
 
-		// If the ball hit the player (bounce)
-		playerLeft.hitbox.setFromObject(playerLeft.cube);
-		playerRight.hitbox.setFromObject(playerRight.cube);
-		if (this.hitbox.intersectsBox(playerLeft.hitbox)) {
-			this.direction = new THREE.Vector3(this.cube.position.x - playerLeft.cube.position.x, 0, this.cube.position.z - playerLeft.cube.position.z);
-		} else if (this.hitbox.intersectsBox(playerRight.hitbox)) {
-			this.direction = new THREE.Vector3(this.cube.position.x - playerRight.cube.position.x, 0, this.cube.position.z - playerRight.cube.position.z);
-		}
+        PONG.ballPinch(this, playerLocal, arena.hitbox);
+        PONG.ballPinch(this, playerSocket, arena.hitbox);
 
-		// Pinch
-		// top
-		if (this.hitbox.max.z >= arena.hitbox.max.z && this.hitbox.min.z <= playerLeft.hitbox.max.z
-			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
-				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(1, 0, -0.5);
-			this.speed = 2;
-		} else if (this.hitbox.max.z >= arena.hitbox.max.z && this.hitbox.min.z <= playerRight.hitbox.max.z
-			&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
-				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(-1, 0, -0.5);
-			this.speed = 2;
-		}
-		// bot
-		if (this.hitbox.min.z <= arena.hitbox.min.z && this.hitbox.max.z >= playerLeft.hitbox.min.z
-			&& ((this.hitbox.min.x >= playerLeft.hitbox.min.x && this.hitbox.min.x <= playerLeft.hitbox.max.x)
-				|| (this.cube.position.x >= playerLeft.hitbox.min.x && this.cube.position.x <= playerLeft.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(1, 0, 0.5);
-			this.speed = 2;
-		} else if (this.hitbox.min.z <= arena.hitbox.min.z && this.hitbox.max.z >= playerRight.hitbox.min.z
-			&& ((this.hitbox.max.x >= playerRight.hitbox.min.x && this.hitbox.max.x <= playerRight.hitbox.max.x)
-				|| (this.cube.position.x >= playerRight.hitbox.min.x && this.cube.position.x <= playerRight.hitbox.max.x))) {
-			this.direction = new THREE.Vector3(-1, 0, 0.5);
-			this.speed = 2;
-		}
+        PONG.ballAntiBlockSystem(this, playerLocal);
+        PONG.ballAntiBlockSystem(this, playerSocket);
 
-		// AntiBlock system
-		if (this.cube.position.x == playerLeft.cube.position.x && this.hitbox.intersectsBox(playerLeft.hitbox)) {
-			this.direction.x = 0.2;
-		} else if (this.cube.position.x == playerRight.cube.position.x && this.hitbox.intersectsBox(playerRight.hitbox)) {
-			this.direction.x = -0.2;
-		}
+        // Setup the director vector
+        this.direction.normalize();
+        this.direction.multiplyScalar(this.speed * deltaTime);
+        this.cube.position.add(this.direction);
+    }
 
-		// Setup the director vector
-		this.direction.normalize();
-		this.direction.multiplyScalar(this.speed * deltaTime);
-		this.cube.position.add(this.direction);
-	}
-
-	reset(scene, playerLeft, playerRight, button, game) {
-		updateScore(scene, playerLeft, playerRight, button, game);
-		this.cube.position.x = 0;
-		this.cube.position.z = 0;
-		this.direction.set(Math.round(Math.random()) * 2 - 1, 0, 0);
-		playerLeft.reset();
-		playerRight.reset();
-	}
+    reset(scene, playerLocal, playerSocket, game) {
+        PONG.updateScore(scene, playerLocal, playerSocket, game);
+        PONG.ballReset(this);
+        playerLocal.reset();
+        playerSocket.reset();
+    }
 }
 
-let textScore = new THREE.Mesh(UTILS.doTextGeo("0 - 0", 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-
-function updateScore(scene, playerLeft, playerRight, button, game) {
-	if (scene && textScore) {
-		// If the TextScore already exist, remove it
-		scene.remove(textScore);
-	}
-
-	if (playerLeft.score == 10 || playerRight.score == 10) {
-		// End of the game
-		button.innerHTML = "RESTART";
-		button.style.display = "block";
-		game.going = false;
-		game.memGoing = false;
-	}
-	let scoreString = playerLeft.score.toString() + " - " + playerRight.score.toString();
-	textScore = new THREE.Mesh(UTILS.doTextGeo(scoreString, 1.5), new THREE.MeshBasicMaterial({ color: 0xffffff }));
-
-	// Add to the scene and set positions
-	textScore.position.x = -2;
-	textScore.position.z = -11;
-	textScore.position.y = 1;
-	scene.add(textScore);
+function sendPlayerPosition(player) {
+    let message = {
+        game: 'player position',
+        username: username,
+        position: player.cube.position.z,
+    };
+    JS_UTILS.sendMessageToSocket(socket, message);
 }
 
+function sendStartingGame() {
+    let message = {
+        game: 'starting',
+        username: username,
+    };
+    JS_UTILS.sendMessageToSocket(socket, message);
+}
 
-// ------------------------------------setup------------------------------------
-export function pong3D() {
+function sendLeaveGame() {
+    let message = {
+        game: 'leaved',
+        username: username,
+    };
+    JS_UTILS.sendMessageToSocket(socket, message);
+}
 
-	let game = {
-		going: false,
-		memGoing: false,
-	}
+function parseMessage(message) {
+    if ('game' in message) {
+        if (message['game'] == 'starting') {
+            side = message['side'];
+        }
+        if (message['game'] == 'player position') {
+            enemyPosition = message['position'];
+        }
+        if (message['game'] == 'ball position') {
+            ballPosition.x = message['positionX'];
+            ballPosition.z = message['positionZ'];
+        }
+        if (message['game'] == 'score') {
+            PONG.updateScore(scene, message['score'], game);
+        }
+    }
+}
 
-	const scene = UTILS.createScene();
-	const renderer = UTILS.createRenderer();
-	const button = UTILS.createContainerForGame("pong", renderer);
-	button.addEventListener("click", () => {
-		game.going = true;
-		button.style.display = "none";
-		playerLeft.score = 0;
-		playerRight.score = 0;
-	});
+export function socketListener(socket) {
+    socket.onopen = function () {
+        console.log('Connection established');
+        sendStartingGame();
+    };
 
-	// 3d Title
-	const title = new THREE.Mesh(UTILS.doTextGeo("PONG", 5, true), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    socket.onmessage = function (e) {
+        let data = JSON.parse(e.data);
+        console.log('Received message: ' + e.data);
+        parseMessage(data);
+    };
 
-	title.position.x = -9;
-	title.position.z = -17;
-	title.position.y = 1.16;
-	title.rotation.x = -0.7;
+    socket.onclose = function () {
+        console.log('Connection closed');
+    };
 
-	scene.add(title);
+    socket.onerror = function (error) {
+        console.log(`socket error: ${error}`);
+        console.error(error);
+    };
 
-	// Floor
-	const floor = new THREE.Mesh(new THREE.BoxGeometry(X_SIZE_MAP, 0.1, 20), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    window.addEventListener('beforeunload', function () {
+        sendLeaveGame();
+        socket.close();
+    });
+}
 
-	floor.position.y = -0.6;
-	floor.receiveShadow = true;
-	floor.castShadow = true;
-	scene.add(floor);
+function sideDefinedPromise() {
+    return new Promise((resolve) => {
+        let checkInterval = setInterval(() => {
+            console.log(side);
+            if (side != 'not assigned') {
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+    });
+}
 
-	// Camera
-	const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-	camera.position.z = 10;
-	camera.position.y = X_SIZE_MAP - 5;
+export async function pong3D() {
+    const renderer = UTILS.createRenderer();
+    UTILS.createContainerForGame('pong', renderer);
+    PONG.putTitle(scene);
+    PONG.putFloor(scene, X_SIZE_MAP);
 
-	let controls = new OrbitControls(camera, renderer.domElement);
-	controls.enableRotate = true;
-	controls.rotateSpeed = 1.0;
-	controls.target.set(0, 0, 0);
+    const light = PONG.createLight(scene, X_SIZE_MAP);
 
-	// ------------------------------------blocks------------------------------------
-	const arena = new Arena(scene);
-	const ball = new Ball(scene);
-	const playerLeft = new Player("left", scene);
-	const playerRight = new Player("right", scene);
+    // ------------------------------------keys------------------------------------
+    let keys = {};
+    document.addEventListener('keydown', (e) => (keys[e.key] = true));
+    document.addEventListener('keyup', (e) => (keys[e.key] = false));
 
-	// ------------------------------------light------------------------------------
-	// Spot light that follow the ball
-	const spot = new THREE.SpotLight(0xffffff, 50, 100, Math.PI / 8, 0);
-	// Directional light that enlighte all the elements
-	const globalLight = new THREE.DirectionalLight(0xffffff, 1);
-	// Setup the position of both light
-	spot.position.set(0, X_SIZE_MAP / 2, 0);
-	globalLight.position.set(0, 10, 20);
+    let display = PONG.createCamera(renderer, X_SIZE_MAP);
+    const arena = new Arena(scene);
+    const ball = new Ball(scene);
 
-	// Enable shadow casting
-	globalLight.castShadow = true;
-	spot.castShadow = true;
+    await sideDefinedPromise();
+    console.log(side);
 
-	// Setup the light data and fov
-	globalLight.shadow.camera.left = -(X_SIZE_MAP / 2);
-	globalLight.shadow.camera.right = X_SIZE_MAP / 2;
-	globalLight.shadow.camera.top = 10;
-	globalLight.shadow.camera.bottom = -10;
-	globalLight.shadow.camera.near = 0.5;
-	globalLight.shadow.camera.far = 500;
+    const playerLocal = new Player(side, scene);
+    let otherSide = 'left';
+    if (side == otherSide) otherSide = 'right';
+    const playerSocket = new Player(otherSide, scene);
+    PONG.updateScore(scene, scoreString, game);
+    game.going = true;
 
-	scene.add(spot);
-	scene.add(spot.target);
-	scene.add(globalLight);
-	updateScore(scene, playerLeft, playerRight, button, game);
+    let lastTime = 0;
+    // ------------------------------------loop------------------------------------
+    function animate(currentTime) {
+        if (lastTime) {
+            let delta = (currentTime - lastTime) / 10;
+            if (PONG.isGameGoing(game)) {
+                playerLocal.move(keys, arena, delta);
+                playerSocket.cube.position.z = enemyPosition;
+                ball.cube.position.x = ballPosition.x;
+                ball.cube.position.z = ballPosition.z;
+            }
+            if (PONG.isGameStarting(game)) {
+                game.memGoing = true;
+                ball.reset(scene, playerLocal, playerSocket, game);
+            }
+            PONG.lightFollowTarget(light.spot, ball.cube);
+            display.controls.update();
+            renderer.render(scene, display.camera);
+            sendPlayerPosition(playerLocal);
+        }
+        lastTime = currentTime;
+        requestAnimationFrame(animate);
+    }
 
-	// ------------------------------------keys------------------------------------
-	let keys = {};
-	document.addEventListener('keydown', (e) => keys[e.key] = true);
-	document.addEventListener('keyup', (e) => keys[e.key] = false);
-
-	// ------------------------------------functions------------------------------------
-
-	// To delete (cheats for debug)
-	function debug() {
-		if (keys['r']) {
-			playerLeft.score = 0;
-			playerRight.score = 0;
-			ball.reset(scene, playerLeft, playerRight, button, game);
-		}
-		if (keys['4']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerLeft.cube.position.x;
-			ball.cube.position.z = playerLeft.cube.position.z + 2;
-		}
-		if (keys['5']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerRight.cube.position.x;
-			ball.cube.position.z = playerRight.cube.position.z + 2;
-		}
-		if (keys['1']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerLeft.cube.position.x;
-			ball.cube.position.z = playerLeft.cube.position.z - 2;
-		}
-		if (keys['2']) {
-			ball.direction.x = 0;
-			ball.direction.z = 0;
-			ball.direction.y = 0;
-			ball.cube.position.x = playerRight.cube.position.x;
-			ball.cube.position.z = playerRight.cube.position.z - 2;
-		}
-	}
-
-	let lastTime = 0;
-	// ------------------------------------loop------------------------------------
-	function animate(currentTime) {
-		if (lastTime) {
-			let delta = (currentTime - lastTime) / 10;
-			if (game.going) {
-				playerLeft.move(keys, arena, delta);
-				playerRight.move(keys, arena, delta);
-			}
-			if (game.going && !game.memGoing) {
-				game.memGoing = true;
-				ball.reset(scene, playerLeft, playerRight, button, game);
-			}
-
-			ball.move(scene, playerLeft, playerRight, button, arena, game, delta);
-			spot.target.position.set(ball.cube.position.x, ball.cube.position.y, ball.cube.position.z);
-			debug();
-
-			controls.update();
-			renderer.render(scene, camera);
-		}
-		lastTime = currentTime;
-		requestAnimationFrame(animate);
-	}
-
-	animate();
+    animate();
 }
