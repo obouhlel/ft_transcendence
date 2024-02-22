@@ -1,11 +1,5 @@
-{% block content %}
-    {% if user.is_authenticated %}
-        <main>
-            <p>Bienvenue {{ user.username }}!</p>
-            {% include 'nav.html' %}
-            <button type="button" id="logout-button">Logout</button>
-        </main>
-    {% else %}
-        {% include 'views/welcome.html' %}
-    {% endif %}
-{% endblock %}
+{% if user.is_authenticated %}
+    {% include 'views/games.html' %}
+{% else %}
+    {% include 'views/login.html' %}
+{% endif %}

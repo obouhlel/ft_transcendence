@@ -1,0 +1,23 @@
+<header>
+	{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+			{% endfor %}
+		</ul>
+	{% endif %}
+	{% if user.is_authenticated %}
+	<nav>
+		<ul id="nav-links">
+			<li><a href="#games">Games</a></li>
+			<li><a href="#game">Game</a></li>
+			<li><a href="#pong">Pong</a></li>
+			<li><a href="#shooter">Shooter</a></li>
+			<li><a href="#profile">Profile</a></li>
+			<li></li>
+		</ul>
+	</nav>
+	<p>{{ user.username }}!</p>
+	<button type="button" id="logout-button">Logout</button>
+	{% endif %}
+</header>

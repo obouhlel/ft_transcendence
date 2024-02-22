@@ -1,24 +1,14 @@
-{% load static %}
-
-{% block extra_head %}
-	<link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock %}
-
-{% block content %}
-	<main>
-		{% if user.is_authenticated %}
-			<h1>Games</h1>
-			<div class="games">
-				{% for game in games %}
-					<div class="game">
-						<h2>{{ game.name }}</h2>
-						<p>{{ game.description }}</p>
-						<a href="{% url 'game' game.id %}">Play</a>
-					</div>
-				{% endfor %}
+{% if user.is_authenticated %}
+	<h1>Games</h1>
+	<div class="games">
+		{% for game in games %}
+			<div class="game">
+				<h2>{{ game.name }}</h2>
+				<p>{{ game.description }}</p>
+				<a href="{% url 'game' game.id %}">Play</a>
 			</div>
-		{% else %}
-			<h1>You need to be logged in to play games</h1>
-		{% endif %}
-	</main>
-{% endblock %}
+		{% endfor %}
+	</div>
+{% else %}
+	<h1>You need to be logged in to play games</h1>
+{% endif %}

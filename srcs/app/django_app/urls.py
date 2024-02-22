@@ -5,10 +5,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+	# Admin part
     path('admin/', admin.site.urls),
 
-	# VIEWS (SHHOW PAGES)
-	path('pages/<str:page>/', views.page, name='page'),
+	# Run the SPA
+	path('', views.index),
+
+	# API VIEWS (SHOW PAGES)
+	path('pages/<str:page>/', views.page),
 
 	# METHODS POST ET GET (API)
 	path('api/', include("transcendence.api")),

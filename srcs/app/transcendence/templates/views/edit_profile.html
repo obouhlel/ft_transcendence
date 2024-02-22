@@ -1,34 +1,32 @@
-{% block content %}
-    <a href="#home">Home</a>
-    <h1>Modifier le profil</h1>
 
-    <form method="post" id="profile-form">
-        {% csrf_token %}
-        {% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-        <label for="username">Nom d'utilisateur:</label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email"><br>
-        <label for="firstname">Prénom:</label><br>
-        <input type="text" id="firstname" name="firstname"><br>
-        <label for="lastname">Nom:</label><br>
-        <input type="text" id="lastname" name="lastname"><br>
-        <label for="sexe">Sexe:</label><br>
-        <input type="text" id="sexe" name="sexe"><br>
-        <label for="birthdate">Date de naissance:</label><br>
-        <input type="date" id="birthdate" name="birthdate"><br>
-        <label for="avatar">Avatar:</label><br>
-        <input type="file" id="avatar" name="avatar"><br>
-        <label for="password">Nouveau mot de passe:</label><br>
-        <input type="password" id="password" name="password"><br>
-        <label for="password_confirm">Confirmer le mot de passe:</label><br>
-        <input type="password" id="password_confirm" name="password_confirm"><br>
-        <input type="submit" value="Mettre à jour">
-    </form>
-{% endblock %}
+<h1>Modifier le profil</h1>
+
+<form method="post" id="profile-form">
+	{% csrf_token %}
+	{% if messages %}
+	<ul class="messages">
+		{% for message in messages %}
+			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	<label for="username">Nom d'utilisateur:</label><br>
+	<input type="text" id="username" name="username"><br>
+	<label for="email">Email:</label><br>
+	<input type="email" id="email" name="email"><br>
+	<label for="firstname">Prénom:</label><br>
+	<input type="text" id="firstname" name="firstname"><br>
+	<label for="lastname">Nom:</label><br>
+	<input type="text" id="lastname" name="lastname"><br>
+	<label for="sexe">Sexe:</label><br>
+	<input type="text" id="sexe" name="sexe"><br>
+	<label for="birthdate">Date de naissance:</label><br>
+	<input type="date" id="birthdate" name="birthdate"><br>
+	<label for="avatar">Avatar:</label><br>
+	<input type="file" id="avatar" name="avatar"><br>
+	<label for="password">Nouveau mot de passe:</label><br>
+	<input type="password" id="password" name="password"><br>
+	<label for="password_confirm">Confirmer le mot de passe:</label><br>
+	<input type="password" id="password_confirm" name="password_confirm"><br>
+	<input type="submit" value="Mettre à jour">
+</form>

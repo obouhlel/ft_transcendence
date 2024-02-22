@@ -1,18 +1,15 @@
-{% block content %}
-	<main>
-		<a href="#home">Home</a>
-		<div id="message"></div>
-		<form method="post" id="login-form" >
-			{% csrf_token %}
-			<label for="username">Nom d'utilisateur:</label>
-			<input type="text" id="username" name="username" required>
-			<br>
-			<label for="password">Mot de passe:</label>
-			<input type="password" id="password" name="password" required>
-			<br>
-			<input type="submit" value="Se connecter">
-			<br>
-			<button type="button" id="login-42">42</button>
-		</form>
-	</main>
-{% endblock %}
+<div id="message"></div>
+<form method="post" id="login-form">
+	{% csrf_token %}
+	<label for="username">Nom d'utilisateur:</label>
+	<input type="text" id="username" name="username" required>
+	<br>
+	<label for="password">Mot de passe:</label>
+	<input type="password" id="password" name="password" required>
+	<br>
+	<input type="submit" value="Se connecter">
+	<br>
+	<button type="button" id="login-42">42</button>
+	<br>
+	<button type="button" id="signin">S'inscrire</button>
+</form>
