@@ -15,16 +15,23 @@ window.addEventListener('load', function() {
     showPage(page);
 });
 
+function userIsLoggedIn() {
+	if (document.cookie.includes('session_id')) {
+		return true;
+	}
+	return false;
+}
+
 function showPage(page) {
     fetch(`/pages/${page}`)
     .then(response => response.json())
     .then(data => {
 		const main = document.querySelector('main');
-        console.log('data:', data);
-		console.log('page:', page);
+		const isLoggedIn = userIsLoggedIn();
+		console.log('isLoggedIn:', isLoggedIn);
 		console.log(main);
         main.innerHTML = data.page;
-		if (page === 'home') {
+		if (page === 'home' && !isLoggedIn) {
 			handleLoginFormSubmit();
 		} else if (page === 'login') {
             handleLoginFormSubmit();
