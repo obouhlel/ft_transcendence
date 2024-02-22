@@ -1,8 +1,15 @@
-# views.py
 from django.http import JsonResponse
+from django.contrib.auth import authenticate, login as django_login, logout as django_logout
+from django.contrib.auth.hashers import make_password
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from transcendence.models import CustomUser
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.http import HttpResponse
+from django.contrib.auth.forms import AuthenticationForm
+import json
+import pytz
 
 def index(request):
 	return render(request, 'index.html')
@@ -21,6 +28,4 @@ def page(request, page):
 		html_content = render_to_string('home.html', request=request)
 		return JsonResponse({'status': 'error', 'page': html_content, 'message': 'Vous n\'êtes pas connecté.'}, status=401)
 	else:
-		html_content = render_to_string('views/' + page + '.html', request=request)
-	return JsonResponse({'status': 'ok', 'page': html_content})
-
+		return JsonResponse({'status': 'error', 'message': 'Section inconnue.'}, status=404)

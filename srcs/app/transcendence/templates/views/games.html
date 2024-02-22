@@ -1,8 +1,4 @@
-{% extends 'index.html' %}
-
 {% load static %}
-
-{% block title %}Games{% endblock %}
 
 {% block extra_head %}
 	<link rel="stylesheet" href="{% static 'css/login.css' %}">
@@ -10,11 +6,19 @@
 
 {% block content %}
 	<main>
-		<a href="/pong/">
-			<div id="pong"></div>
-		</a>
-		<a href="/shooter/">
-			<div id="shooter"></div>
-		</a>
+		{% if user.is_authenticated %}
+			<h1>Games</h1>
+			<div class="games">
+				{% for game in games %}
+					<div class="game">
+						<h2>{{ game.name }}</h2>
+						<p>{{ game.description }}</p>
+						<a href="{% url 'game' game.id %}">Play</a>
+					</div>
+				{% endfor %}
+			</div>
+		{% else %}
+			<h1>You need to be logged in to play games</h1>
+		{% endif %}
 	</main>
 {% endblock %}

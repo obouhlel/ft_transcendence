@@ -1,6 +1,5 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit } from './register.js';
-import { handleEditProfileFormSubmit } from './profile.js';
 
 window.addEventListener('hashchange', function() {
     const page = window.location.hash.substring(1); // Supprime le '#'
@@ -26,14 +25,9 @@ function showPage(page) {
             handleLoginFormSubmit();
         } else if (page === 'register') {
             handleRegisterFormSubmit();
-        }
-        else if (page === 'edit_profile') {
-            handleEditProfileFormSubmit();
-        }
-        else if (page === 'games') {
-            getGames();
-        }
-        handleLogoutFormSubmit();
+        } else if (section === 'logout') {
+			handleLogoutFormSubmit();
+		}
     })
     .catch(error => {
         console.error(error);
