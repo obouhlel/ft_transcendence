@@ -27,6 +27,10 @@ class Ball():
             if self.position['z'] >= topLeft['z'] and self.position['z'] <= botRight['z']:
                 self.direction['x'] = self.position['x'] - playerPos['x']
                 self.direction['z'] = self.position['z'] - playerPos['z']
+                maxVal = max(abs(self.direction['x']), abs(self.direction['z']))
+                if maxVal != 0:
+                    self.direction['x'] /= maxVal
+                    self.direction['z'] /= maxVal
 
     def isTopBotHitted(self):
         if self.position['z'] >= 10 or self.position['z'] <= -10:
