@@ -1,6 +1,7 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit } from './register.js';
 import { handleEditProfileFormSubmit } from './profile.js';
+import { game, listenerGame } from './game.js';
 
 window.addEventListener('hashchange', function() {
     let page = window.location.hash.substring(1);
@@ -27,15 +28,26 @@ function showPage(page) {
         console.log('data :', data);
 		console.log(page_content);
         page_content.innerHTML = data.page;
-		if (page === 'home') {
+		if (page === 'home')
+        {
 			handleLoginFormSubmit();
-		} else if (page === 'login') {
+		}
+        else if (page === 'login')
+        {
             handleLoginFormSubmit();
-        } else if (page === 'register') {
+        }
+        else if (page === 'register')
+        {
             handleRegisterFormSubmit();
         }
-        else if (page === 'edit_profile') {
+        else if (page === 'edit_profile')
+        {
             handleEditProfileFormSubmit();
+        }
+        else if (page === 'game')
+        {
+            game();
+            listenerGame();
         }
         handleLogoutFormSubmit();
     })
