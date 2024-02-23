@@ -19,8 +19,15 @@ window.addEventListener('load', function() {
 	showPage(page);
 });
 
+function is_logged_in()
+{
+	const is_logged_in = document.getElementById('isLoggedIn');
+	if (is_logged_in)
+		return true;
+	return false;
+}
+
 const pageHandlers = {
-    'home': handleLoginFormSubmit,
     'login': handleLoginFormSubmit,
     'register': handleRegisterFormSubmit,
     'edit_profile': handleEditProfileFormSubmit,
@@ -35,14 +42,14 @@ function showPage(page) {
 	.then(response => response.json())
 	.then(data => {
 		const page_content = document.getElementById('page');
-		console.log('page :', page);
-		console.log('data :', data);
-		console.log('pageHandlers :', pageHandlers[page]);
-		console.log(page_content);
 		page_content.innerHTML = data.page;
-		if (pageHandlers[page]) 
+		const isLogged = is_logged_in();
+		if (!isLogged && page === 'home')
+			handleLoginFormSubmit();
+		else if (pageHandlers[page])
 			pageHandlers[page]();
-		handleLogoutFormSubmit();
+		if (isLogged)
+			handleLogoutFormSubmit();
 	})
 	.catch(error => {
 		console.error(error);
