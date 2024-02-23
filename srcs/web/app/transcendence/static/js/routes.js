@@ -1,7 +1,7 @@
 // import { login } from './login.js';
 // import { signin } from './signin.js';
 // import { games } from './games.js';
-import { game, listenerGame } from './game.js';
+import { listenerGame } from './game.js';
 import { pong3D } from './pong.js';
 import { shooter } from './shooter.js';
 
@@ -10,7 +10,7 @@ const routes = {
     '/login/': null,
     '/signin/': null,
     '/games/': null,
-    '/game/': game,
+    '/game/': null,
     '/pong/': pong3D,
     '/shooter/': shooter,
 };

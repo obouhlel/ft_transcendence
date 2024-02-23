@@ -40,9 +40,6 @@ class Arena {
         );
         this.hitbox = new THREE.Box3().setFromObject(this.cube);
 
-        // this.cube.castShadow = true;
-        // this.cube.receiveShadow = true;
-
         scene.add(this.cube);
     }
 }
@@ -111,44 +108,6 @@ class Ball {
         UTILS.addShadowsToMesh(this.cube);
         scene.add(this.cube);
     }
-
-    move(scene, playerLocal, playerSocket, arena, game, deltaTime) {
-        PONG.ballSlowSystem(this);
-
-        this.hitbox.setFromObject(this.cube);
-        PONG.ballHitTopOrBot(this, arena.hitbox);
-
-        if (PONG.ballHitGoal(this, arena.hitbox) == 'left') {
-            playerLocal.score += 1;
-            this.reset(scene, playerLocal, playerSocket, game);
-        } else if (PONG.ballHitGoal(this, arena.hitbox) == 'right') {
-            playerSocket.score += 1;
-            this.reset(scene, playerLocal, playerSocket, game);
-        }
-
-        playerLocal.hitbox.setFromObject(playerLocal.cube);
-        playerSocket.hitbox.setFromObject(playerSocket.cube);
-        PONG.ballHitPlayer(this, playerLocal);
-        PONG.ballHitPlayer(this, playerSocket);
-
-        PONG.ballPinch(this, playerLocal, arena.hitbox);
-        PONG.ballPinch(this, playerSocket, arena.hitbox);
-
-        PONG.ballAntiBlockSystem(this, playerLocal);
-        PONG.ballAntiBlockSystem(this, playerSocket);
-
-        // Setup the director vector
-        this.direction.normalize();
-        this.direction.multiplyScalar(this.speed * deltaTime);
-        this.cube.position.add(this.direction);
-    }
-
-    reset(scene, playerLocal, playerSocket, game) {
-        PONG.updateScore(scene, playerLocal, playerSocket, game);
-        PONG.ballReset(this);
-        playerLocal.reset();
-        playerSocket.reset();
-    }
 }
 
 function sendPlayerPosition(player) {
@@ -194,7 +153,7 @@ function parseMessage(message) {
     }
 }
 
-export function socketListener(socket) {
+function socketListener(socket) {
     socket.onopen = function () {
         console.log('Connection established');
         sendStartingGame();
@@ -258,23 +217,17 @@ export async function pong3D() {
     if (side == otherSide) otherSide = 'right';
     const playerSocket = new Player(otherSide, scene);
     PONG.updateScore(scene, scoreString, game);
-    game.going = true;
 
     let lastTime = 0;
     // ------------------------------------loop------------------------------------
     function animate(currentTime) {
         if (lastTime) {
             let delta = (currentTime - lastTime) / 10;
-            if (PONG.isGameGoing(game)) {
-                playerLocal.move(keys, arena, delta);
-                playerSocket.cube.position.z = enemyPosition;
-                ball.cube.position.x = ballPosition.x;
-                ball.cube.position.z = ballPosition.z;
-            }
-            if (PONG.isGameStarting(game)) {
-                game.memGoing = true;
-                ball.reset(scene, playerLocal, playerSocket, game);
-            }
+            playerLocal.move(keys, arena, delta);
+            playerSocket.cube.position.z = enemyPosition;
+            ball.cube.position.x = ballPosition.x;
+            ball.cube.position.z = ballPosition.z;
+
             PONG.lightFollowTarget(light.spot, ball.cube);
             display.controls.update();
             renderer.render(scene, display.camera);
