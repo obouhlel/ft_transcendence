@@ -629,7 +629,7 @@ def add_stats_game(request, id_party):
 				party = Party.objects.get(id=id_party)
 				stat_game = party.id_game.stat
 				stat_game.nb_played += 1
-				stat_game.time_played += paty
+				stat_game.time_played += party
 				stat_game.nb_party += 1
 				stat_game.save()
 				return JsonResponse({'status': 'ok', 'message': 'Statistiques mises à jour avec succès.'})
