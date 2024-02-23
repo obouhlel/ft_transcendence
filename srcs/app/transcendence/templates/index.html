@@ -1,10 +1,16 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
 <html lang="fr">
 	<head>
 		<meta charset="utf-8">
-		<title>{% block title %}Transcendence{% endblock %}</title>
+		<title>Transcendence</title>
 		<link rel="stylesheet" href="{% static 'css/index.css' %}">
+		<!-- Poppins - Google Font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+		<!-- ThreeJS -->
 		<script src="https://unpkg.com/three@v0.160.1/build/three.min.js"></script>
 		<script type="importmap">
 			{
@@ -16,9 +22,10 @@
 		</script>
 	</head>
 	<body>
-		<div id="message"></div>
 		<div id="page"></div>
 		{% include 'footer.html' %}
 	</body>
+	<script type="module" src="{% static 'js/index.js' %}"></script>
 	<script type="module" src="{% static 'js/load.js' %}"></script>
+	<script src="https://kit.fontawesome.com/e62912d1a1.js" crossorigin="anonymous"></script>
 </html>

@@ -1,14 +1,15 @@
 {% include 'header.html' %}
-<main>
+{% load static %}
+<!-- <main>
 	<h1>Modifier le profil</h1>
-	
+
 	<form method="post" id="profile-form">
 		{% csrf_token %}
 		{% if messages %}
 		<ul class="messages">
 			{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-			{% endfor %}
+			<li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+				{% endfor %}
 		</ul>
 		{% endif %}
 		<label for="username">Nom d'utilisateur:</label><br>
@@ -31,4 +32,52 @@
 		<input type="password" id="password_confirm" name="password_confirm"><br>
 		<input type="submit" value="Mettre à jour">
 	</form>
+</main> -->
+<main class="main-content">
+	<div class="wrapper wrapper-register">
+		<div class="avatar-upload-container">
+			{% if user.avatar %}
+			<img src="{{ user.avatar.url }}" class="avatar-placeholder" alt="user">
+			{% else %}
+			<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" alt="user">
+			{% endif %}
+			<div class="image-upload-area">
+				<label for='picture'>
+					<img src="{% static 'img/pencil.png' %}" class="avatar-upload-icon" width="50" height="50" alt="user">
+				</label>
+			</div>
+
+			<form style='display: none;'>
+				<input type="file" name="pic" accept=".gif,.jpg,.png,.tif|image/*" id='picture'>
+				<input type="submit">
+			</form>
+		</div>
+		<form method="post" id="profile-form">
+			{% csrf_token %}
+			{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+				<li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+					{% endfor %}
+			</ul>
+			{% endif %}
+			<div class="input-box input-box-reg">
+				<input type="text" placeholder=" New Name" required>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="text" placeholder=" New Nickname" required>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="email" placeholder="New Email" required>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="New Password" required>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Confirm New Password" required>
+			</div>
+
+			<button type="submit" class="btn">Save changes</button>
+		</form>
+	</div>
 </main>

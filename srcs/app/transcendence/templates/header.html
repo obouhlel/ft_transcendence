@@ -1,23 +1,75 @@
+{% load static %}
 <header>
-	{% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-			{% endfor %}
-		</ul>
-	{% endif %}
 	{% if user.is_authenticated %}
-	<nav>
-		<ul id="nav-links">
-			<li><a href="#games">Games</a></li>
-			<li><a href="#game">Game</a></li>
-			<li><a href="#pong">Pong</a></li>
-			<li><a href="#shooter">Shooter</a></li>
-			<li><a href="#profile">Profile</a></li>
-			<li></li>
-		</ul>
+	<nav id="logged" class="nav">
+		<div class="custom-container">
+			<div class="navbar">
+				<div class="logo">
+					<h1>Ft-transcendence</h1>
+					<div class="nav-btns">
+						<a href="#profile" class="btn-user">
+							<img src="{% static 'img/Group 3.svg' %}" alt="" />
+						</a>
+						<a href="#games" class="btn-gamepad">
+							<img src="{% static 'img/game-high.png' %}" alt="" />
+						</a>
+					</div>
+				</div>
+				<div class="end-nav-btns">
+					<div class="bell-btn">
+						<a class="dropdown-toggle" data-dropdown="bellDropdown" >
+							<img src="{% static 'img/Group 4.svg' %}" alt="" />
+						</a>
+						<div class="dropdown-content" id="bellDropdown">
+							<div class="content">
+								<div class="user-btn">
+									<img src="{% static 'img/Group 3.svg' %}" alt="" />
+								</div>
+								<p>Notification</p>
+								<i class="fa-solid fa-check check" id="accept-request"></i>
+								<i class="fa-solid fa-xmark cross" id="deny-request"></i>
+							</div>
+						</div>
+					</div>
+	
+	
+					<div class="user-btn">
+						<a class="dropdown-toggle" data-dropdown="userDropdown">
+							<img src="{% static 'img/Group 3.svg' %}" alt="" />
+						</a>
+						<div class="dropdown-content-one" id="userDropdown">
+							<i class="fa-solid fa-xmark usercross" id="cross"></i>
+							<div class="content">
+								<div class="user-avatar-dropdown">
+									<img src="{% static 'img/user-image.png' %}" alt="" />
+								</div>
+								<a href="#edit_profile" class="edit-profile-btn">Edit your profile</a>
+								<a class="logout-btn" id="logout-button">Logout</a>
+							</div>
+						</div>
+					</div>
+					<i class="fa-solid fa-bars bar" id="bar"></i>
+				</div>
+			</div>
+		</div>
+		<div class="list-bar" id="list">
+			<div class="nav-btns">
+				<button class="btn-user">
+					<img src="{% static 'img/Group 3.svg' %}" alt="" />
+				</button>
+				<button class="btn-gamepad">
+					<img src="{% static 'img/game-high.png' %}" alt="" />
+				</button>
+			</div>
+		</div>
 	</nav>
-	<p id="isLoggedIn">{{ user.username }}</p>
-	<button type="button" id="logout-button">Logout</button>
+	{% else %}
+	<nav class="nav">
+		<header class="nav-header">
+			<div class="nav-title">
+				Ft-transcendence
+			</div>
+		</header>
+	</nav>
 	{% endif %}
 </header>

@@ -1,17 +1,24 @@
-<main>
-	<div id="message"></div>
-	<form method="post" id="login-form">
-		{% csrf_token %}
-		<label for="username">Nom d'utilisateur:</label>
-		<input type="text" id="username" name="username" required>
-		<br>
-		<label for="password">Mot de passe:</label>
-		<input type="password" id="password" name="password" required>
-		<br>
-		<input type="submit" value="Se connecter">
-		<br>
-		<button type="button" id="login-42">42</button>
-		<br>
-		<button type="button" id="signin">S'inscrire</button>
-	</form>
+{% load static %}
+{% include 'header.html' %}
+<main class="main-content">
+    <section class="wrapper wrapper-login">
+        <form method="post" id="login-form">
+            <h1>Login</h1>
+            <div class="input-box">
+                <input type="text" placeholder="username" id="username" required>
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="password" id="password" required>
+                <i class='bx bxs-lock-alt'></i>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <button type="button" class="btn btn-42" id="login-42">Login with 42</button>
+            <div class="register-link">
+                <p>Dont't have an account? <a href="#register">
+                        Register
+                    </a></p>
+            </div>
+        </form>
+    </section>
 </main>

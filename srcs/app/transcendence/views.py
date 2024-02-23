@@ -6,7 +6,7 @@ def index(request):
 	return render(request, 'index.html')
 
 def page(request, page):
-	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game', 'pong', 'shooter']
+	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'shooter']
 	if page == '' or page == 'home':
 		html_content = render_to_string('home.html', request=request)
 		return JsonResponse({'status': 'success', 'page': html_content})

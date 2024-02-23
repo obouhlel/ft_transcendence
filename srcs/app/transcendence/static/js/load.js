@@ -21,7 +21,7 @@ window.addEventListener('load', function() {
 
 function is_logged_in()
 {
-	const is_logged_in = document.getElementById('isLoggedIn');
+	const is_logged_in = document.getElementById('logged');
 	if (is_logged_in)
 		return true;
 	return false;
@@ -31,7 +31,11 @@ const pageHandlers = {
     'login': handleLoginFormSubmit,
     'register': handleRegisterFormSubmit,
     'edit_profile': handleEditProfileFormSubmit,
-    'game': () => {
+    'game-1': () => {
+        game();
+        listenerGame();
+    },
+	'game-2': () => {
         game();
         listenerGame();
     }
@@ -41,6 +45,8 @@ function showPage(page) {
 	fetch(`/pages/${page}`)
 	.then(response => response.json())
 	.then(data => {
+		console.log(data);
+		console.log(page);
 		const page_content = document.getElementById('page');
 		page_content.innerHTML = data.page;
 		const isLogged = is_logged_in();

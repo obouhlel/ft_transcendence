@@ -51,7 +51,7 @@ export const doRequest = {
 		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('CONNEXION REUSSIE');
-			window.location.hash = 'home';
+			window.location.hash = 'games';
 			messageElement.textContent = "Connexion réussie !";
 			messageElement.style.color = 'green';
 		} else if (data.status === 'error') {
@@ -66,7 +66,7 @@ export const doRequest = {
 		let messageElement = document.getElementById('message');
 		if (data.status === 'ok') {
 			console.log('DECONNEXION REUSSIE');
-			window.location.hash = 'home';
+			window.location.hash = 'login';
 			messageElement.textContent = data.message;
 			messageElement.style.color = 'green';
 		} else if (data.status === 'error') {

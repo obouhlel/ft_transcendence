@@ -1,13 +1,19 @@
 {% include 'header.html' %}
-<main>
-	<h1>Games</h1>
-	<div class="games">
-		{% for game in games %}
-			<div class="game">
-				<h2>{{ game.name }}</h2>
-				<p>{{ game.description }}</p>
-				<a href="{% url 'game' game.id %}">Play</a>
-			</div>
-		{% endfor %}
-	</div>
+{% load static %}
+<main class="games-section">
+    <h1>Games</h1>
+    <div class="games-grid">
+        <div>
+            <a href="#game-1">
+                <img src="{% static 'img/pong.jpg' %}" class="game-image" alt="pong">
+                <h2>Pong</h2>
+            </a>
+        </div>
+        <div>
+            <a href="#game-2">
+                <img src="{% static 'img/pew.jpg' %}" class="game-image" alt="shooter">
+                <h2>Shooter</h2>
+            </a>
+        </div>
+    </div>
 </main>
