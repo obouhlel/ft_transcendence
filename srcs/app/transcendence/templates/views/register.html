@@ -8,7 +8,7 @@
 	{% endif %}
 	<form method="post" id="register-form">
 		{% csrf_token %}
-		<label for="username">username</label>
+		<label for="username">Username</label>
 		<input type="text" id="username" name="username" required>
 		<br>
 		<label for="email">Email</label>
@@ -17,7 +17,7 @@
 		<label for="password">Password</label>
 		<input type="password" id="password" name="password" required>
 		<br>
-		<label for="confirm password">confirm password</label>
+		<label for="confirm password">Confirm password</label>
 		<input type="password" id="password_confirm" name="password_confirm" required>
 		<br>
 		<label for="firstname">Firstname</label>
@@ -39,10 +39,10 @@
 		<label for="avatar">Avatar</label>
 		<input type="file" id="avatar" name="avatar">
 		<br>
-		<button type="submit">Sign In</button>
+		<button type="submit">S'inscrire</button>
 		<br>
-		<button type="button" id="Auth42">42</button>
+		<button type="button" id="login-42">S'inscrire avec 42</button>
 		<br>
-		<button type="button" id="login">Login</button>
+		<button type="button" id="login">Se connecter</button>
 	</form>
 </main>
