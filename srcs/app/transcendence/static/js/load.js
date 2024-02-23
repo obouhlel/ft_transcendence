@@ -19,6 +19,17 @@ window.addEventListener('load', function() {
 	showPage(page);
 });
 
+const pageHandlers = {
+    'home': handleLoginFormSubmit,
+    'login': handleLoginFormSubmit,
+    'register': handleRegisterFormSubmit,
+    'edit_profile': handleEditProfileFormSubmit,
+    'game': () => {
+        game();
+        listenerGame();
+    }
+};
+
 function showPage(page) {
 	fetch(`/pages/${page}`)
 	.then(response => response.json())
@@ -26,29 +37,11 @@ function showPage(page) {
 		const page_content = document.getElementById('page');
 		console.log('page :', page);
 		console.log('data :', data);
+		console.log('pageHandlers :', pageHandlers[page]);
 		console.log(page_content);
 		page_content.innerHTML = data.page;
-		if (page === 'home')
-		{
-			handleLoginFormSubmit();
-		}
-		else if (page === 'login')
-		{
-			handleLoginFormSubmit();
-		}
-		else if (page === 'register')
-		{
-			handleRegisterFormSubmit();
-		}
-		else if (page === 'edit_profile')
-		{
-			handleEditProfileFormSubmit();
-		}
-		else if (page === 'game')
-		{
-			game();
-			listenerGame();
-		}
+		if (pageHandlers[page]) 
+			pageHandlers[page]();
 		handleLogoutFormSubmit();
 	})
 	.catch(error => {
