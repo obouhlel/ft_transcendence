@@ -184,12 +184,14 @@ class Tournament(models.Model):
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(auto_now=True)
 	is_active = models.BooleanField(default=False)
+	status = models.CharField(max_length=30, default='Waiting')
 	winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner')
 	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='creator')
 	lobby_tournament = models.ForeignKey('Lobby', on_delete=models.CASCADE, default=None)
 	parties = models.ManyToManyField('Party', related_name='party')
-	nb_round = models.IntegerField(default=0)
 	user_tournament = models.ManyToManyField('CustomUser', related_name='user')
+	invited_user = models.ManyToManyField('CustomUser', related_name='invited')
+	nb_player_to_start = models.IntegerField(default=4)
 	def __str__(self):
 		return self.id
 	def Tournament_data(self):
