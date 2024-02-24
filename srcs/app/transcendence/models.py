@@ -44,14 +44,14 @@ class CustomUser(AbstractUser):
 			'is_admin': self.is_admin,
 			'sexe': self.sexe,
 			'birthdate': self.birthdate,
-			'avatar': self.avatar,
+			'avatar': self.avatar.path,
 			'created_at': self.created_at,
 			'last_connexion': self.last_connexion,
 			'status': self.status,
-			'list_friends': self.list_friends,
-			'list_request': self.list_request,
-			'list_request_sent': self.list_request_sent,
-			'stat': self.stat
+			# 'list_friends': self.list_friends,
+			# 'list_request': self.list_request,
+			# 'list_request_sent': self.list_request_sent,
+			# 'stat': self.stat
 		}
 	def friend_data(self):
 		list_friends = [user.user_data() for user in self.list_friends.all()]
@@ -82,9 +82,9 @@ class Game(models.Model):
 			'genre': self.genre,
 			'created_at': self.created_at,
 			'point_to_win': self.point_to_win,
-			'stat': self.stat,
-			'lobby_game': self.lobby_game,
-			'tournament': self.tournament
+			# 'stat': self.stat,
+			# 'lobby_game': self.lobby_game,
+			# 'tournament': self.tournament
 		}
 
 class Stat_Game(models.Model):
