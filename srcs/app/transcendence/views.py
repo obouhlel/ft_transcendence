@@ -9,7 +9,7 @@ def index(request):
 def page(request, page):
 	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'shooter']
 	settings.LOGGER.debug('page: ' + page)
-	if page == '' or page == 'home':
+	if page == 'home':
 		html_content = render_to_string('home.html', request=request)
 		return JsonResponse({'status': 'success', 'page': html_content})
 	elif ((page == 'login' or page == 'register') and request.user.is_authenticated):
