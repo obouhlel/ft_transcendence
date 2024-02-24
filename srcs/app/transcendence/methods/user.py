@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.db.models import CustomUser
+from transcendence.models  import CustomUser
 
 #CRUD : Create, Read, Update, Delete
 #Create: POST : Create a new user

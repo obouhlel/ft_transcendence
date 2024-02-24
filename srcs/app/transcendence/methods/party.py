@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.db.models import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game 
+from transcendence.models  import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game 
 import json
 from django.utils import timezone
 
@@ -116,9 +116,9 @@ def EndParty(party):
 		stat_user = Stat_User_by_Game.objects.get(id_user=party.player2, id_game=party.id_game)
 		stat_user.update(party.time_played, party.id)
 		#if this party is for tournament, we need to update the tournament
-		if (party.type = "tournament"):
-			tournament = party.tournament_party
-			checktoNextRound(tournament)
+		# if (party.type = "tournament"):
+		# 	tournament = party.tournament_party
+		# 	checktoNextRound(tournament)
 	except Stat_Game.DoesNotExist:
 		stat_game = Stat_Game.objects.create(id_game=party.id_game, nb_played=1, time_played=party.time_played, nb_party=1)
 		stat_game.save()

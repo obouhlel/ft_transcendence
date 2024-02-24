@@ -92,7 +92,7 @@ class Stat_Game(models.Model):
 	nb_played = models.IntegerField(default=0)
 	time_played = models.IntegerField(default=0)
 	nb_party = models.IntegerField(default=0)
-	id_party = models.ManyToManyField('Party', related_name='party')
+	id_party = models.ManyToManyField('Party', related_name='id_party')
 	avg_game_time = models.IntegerField(default=0)
 	def __str__(self):
 		return self.id
@@ -179,13 +179,13 @@ class UserInLobby(models.Model):
 
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
-	id_game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	id_game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
 	name = models.CharField(max_length=30, default='Tournament')
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(auto_now=True)
 	is_active = models.BooleanField(default=False)
 	status = models.CharField(max_length=30, default='Waiting')
-	winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner')
+	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
 	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='creator')
 	lobby_tournament = models.ForeignKey('Lobby', on_delete=models.CASCADE, default=None)
 	parties = models.ManyToManyField('Party', related_name='party')
@@ -226,8 +226,8 @@ class Party(models.Model):
 	player2 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player2')
 	score1 = models.IntegerField(default=0)
 	score2 = models.IntegerField(default=0)
-	id_winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner')
-	id_loser = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='loser')
+	winner_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_party')
+	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='loser_party')
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
 	round_nb = models.IntegerField(default=0)
 	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, default=None)

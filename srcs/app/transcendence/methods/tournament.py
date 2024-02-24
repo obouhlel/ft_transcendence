@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.db.models import Game, Tournament, Lobby, PartyInTournament, CustomUser, UserInLobby
+from transcendence.models  import Game, Tournament, Lobby, PartyInTournament, CustomUser, UserInLobby
 import json
 from django.utils import timezone
 

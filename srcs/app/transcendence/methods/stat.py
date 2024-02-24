@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.db.models import Game, CustomUser
+from transcendence.models  import Game, CustomUser
 
 #CRUD : Create, Read, Update, Delete
 #Create: POST : Create stat for a user or a game for the first time

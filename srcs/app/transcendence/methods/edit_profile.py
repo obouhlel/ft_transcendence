@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
-from app.models import CustomUser
+from transcendence.models  import CustomUser
 from django.views.decorators.csrf import csrf_exempt
 import json
 
