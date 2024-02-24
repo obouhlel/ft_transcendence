@@ -10,7 +10,7 @@
 body {
   max-width: 100%;
   overflow-x: hidden;
-  background-image: url("https://www.zupimages.net/up/24/08/lbdw.png");
+  background-image: url("../img/background.png");
   background-size: cover;
   background-position: center;
   min-height: 100vh;
