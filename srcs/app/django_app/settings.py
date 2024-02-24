@@ -135,11 +135,11 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 # CORS AND CSRF
-CORS_ALLOW_ALL_ORIGINS = False
-CSRF_TRUSTED_ORIGINS = [
-    "https://localhost:8000",
-	"https://api.intra.42.fr"
-]
+CORS_ALLOW_ALL_ORIGINS = True
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://localhost:8000",
+# 	"https://api.intra.42.fr"
+# ]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = [
@@ -152,10 +152,10 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken'
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "https://localhost:8000",
-	"https://api.intra.42.fr"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://localhost:8000",
+# 	"https://api.intra.42.fr"
+# ]
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True
