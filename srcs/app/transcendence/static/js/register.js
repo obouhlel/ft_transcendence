@@ -2,7 +2,6 @@ import { doRequest, SERVER_URL } from './fetch.js';
 
 export function handleRegisterFormSubmit() {
     const form = document.getElementById('register-form');
-    const login = document.getElementById('login');
     if (!form) { return; }
 
     form.addEventListener('submit', function(event) {
@@ -29,10 +28,5 @@ export function handleRegisterFormSubmit() {
             console.error('Une erreur est survenue lors de l\'inscription :', error);
             window.location.hash = 'register';
         }
-    });
-
-    login.addEventListener('click', function(event) {
-        event.preventDefault();
-        window.location.href = '#login';
     });
 };

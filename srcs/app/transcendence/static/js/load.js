@@ -1,7 +1,8 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit } from './register.js';
-import { handleEditProfileFormSubmit } from './profile.js';
-import { game, listenerGame } from './game.js';
+import { handleEditProfileFormSubmit, gameTab } from './profile.js';
+import { dropdown } from './header.js';
+// import { game, listenerGame } from './game.js';
 
 window.addEventListener('hashchange', function() {
 	let page = window.location.hash.substring(1);
@@ -21,7 +22,7 @@ window.addEventListener('load', function() {
 
 function is_logged_in()
 {
-	const is_logged_in = document.getElementById('logged');
+	const is_logged_in = document.getElementById('logout-button');
 	if (is_logged_in)
 		return true;
 	return false;
@@ -30,15 +31,16 @@ function is_logged_in()
 const pageHandlers = {
     'login': handleLoginFormSubmit,
     'register': handleRegisterFormSubmit,
+	'profile': gameTab,
     'edit_profile': handleEditProfileFormSubmit,
-    'game-1': () => {
-        game();
-        listenerGame();
-    },
-	'game-2': () => {
-        game();
-        listenerGame();
-    }
+    // 'game-1': () => {
+    //     game();
+    //     listenerGame();
+    // },
+	// 'game-2': () => {
+    //     game();
+    //     listenerGame();
+    // }
 };
 
 function showPage(page) {
@@ -55,7 +57,10 @@ function showPage(page) {
 		else if (pageHandlers[page])
 			pageHandlers[page]();
 		if (isLogged)
+		{
 			handleLogoutFormSubmit();
+			dropdown();
+		}
 	})
 	.catch(error => {
 		console.error(error);

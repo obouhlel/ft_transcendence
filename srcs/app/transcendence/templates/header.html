@@ -1,7 +1,7 @@
 {% load static %}
 <header>
 	{% if user.is_authenticated %}
-	<nav id="logged" class="nav">
+	<nav class="nav">
 		<div class="custom-container">
 			<div class="navbar">
 				<div class="logo">
@@ -33,7 +33,7 @@
 					</div>
 	
 	
-					<div class="user-btn" id="logout-button">
+					<div class="user-btn">
 						<a class="dropdown-toggle" data-dropdown="userDropdown">
 							<img src="{% static 'img/Group 3.svg' %}" alt="" />
 						</a>
@@ -41,7 +41,11 @@
 							<i class="fa-solid fa-xmark usercross" id="cross"></i>
 							<div class="content">
 								<div class="user-avatar-dropdown">
-									<img src="{% static 'img/user-image.png' %}" alt="" />
+									{% if user.avatar %}
+										<img src="{{ user.avatar.url }}" alt="" />
+									{% else %}
+										<img src="{% static 'img/user-image.png' %}" alt="" />
+									{% endif %}
 								</div>
 								<a href="#edit_profile" class="edit-profile-btn">Edit your profile</a>
 								<a class="logout-btn" id="logout-button">Logout</a>

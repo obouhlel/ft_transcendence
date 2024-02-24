@@ -24,3 +24,32 @@ export function handleEditProfileFormSubmit() {
 		doRequest.Fetch(`${SERVER_URL}/api/edit_profile/`, 'POST', data, doRequest.callbackProfile);
 	});
 };
+
+/*ACTIVE GAME-TAB FUNCTIONALITY IN USER PROFILE*/
+export function gameTab()
+{
+	document.querySelectorAll('.tab-link').forEach(function(link) {
+		link.addEventListener('click', function(e) {
+			e.preventDefault(); // Prevent default anchor behavior
+
+			// Get the tab ID from data-tab attribute
+			const tabId = this.getAttribute('data-tab');
+
+			// Remove active class from all tab links
+			document.querySelectorAll('.tab-link').forEach(function(link) {
+				link.classList.remove('active');
+			});
+
+			// Add active class to the current tab link
+			this.classList.add('active');
+
+			// Hide all tab contents
+			document.querySelectorAll('.tab-content').forEach(function(tab) {
+				tab.classList.remove('active-tab');
+			});
+
+			// Show the current tab content
+			document.getElementById(tabId).classList.add('active-tab');
+		});
+	});
+}
