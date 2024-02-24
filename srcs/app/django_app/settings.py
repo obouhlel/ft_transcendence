@@ -1,5 +1,10 @@
 from pathlib import Path
 from decouple import config
+import logging
+
+# Configuration of the logger
+logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger('transcendence')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

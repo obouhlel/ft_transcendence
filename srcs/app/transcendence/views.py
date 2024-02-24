@@ -1,12 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.conf import settings
 
 def index(request):
 	return render(request, 'index.html')
 
 def page(request, page):
 	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'shooter']
+	settings.LOGGER.debug('page: ' + page)
 	if page == '' or page == 'home':
 		html_content = render_to_string('home.html', request=request)
 		return JsonResponse({'status': 'success', 'page': html_content})
