@@ -152,6 +152,87 @@ body {
   justify-content: center;
 }
 
+/**********sex and date of birth fields*******************/
+
+.wrapper .input-box-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: -19px;
+}
+
+.wrapper .input-box-group .input-box {
+  width: calc(50% - 10px);
+}
+
+.birthdate-label,
+.sex-label{
+  position: relative;
+  right:-15px;
+  top: -8px;
+}
+
+.birthdate-label {
+  top: -4px;
+}
+
+.input-box.date-input-box {
+  width: 100%;
+}
+
+.input-box.date-input-box input[type="date"] {
+  width: 100%;
+  padding: 12px 20px;
+  text-align: start;
+  color: #ffffffba; 
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, .2);
+  border-radius: 40px;
+  font-size: 16px;
+  margin-top: -30px;;
+}
+
+/*
+.input-box.date-input-box input[type="date"]::-webkit-inner-spin-button,
+.input-box.date-input-box input[type="date"]::-webkit-calendar-picker-indicator {
+  display: none; 
+  -webkit-appearance: none;
+}
+*/
+
+.input-box.date-input-box input[type="date"]::placeholder {
+  color: #fff;
+  opacity: 1;
+}
+
+
+.sex-input-box{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 19px;
+  color: #ffffffba;
+  
+}
+
+.sex-input-box input[type="radio"] {
+  margin-right: 4.2px;
+  width: 15px;
+}
+
+@media (max-width: 490px) {
+  .wrapper .input-box-group {
+      flex-direction: column;
+  }
+  .wrapper .input-box-group .input-box {
+      width: 100%;
+      margin-bottom: 0px;
+  }
+
+  .wrapper .input-box-group .input-box:last-child {
+      margin-bottom: 19px;
+  }
+}
+
 
 /* ----Nav Bar Login/Register--- */
 .nav {

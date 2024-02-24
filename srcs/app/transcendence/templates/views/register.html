@@ -66,8 +66,13 @@
         </div>
         <form method="post" id="register-form">
 			{% csrf_token %}    
-            <div class="input-box input-box-reg">
-                <input type="text" placeholder="Name" required>
+            <div class="input-box-group">
+                <div class="input-box input-box-reg">
+                    <input type="text" placeholder="First Name" required>
+                </div>
+                <div class="input-box input-box-reg">
+                    <input type="text" placeholder="Last Name" required>
+                </div>
             </div>
             <div class="input-box input-box-reg">
                 <input type="text" placeholder="Nickname" required>
@@ -80,6 +85,25 @@
             </div>
             <div class="input-box input-box-reg">
                 <input type="password" placeholder="Confirm Password" required>
+            </div>
+			<label class="birthdate-label">Date of birth:</label>
+            <div class="input-box input-box-reg date-input-box">
+                <input type="date" placeholder="Date of Birth" required>
+            </div>
+            <label class="sex-label">Sex:</label>
+            <div class=" sex-input-box">
+                <div>
+                    <input type="radio" id="male" name="sex" value="male">
+                    <label for="male">Male</label>
+                </div>
+                <div>
+                    <input type="radio" id="female" name="sex" value="female">
+                    <label for="female">Female</label>
+                </div>
+                <div>
+                    <input type="radio" id="other" name="sex" value="other">
+                    <label for="other">Other</label>
+                </div>
             </div>
            
             <button type="submit" class="btn">Register</button>
