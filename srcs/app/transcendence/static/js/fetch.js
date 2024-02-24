@@ -27,7 +27,8 @@ export const doRequest = {
 		};
 		if (data instanceof FormData) {
 			options.body = data;
-		} else if (method !== 'GET' && method !== 'HEAD') {
+		}
+		else if (method !== 'GET' && method !== 'HEAD') {
 			options.headers['Content-Type'] = 'application/json';
 			options.body = JSON.stringify(data);
 		}
