@@ -108,7 +108,7 @@ class Game():
         message = json.dumps(message)
         for player in self.__players:
             await player.socket.send(message)
-            
+        
     async def game(self):
         playersPos = {'left': self.getPlayerLeft().position, 'right': self.getPlayerRight().position}
         await self.__ball.move(playersPos)
@@ -132,6 +132,12 @@ def getOtherPlayerPositionJson(position):
 async def gamePong():
     while True:
         if pong.getPlayerLeft().score == 10 or pong.getPlayerRight().score == 10:
+            message = { 'game': 'end',
+                        'score': pong.getScoreString(),
+                        'winner': pong.getPlayerLeft().username if pong.getPlayerLeft().score == 10 else pong.getPlayerRight().username }
+            pong.broadcast(message)
+            pong.remove(pong.getPlayerLeft().username)
+            pong.remove(pong.getPlayerRight().username)
             return
         await pong.game()
         await asyncio.sleep(0.01)
@@ -157,12 +163,6 @@ def playerPosition(message):
     player.position = message['position']
     otherPlayer = pong.getOtherPlayer(message['username'])
     return getOtherPlayerPositionJson(otherPlayer.position)
-      
-def score(message):
-    global isScoreChange
-    otherPlayer = pong.getOtherPlayer(message['username'])
-    otherPlayer.score += 1
-    isScoreChange = True
 
 def forfait(message):
     otherPlayer = pong.getOtherPlayer(message['username'])
@@ -174,8 +174,6 @@ def parseMessage(self, message):
             return starting(self, message)
         elif message['game'] == 'player position':
             return playerPosition(message)
-        elif message['game'] == 'score':
-            score(message)
         elif message['game'] == 'leaved':
             forfait(message)
         return json.dumps({ 'game': 'ok' })
