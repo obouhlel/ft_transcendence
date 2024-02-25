@@ -2,9 +2,7 @@ from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from transcendence.models import CustomUser
-import json
-
-
+import pytz
 
 def register_user(request):
 	if request.method == 'POST':
