@@ -10,7 +10,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 import requests
 from django.core.files.base import ContentFile
-
+import logging
+logger = logging.getLogger(__name__)
 
 def login_42(request):
 	if request.method == 'GET':
@@ -20,7 +21,8 @@ def login_42(request):
 
 			client_id = settings.API_42_UID
 			secret_key = settings.API_42_SECRET
-			redirect_uri = settings.API_42_REDIRECT_URI
+			redirect_uri = settings.API_42_REDIRECT_URI.replace('$HOST', request.get_host())
+			logger.log(logging.DEBUG, 'redirect_uri: ' + redirect_uri)
 
 			data = {
 				'grant_type': 'authorization_code',
@@ -29,6 +31,7 @@ def login_42(request):
 				'code': code,
 				'redirect_uri': redirect_uri,
 			}
+			logger.log(logging.DEBUG, 'data: ' + json.dumps(data))
 			response = requests.post(token_url, data=data)
 			if response.status_code == 200:
 				access_token = response.json()['access_token']
@@ -62,6 +65,7 @@ def login_42(request):
 				else:
 					return JsonResponse({'status': 'error', 'message': 'Impossible de récupérer les données de l\'utilisateur.'}, status=400)
 			else:
+				logger.log(logging.ERROR, response.json())
 				return JsonResponse({'status': 'error', 'message': 'Impossible de récupérer le token d\'accès.'}, status=400)
 		else:
 			return JsonResponse({'status': 'error', 'message': 'Code invalide.'}, status=400)

@@ -1,4 +1,5 @@
-export const SERVER_URL = 'https://localhost:8000';
+// export const SERVER_URL = 'https://localhost:8000';
+export const SERVER_URL = '';
 
 export const doRequest = {
 	getCookie: function getCookie(name) {

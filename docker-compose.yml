@@ -34,7 +34,7 @@ services:
     depends_on:
       - web
     ports:
-      - "8000:443"
+      - "8000:8000"
     volumes:
       - ./srcs/tools/ssl/transcendance.crt:/etc/nginx/ssl/transcendance.crt
       - ./srcs/tools/ssl/transcendance.key:/etc/nginx/ssl/transcendance.key
