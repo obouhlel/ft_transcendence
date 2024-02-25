@@ -14,6 +14,16 @@ from django.utils import timezone
 #return data as friend request object
 @login_required
 @require_http_methods(['GET'])
+def getAllFriendRequest(request):
+	try:
+		list_friend_request = request.user.friend_request.all()
+		data = [request.friend_request_data() for request in list_friend_request]
+		return JsonResponse({'status': 'ok', 'friend_request': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
 def getAllFriendRequestofUser(request, id_user):
 	try:
 		user = CustomUser.objects.get(id=id_user)
@@ -27,6 +37,16 @@ def getAllFriendRequestofUser(request, id_user):
 #return data as friend request object
 @login_required
 @require_http_methods(['GET'])
+def getAllFriendRequestSentByUser(request):
+	try:
+		list_friend_request = request.user.friend_request_sent.all()
+		data = [request.friend_request_data() for request in list_friend_request]
+		return JsonResponse({'status': 'ok', 'friend_request': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
 def getAllFriendRequestSentByUser(request, id_user):
 	try:
 		user = CustomUser.objects.get(id=id_user)
@@ -36,19 +56,12 @@ def getAllFriendRequestSentByUser(request, id_user):
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
 
-def accept_friend_request(sender, receiver):
-	sender.friends.add(receiver)
-	receiver.friends.add(sender)
-	sender.friend_request_sent.get(sender=sender, receiver=receiver).delete()
-	receiver.friend_request_received.get(sender=sender, receiver=receiver).delete()
-	
-	sender.save()
-	receiver.save()
+
+
 
 # friend_requests
-# GET: RETURN ALL FRIEND REQUESTS
 # POST: SEND FRIEND REQUEST
-# PARAMS: username, action
+# PARAMS: friend_id
 # FORMATS:
 @login_required
 @require_http_methods(['POST'])
@@ -66,13 +79,22 @@ def send_friend_request(request):
 			return JsonResponse({'status': 'error', 'message': 'You already sent a friend request to this user.'}, status=400)
 		if user in friend.friend_requests.all():
 			return JsonResponse({'status': 'error', 'message': 'This user already sent you a friend request, please accept it.'}, status=400)
-		user.friend_request_sent.create(sender=user, receiver=friend, created_at=timezone.now())
-		friend.friend_request.create(sender=user, receiver=friend, created_at=timezone.now())
+		user.request_sent.create(sender=user, receiver=friend, date=timezone.now())
+		friend.request_received.create(sender=user, receiver=friend, date=timezone.now())
 		#sent notification to the user friend
 		return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.'})
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
 	
+#---------------------------------#
+	
+def accept_friend_request(sender, receiver):
+	sender.friends.add(receiver)
+	receiver.friends.add(sender)
+	sender.request_sent.get(sender=sender, receiver=receiver).delete()
+	receiver.request_received.get(sender=sender, receiver=receiver).delete()
+	sender.save()
+	receiver.save()
 
 # friend_requests
 # POST: ACCEPT FRIEND REQUEST OR DECLINE FRIEND REQUEST

@@ -3,6 +3,7 @@ import { handleRegisterFormSubmit } from './register.js';
 import { handleEditProfileFormSubmit, gameTab } from './profile.js';
 import { dropdown } from './header.js';
 // import { game, listenerGame } from './game.js';
+import './notifs.js';
 
 window.addEventListener('hashchange', function() {
 	let page = window.location.hash.substring(1);

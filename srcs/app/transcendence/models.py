@@ -76,6 +76,25 @@ class CustomUser(AbstractUser):
 		stat = [stat.stat_user_by_game_data() for stat in list_stat]
 		return stat
 
+class Notification(models.Model):
+	id = models.AutoField(primary_key=True)
+	id_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+	content = models.TextField()
+	created_at = models.DateTimeField(auto_now_add=True)
+	is_read = models.BooleanField(default=False)
+	def __str__(self):
+		return self.id
+	def update_read(self):
+		self.is_read = True
+		self.save()
+	def notification_data(self):
+		return {
+			'id': self.id,
+			'id_user': self.id_user,
+			'content': self.content,
+			'created_at': self.created_at,
+			'is_read': self.is_read
+	}
 
 class friend_request(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -158,8 +177,6 @@ class Stat_Game(models.Model):
 			'avg_game_time': self.avg_game_time,
 			'parties': self.getPaties()
 		}
-
-
 
 
 class Stat_User_by_Game(models.Model):
@@ -350,3 +367,14 @@ class PartyInTournament(models.Model):
 			'id_tournament': self.id_tournament
 	}
 
+#----------notifications
+
+class Notification(models.Model):
+	id = models.AutoField(primary_key=True)
+	message = models.CharField(max_length=255)
+	created_at = models.DateTimeField(auto_now_add=True)
+	is_read = models.BooleanField(default=False)
+	id_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+
+	def __str__(self):
+		return self.message

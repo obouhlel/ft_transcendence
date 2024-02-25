@@ -41,7 +41,7 @@ class Command(BaseCommand):
 			stat=stat_game1
 		)
 
-		lobby = Lobby.objects.create(type='Public',id_game=game1)
+		lobby = Lobby.objects.create(type='Public',game=game1)
 		# lobby.user.add(user1)
 		# lobby.user.add(user2)
 		# game1.lobby_game.add(lobby)
