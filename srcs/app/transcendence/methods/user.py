@@ -37,12 +37,46 @@ def getUserById(request, id):
 
 @login_required
 @require_http_methods(['GET'])
+def getUserByStatus(request, status):
+	users = CustomUser.objects.filter(status=status)
+	data = [user.user_data() for user in users]
+	return JsonResponse({'status': 'ok', 'users': data})
+
+@login_required
+@require_http_methods(['GET'])
 def getAllUsers(request):
 	users = CustomUser.objects.all()
 	data = []
 	for user in users:
 		data += [user.user_data()]
 	return JsonResponse({'status': 'ok', 'users': data})
+
+
+@login_required
+@require_http_methods(['GET'])
+def getFriends(request):
+	user = request.user
+	friends = user.friends.all()
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getOnlineFriends(request):
+	user = request.user
+	friends = user.friends.filter(status='online')
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getOfflineFriends(request):
+	user = request.user
+	friends = user.friends.filter(status='offline')
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+
 
 # -------------------------------POST USER-----------------------------#
 #=> register_user.py

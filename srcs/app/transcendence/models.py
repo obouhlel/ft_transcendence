@@ -16,8 +16,8 @@ class CustomUser(AbstractUser):
 	last_connexion = models.DateTimeField(default=timezone.now)
 	status = models.CharField(max_length=30, default='Online')
 	list_friends = models.ManyToManyField('CustomUser', related_name='friends')
-	list_request = models.ManyToManyField('friend_request', related_name='request')
-	list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
+	request_received = models.ManyToManyField('friend_request', related_name='request_received')
+	request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
 	stat = models.ManyToManyField('Stat_User_by_Game', related_name='stat')
 	def __str__(self):
 		return self.username
@@ -48,16 +48,50 @@ class CustomUser(AbstractUser):
 			'created_at': self.created_at,
 			'last_connexion': self.last_connexion,
 			'status': self.status,
-			# 'list_friends': self.list_friends,
-			# 'list_request': self.list_request,
-			# 'list_request_sent': self.list_request_sent,
-			# 'stat': self.stat
+			'friends_received': self.getFriendRequestReceived(),
+			'request_sent': self.getFriendRequestSent(),
+			'list_friends': self.friend_user_data(),
+			'stat': self.getStat()
 		}
-	def friend_data(self):
-		list_friends = [user.user_data() for user in self.list_friends.all()]
-		for user in list_friends:
-			data += [user.user_data()]
+	def friend_user_data(self):
+		data = []
+		list_friends = self.list_friends.all()
+		for friend in list_friends:
+			data += friend.user_data()
 		return data
+	def getFriendRequestReceived(self):
+		list_friend_request = self.request_received.all()
+		data = []
+		for re in list_friend_request:
+			data += re.friend_request_data()
+		return data
+	def getFriendRequestSent(self):
+		list_friend_request = self.request_sent.all()
+		data = []
+		for re in list_friend_request:
+			data += re.friend_request_data()
+		return data
+	def getStat(self):
+		list_stat = self.stat.all()
+		stat = [stat.stat_user_by_game_data() for stat in list_stat]
+		return stat
+
+
+class friend_request(models.Model):
+	id = models.AutoField(primary_key=True)
+	sender = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='sender')
+	receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
+	created_at = models.DateTimeField(auto_now_add=True)
+	def __str__(self):
+		return self.id
+	def friend_request_data(self):
+		return {
+			'id': self.id,
+			'id_sender': self.id_sender,
+			'id_receiver': self.id_receiver,
+			'created_at': self.created_at,
+	}
+
 
 
 class Game(models.Model):
@@ -82,10 +116,21 @@ class Game(models.Model):
 			'genre': self.genre,
 			'created_at': self.created_at,
 			'point_to_win': self.point_to_win,
-			# 'stat': self.stat,
-			# 'lobby_game': self.lobby_game,
-			# 'tournament': self.tournament
+			'stat': self.getStat(),
+			'lobby': self.getLobby(),
+			'tournament': self.getTournament()
 		}
+	def getLobby(self):
+		list_lobby = self.lobby_game.all()
+		lobby = [lobby.Lobby_data() for lobby in list_lobby]
+		return lobby
+	def getTournament(self):
+		list_tournament = self.tournament.all()
+		tournament = [tournament.Tournament_data() for tournament in list_tournament]
+		return tournament
+	def getStat(self):
+		stat = self.stat.stat_game_data()
+		return stat
 
 class Stat_Game(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -101,12 +146,17 @@ class Stat_Game(models.Model):
 		self.time_played += time
 		self.avg_game_time = self.time_played / self.nb_party
 		self.save()
+	def getPaties(self):
+		list_party = self.id_party.all()
+		party = [party.Party_data() for party in list_party]
+		return party
 	def stat_game_data(self):
 		return {
 			'nb_played': self.nb_played,
 			'time_played': self.time_played,
 			'nb_party': self.nb_party,
-			'avg_game_time': self.avg_game_time
+			'avg_game_time': self.avg_game_time,
+			'parties': self.getPaties()
 		}
 
 
@@ -148,16 +198,20 @@ class Stat_User_by_Game(models.Model):
 class Lobby(models.Model):
 	id = models.AutoField(primary_key=True)
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
-	id_game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	game = models.ForeignKey('Game', on_delete=models.CASCADE)
 	user = models.ManyToManyField('UserInLobby', related_name='user')
 	def __str__(self):
 		return self.id
-	def Lobby_data(self):
+	def getAllUser(self):
+		list_user = self.user.all()
+		user = [user.UserInLobby_data() for user in list_user]
+		return user
+	def lobby_data(self):
 		return {
 			'id': self.id,
 			'type': self.type,
-			'id_game': self.id_game,
-			'user': self.user
+			'id_game': self.game.id,
+			'user': self.getAllUser()
 	}
 
 #a user can be in one and only one lobby
@@ -181,37 +235,52 @@ class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
 	id_game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
 	name = models.CharField(max_length=30, default='Tournament')
+	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='creator')
+	status = models.CharField(max_length=30, default='Waiting')
+	nb_player_to_start = models.IntegerField(default=4)
+	nb_round = models.IntegerField(default=2)
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(auto_now=True)
-	is_active = models.BooleanField(default=False)
-	status = models.CharField(max_length=30, default='Waiting')
-	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
-	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='creator')
+	# is_active = models.BooleanField(default=False)
 	lobby_tournament = models.ForeignKey('Lobby', on_delete=models.CASCADE, default=None)
 	parties = models.ManyToManyField('Party', related_name='party')
 	user_tournament = models.ManyToManyField('CustomUser', related_name='user')
 	invited_user = models.ManyToManyField('CustomUser', related_name='invited')
-	nb_player_to_start = models.IntegerField(default=4)
+	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
+	
 	def __str__(self):
 		return self.id
+	def getAllParties(self):
+		list_party = self.parties.all()
+		party = [party.Party_data() for party in list_party]
+		return party
+	def getAllUser(self):
+		list_user = self.user_tournament.all()
+		user = [user.user_data() for user in list_user]
+		return user
+	def getAllInvitedUser(self):
+		list_user = self.invited_user.all()
+		user = [user.user_data() for user in list_user]
+		return user
 	def Tournament_data(self):
 		return {
 			'id': self.id,
 			'id_game': self.id_game,
 			'name': self.name,
+			'creator': self.creator,
+			'nb_player_to_start': self.nb_player_to_start,
+			'status': self.status, # 'Waiting', "Playing", "Finished"
 			'started_at': self.started_at,
 			'ended_at': self.ended_at,
-			'is_active': self.is_active,
-			'winner': self.winner,
-			'creator': self.creator,
+			# 'is_active': self.is_active,
 			'lobby_tournament': self.lobby_tournament,
 			'parties': self.parties,
 			'nb_round': self.nb_round,
-			'user_tournament': self.user_tournament.all(),
-			'nb_player': len(self.user_tournament)
+			'user_tournament': self.getAllUser(),
+			'invited_user': self.getAllInvitedUser(),
+			'winner': self.winner,
 	}
 
-	
 
 class Party(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -281,19 +350,3 @@ class PartyInTournament(models.Model):
 			'id_tournament': self.id_tournament
 	}
 
-class friend_request(models.Model):
-	id = models.AutoField(primary_key=True)
-	id_sender = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='sender')
-	id_receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
-	created_at = models.DateTimeField(auto_now_add=True)
-	status = models.CharField(max_length=30, default='Waiting')
-	def __str__(self):
-		return self.id
-	def friend_request_data(self):
-		return {
-			'id': self.id,
-			'id_sender': self.id_sender,
-			'id_receiver': self.id_receiver,
-			'created_at': self.created_at,
-			'status': self.status
-	}

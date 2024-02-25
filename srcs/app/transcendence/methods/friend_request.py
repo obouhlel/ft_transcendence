@@ -11,7 +11,7 @@ from django.utils import timezone
 #Update: PUT
 #Delete: DELETE
 
-
+#return data as friend request object
 @login_required
 @require_http_methods(['GET'])
 def getAllFriendRequestofUser(request, id_user):
@@ -24,7 +24,55 @@ def getAllFriendRequestofUser(request, id_user):
 		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
 
 
+#return data as friend request object
+@login_required
+@require_http_methods(['GET'])
+def getAllFriendRequestSentByUser(request, id_user):
+	try:
+		user = CustomUser.objects.get(id=id_user)
+		list_friend_request = user.friend_request_sent.all()
+		data = [request.friend_request_data() for request in list_friend_request]
+		return JsonResponse({'status': 'ok', 'friend_request': data})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
 
+def accept_friend_request(sender, receiver):
+	sender.friends.add(receiver)
+	receiver.friends.add(sender)
+	sender.friend_request_sent.get(sender=sender, receiver=receiver).delete()
+	receiver.friend_request_received.get(sender=sender, receiver=receiver).delete()
+	
+	sender.save()
+	receiver.save()
+
+# friend_requests
+# GET: RETURN ALL FRIEND REQUESTS
+# POST: SEND FRIEND REQUEST
+# PARAMS: username, action
+# FORMATS:
+@login_required
+@require_http_methods(['POST'])
+def send_friend_request(request):
+	data = json.loads(request.body)
+	friend_id = data['user_id']
+	user = request.user
+	try:
+		friend = CustomUser.objects.get(id=friend_id)
+		if friend == user:
+			return JsonResponse({'status': 'error', 'message': 'You can\'t send a friend request to yourself.'}, status=400)
+		if friend in user.friends.all():
+			return JsonResponse({'status': 'error', 'message': 'You are already friend with this user.'}, status=400)
+		if friend in user.friend_requests.all():
+			return JsonResponse({'status': 'error', 'message': 'You already sent a friend request to this user.'}, status=400)
+		if user in friend.friend_requests.all():
+			return JsonResponse({'status': 'error', 'message': 'This user already sent you a friend request, please accept it.'}, status=400)
+		user.friend_request_sent.create(sender=user, receiver=friend, created_at=timezone.now())
+		friend.friend_request.create(sender=user, receiver=friend, created_at=timezone.now())
+		#sent notification to the user friend
+		return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.'})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
+	
 
 # friend_requests
 # POST: ACCEPT FRIEND REQUEST OR DECLINE FRIEND REQUEST
@@ -56,39 +104,6 @@ def respond_to_friend_request(request):
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
 
-# friend_requests
-# GET: RETURN ALL FRIEND REQUESTS
-# POST: SEND FRIEND REQUEST
-# PARAMS: username, action
-# FORMATS:
-def request_friend(request):
-	data = json.loads(request.body)
-	username = data['username']
-	action = data['action']
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			friend_requests = request.user.friend_requests.all()
-			data = []
-			for friend in friend_requests:
-				data += [{
-					'username': friend.username,
-					'avatar': friend.avatar.url if friend.avatar else None,
-				}]
-			return JsonResponse({'status': 'ok', 'friend_requests': data})
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	elif request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				friend = CustomUser.objects.get(username=username)
-				request.user.friend_requests.add(friend)
-				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami envoyée avec succès.'})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
 
 #remove friend
 # POST: REMOVE FRIEND

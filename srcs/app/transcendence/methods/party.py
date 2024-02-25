@@ -104,24 +104,13 @@ def isUserInParty(party, user):
 		return True
 	else:
 		return False
-		
 
-def EndParty(party):
+def EndPartyinTournament(tournament, party):
+	#End party first
 	party.update_end()
-	try:
-		stat_game = Stat_Game.objects.get(id_game=party.id_game)
-		stat_game.update(party.time_played, party.id)
-		stat_user = Stat_User_by_Game.objects.get(id_user=party.player1, id_game=party.id_game)
-		stat_user.update(party.time_played, party.id)
-		stat_user = Stat_User_by_Game.objects.get(id_user=party.player2, id_game=party.id_game)
-		stat_user.update(party.time_played, party.id)
-		#if this party is for tournament, we need to update the tournament
-		# if (party.type = "tournament"):
-		# 	tournament = party.tournament_party
-		# 	checktoNextRound(tournament)
-	except Stat_Game.DoesNotExist:
-		stat_game = Stat_Game.objects.create(id_game=party.id_game, nb_played=1, time_played=party.time_played, nb_party=1)
-		stat_game.save()
+
+
+
 
 @login_required
 @require_http_methods(['POST'])
@@ -139,7 +128,7 @@ def addPointToParty(request, id_party):
 				party.score2 += 1
 			party.save()
 			if party.score1 == party.id_game.point_to_win or party.score2 == party.id_game.point_to_win:
-				EndParty(party)
+				party.update_end()
 				return JsonResponse({'status': 'ok', 'message': 'Party ended successfully.'})
 			return JsonResponse({'status': 'ok', 'message': 'Point added successfully.'})
 		else:

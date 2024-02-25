@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from transcendence.models  import Game, Tournament, Lobby, PartyInTournament, CustomUser, UserInLobby
 import json
 from django.utils import timezone
+import math
 
 
 #CRUD : Create, Read, Update, Delete
@@ -93,6 +94,7 @@ def createTournament(request):
 		game = Game.objects.get(id=data['id_game'])
 		tournament = Tournament.objects.create(game=game, user=request.user, nb_player_to_start=nb_player)
 		tournament.nb_player_to_start = nb_player
+		tournament.nb_round = math.log2(nb_player)
 		tournament.status = 'waiting'
 		tournament.start_date = timezone.now()
 		tournament.creator = request.user
