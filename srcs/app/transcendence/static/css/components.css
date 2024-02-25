@@ -29,3 +29,14 @@
   .blue-btn:active{
   transform: scale(0.98);
   }
+
+  .white-btn:active{
+    transform: scale(0.98);
+  }
+
+  .white-btn:hover {
+    background: #4e51ff;
+    color: #fff;
+    transition: ease-in, 0.3s;
+  }
+

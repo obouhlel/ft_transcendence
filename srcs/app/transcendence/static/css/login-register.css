@@ -87,6 +87,15 @@
 .wrapper .btn-42{
   margin-top: 20px;
 }
+
+.wrapper .btn:active{
+  transform: scale(0.98);
+}
+
+.wrapper .btn-42:active{
+  transform: scale(0.98);
+}
+
 .wrapper .register-link{
    text-align: center;
     font-size: 14.5px;
