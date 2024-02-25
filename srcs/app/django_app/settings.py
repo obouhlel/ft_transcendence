@@ -90,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Authentification 42
 API_42_UID = config('CLIENT_ID')
 API_42_SECRET = config('CLIENT_SECRET')
-API_42_REDIRECT_URI = 'https://localhost:8000/api/login42/'
+API_42_REDIRECT_URI = 'https://$HOST/api/login42/'
 
 # Internationalization
 
@@ -134,11 +134,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
+
 # CORS AND CSRF
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_TRUSTED_ORIGINS = []
 # CSRF_TRUSTED_ORIGINS = [
 #     "https://localhost:8000",
-# 	"https://api.intra.42.fr"
+# 	"https://api.intra.42.fr",
 # ]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
