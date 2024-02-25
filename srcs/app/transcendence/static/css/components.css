@@ -19,3 +19,13 @@
     cursor: pointer;
     text-decoration: none;
   }
+
+  .blue-btn:hover {
+    background: #fff;
+    color: #4e51ff;
+    transition: ease-in, 0.3s;
+  }
+  
+  .blue-btn:active{
+  transform: scale(0.98);
+  }
