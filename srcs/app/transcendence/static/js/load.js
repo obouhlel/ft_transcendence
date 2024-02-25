@@ -1,5 +1,5 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
-import { handleRegisterFormSubmit } from './register.js';
+import { handleRegisterFormSubmit, changeAvatar } from './register.js';
 import { handleEditProfileFormSubmit, gameTab } from './profile.js';
 import { dropdown } from './header.js';
 // import { game, listenerGame } from './game.js';
@@ -30,7 +30,10 @@ function is_logged_in()
 
 const pageHandlers = {
     'login': handleLoginFormSubmit,
-    'register': handleRegisterFormSubmit,
+    'register': () => {
+		handleRegisterFormSubmit();
+		changeAvatar();
+	},
 	'profile': gameTab,
     'edit_profile': handleEditProfileFormSubmit,
     // 'game-1': () => {

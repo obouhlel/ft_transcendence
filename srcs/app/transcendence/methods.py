@@ -124,8 +124,6 @@ def register_user(request):
 		user = CustomUser.objects.create(username=username, password=make_password(password), email=email, first_name=firstname, last_name=lastname ,sexe=sexe, birthdate=birthdate, date_joined=timezone.now())
 		if 'avatar' in request.FILES:
 			user.avatar = request.FILES['avatar']
-		else :
-			user.avatar = 'no_avatar.png'
 		user.save()
 		return JsonResponse({'status': 'ok', 'message': 'Votre compte a été créé avec succès.'})
 	else:
