@@ -129,19 +129,22 @@ class Duo():
         
     async def gameLoop(self):
         while True:
-            self.ball.move({ 'left': self.getPlayerLeft(),
-                                   'right': self.getPlayerRight() })
-            await self.broadcast({ 'game': 'positions',
-                                   'positionBallX': self.ball.position['x'],
-                                   'positionBallZ': self.ball.position['z'],
-                                   'playerLeft': self.getPlayerLeft().position,
-                                   'playerRight': self.getPlayerRight().position })
+            playerLeft = self.getPlayerLeft()
+            playerRight = self.getPlayerRight()
+            if playerLeft != None and playerRight != None:
+                self.ball.move({ 'left': playerLeft,
+                                 'right': playerRight })
+                await self.broadcast({ 'game': 'positions',
+                                       'positionBallX': self.ball.position['x'],
+                                       'positionBallZ': self.ball.position['z'],
+                                       'playerLeft': playerLeft.position,
+                                       'playerRight': playerRight.position })
             if self.isScoreChanged():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
                 await self.broadcast({ 'game': 'end',
-                                       'winner': self.getPlayerLeft().score == 10 and 'left' or 'right' })
+                                       'winner': playerLeft.score == 10 and 'left' or 'right' })
                 return
             await asyncio.sleep(0.01)
     
