@@ -30,22 +30,14 @@
 				<input type="text" placeholder="Username" id="username" value="{{ user.username }}" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Password" id="password" required />
+				<input type="password" placeholder="New password" id="password" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
+				<input type="password" placeholder="Confirm new password" id="password_confirm" required />
 			</div>
 			<div class="input-box input-box-reg">
 				<input type="email" placeholder="Email" id="email" value="{{ user.email }}" required />
 			</div>
-			<div class="input-box input-box-reg">
-				<input type="date" placeholder="Date of Birth" id="birthdate" value="{{ user.birthdate|to_date_string }}" required />
-			</div>
-			<select id="sexe" name="sexe" class="input-box input-box-reg">
-				<option value="F" title="Female" {% if user.sexe == 'F' %}selected{% endif %}>Female</option>
-				<option value="M" title="Male" {% if user.sexe == 'M' %}selected{% endif %}>Male</option>
-				<option value="N" title="Other" {% if user.sexe == 'N' %}selected{% endif %}>Other</option>
-			</select>
 			<button type="submit" class="btn">Save changes</button>
 		</form>
 	</div>

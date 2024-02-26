@@ -82,14 +82,11 @@
     color: #ffffff;
     transition: all ease 0.5s;
   }
-  
-  .friend-list .friend-list-members .end-btns {
+  .friend-list .friend-list-members .end-cards {
     margin-top: 7px;
   }
   .friend-list .friend-list-members {
     margin-top: 12px;
-    max-height: 632px;
-    overflow: scroll;
   }
   .friend-list .friend-list-members .friend-card .member-details img {
     width: 40.86px;
