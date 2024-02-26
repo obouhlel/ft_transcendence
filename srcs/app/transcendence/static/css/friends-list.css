@@ -88,6 +88,8 @@
   }
   .friend-list .friend-list-members {
     margin-top: 12px;
+    max-height: 632px;
+    overflow: scroll;
   }
   .friend-list .friend-list-members .friend-card .member-details img {
     width: 40.86px;
