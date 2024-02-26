@@ -4,7 +4,7 @@
 	<h1>Modifier le profil</h1>
 
 	<form method="post" id="profile-form">
-		{% csrf_token %}
+		
 		{% if messages %}
 		<ul class="messages">
 			{% for message in messages %}
@@ -36,7 +36,6 @@
 <main class="main-content">
 	<div class="wrapper wrapper-register">
 		<form method="post" id="profile-form">
-			{% csrf_token %}
 			<p id="message"></p>
 			<div class="avatar-upload-container">
 				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
