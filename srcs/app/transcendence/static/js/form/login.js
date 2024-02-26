@@ -3,7 +3,7 @@ import { callback } from '../utils/callback.js';
 
 export function handleLoginFormSubmit() {
 	const client_id = 'u-s4t2ud-b221266d69284108d856829b7bf94bddec68b82af2a4d2eb994ac4df2978deb5';
-	const redirectURI42 = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(window.location.origin + '/api/login42/')}&response_type=code`;
+	const redirectURI42 = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(window.location.origin + '/api/login_42/')}&response_type=code`;
 	console.log(redirectURI42);
 	const form = document.getElementById('login-form');
 	const login42 = document.getElementById('login-42');
