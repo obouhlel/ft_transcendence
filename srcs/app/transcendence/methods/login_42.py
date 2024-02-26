@@ -65,6 +65,7 @@ def create_user(user_data, access_token):
 def authenticate_user(request, user):
     django_login(request, user)
     user.status = 'online'
+    user.save()
     return redirect('/')
 
 def redirect_with_message(url, message):
