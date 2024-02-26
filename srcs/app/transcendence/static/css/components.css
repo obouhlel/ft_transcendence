@@ -40,3 +40,19 @@
     transition: ease-in, 0.3s;
   }
 
+/*SCROLLBAR*/
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1a7; 
+}
+
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px; 
+}
