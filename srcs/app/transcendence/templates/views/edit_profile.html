@@ -1,82 +1,50 @@
 {% include 'header.html' %}
 {% load static %}
-<!-- <main>
-	<h1>Modifier le profil</h1>
-
-	<form method="post" id="profile-form">
-		{% csrf_token %}
-		{% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-			<li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-				{% endfor %}
-		</ul>
-		{% endif %}
-		<label for="username">Nom d'utilisateur:</label><br>
-		<input type="text" id="username" name="username"><br>
-		<label for="email">Email:</label><br>
-		<input type="email" id="email" name="email"><br>
-		<label for="firstname">Prénom:</label><br>
-		<input type="text" id="firstname" name="firstname"><br>
-		<label for="lastname">Nom:</label><br>
-		<input type="text" id="lastname" name="lastname"><br>
-		<label for="sexe">Sexe:</label><br>
-		<input type="text" id="sexe" name="sexe"><br>
-		<label for="birthdate">Date de naissance:</label><br>
-		<input type="date" id="birthdate" name="birthdate"><br>
-		<label for="avatar">Avatar:</label><br>
-		<input type="file" id="avatar" name="avatar"><br>
-		<label for="password">Nouveau mot de passe:</label><br>
-		<input type="password" id="password" name="password"><br>
-		<label for="password_confirm">Confirmer le mot de passe:</label><br>
-		<input type="password" id="password_confirm" name="password_confirm"><br>
-		<input type="submit" value="Mettre à jour">
-	</form>
-</main> -->
 <main class="main-content">
 	<div class="wrapper wrapper-register">
-		<div class="avatar-upload-container">
-			{% if user.avatar %}
-			<img src="{{ user.avatar.url }}" class="avatar-placeholder" alt="user">
-			{% else %}
-			<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" alt="user">
-			{% endif %}
-			<div class="image-upload-area">
-				<label for='picture'>
-					<img src="{% static 'img/pencil.png' %}" class="avatar-upload-icon" width="50" height="50" alt="user">
-				</label>
-			</div>
-
-			<form style='display: none;'>
-				<input type="file" name="pic" accept=".gif,.jpg,.png,.tif|image/*" id='picture'>
-				<input type="submit">
-			</form>
-		</div>
 		<form method="post" id="profile-form">
-			{% csrf_token %}
-			{% if messages %}
-			<ul class="messages">
-				{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
-					{% endfor %}
-			</ul>
-			{% endif %}
-			<div class="input-box input-box-reg">
-				<input type="text" placeholder=" New Name" required>
+			<p id="message"></p>
+			<div class="avatar-upload-container">
+				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
+					alt="user" />
+				<input type="file" id="avatar" name="avatar" accept="image/*" style="display: none" />
+				<div class="image-upload-area">
+					<label for="avatar" id="avatar" name="avatar">
+						<img src="{% static 'img/pencil.png' %}" class="avatar-upload-icon" width="40" height="40"
+							alt="user" />
+					</label>
+				</div>
+			</div>
+			<div class="input-box-group">
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="First Name" id="firstname" required />
+				</div>
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="Last Name" id="lastname" required />
+				</div>
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="text" placeholder=" New Nickname" required>
+				<input type="text" placeholder="Username" id="username" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="email" placeholder="New Email" required>
+				<input type="email" placeholder="Email" id="email" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="New Password" required>
+				<input type="password" placeholder="Password" id="password" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Confirm New Password" required>
+				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
 			</div>
-
+			<label class="birthdate-label">Date of birth:</label>
+			<div class="input-box input-box-reg date-input-box">
+				<input type="date" placeholder="Date of Birth" id="birthdate" required />
+			</div>
+			<label class="sex-label">Sex:</label>
+			<select id="sexe" name="sexe" class="input-box input-box-reg">
+				<option value="F" title="Female">Female</option>
+				<option value="M" title="Male">Male</option>
+				<option value="N" title="Other">Other</option>
+			</select>
 			<button type="submit" class="btn">Save changes</button>
 		</form>
 	</div>
