@@ -13,9 +13,9 @@ def login_user(request):
 		django_login(request, user)
 		user.status = 'online'
 		return JsonResponse(
-			{'status': 'ok', 'message': 'Vous êtes maintenant connecté en tant que ' + username}
+			{'status': 'ok', 'message': 'You are now logged in as ' + username}
 		)
 	else:
 		return JsonResponse(
-			{'status': 'error', 'message': 'Nom d\'utilisateur ou mot de passe incorrect.'}, status=401
+			{'status': 'error', 'message': 'Incorrect username or password.'}, status=401
 		)

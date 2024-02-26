@@ -90,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Authentification 42
 API_42_UID = config('CLIENT_ID')
 API_42_SECRET = config('CLIENT_SECRET')
-API_42_REDIRECT_URI = 'https://$HOST/api/login42/'
+API_42_REDIRECT_URI = 'https://$HOST/api/login_42/'
 
 # Internationalization
 
