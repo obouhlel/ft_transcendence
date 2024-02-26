@@ -16,7 +16,7 @@
     box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
     color: #fff;
     border-radius: 10px;
-    padding: 30px 40px;
+    padding: 30px 40px 45px 40px;
   }
   
 .error-wrapper h1 {
@@ -31,7 +31,11 @@
 }
   
 .error-wrapper p {
-      font-size: 23px;
+      font-size: 22px;
       color: #ffffffd1; 
-      margin-bottom: 60px;
+      margin-bottom: 6px;
+}
+
+.error-btn {
+  margin-top: 60px;
 }
