@@ -1,4 +1,5 @@
 import { doRequest, SERVER_URL } from '../utils/fetch.js';
+import { callback } from '../utils/callback.js';
 
 export function handleRegisterFormSubmit() {
     const form = document.getElementById('register-form');
@@ -15,33 +16,11 @@ export function handleRegisterFormSubmit() {
 			if (element) {
 				let value = field === 'avatar' ? element.files[0] : element.value;
 				data.append(field, value);
-			} else {
+			}
+            else {
 				console.log(`Element with ID ${field} not found`);
 			}
 		});
-        try {
-            console.log('data register:', Object.fromEntries(data.entries()));
-            doRequest.Fetch(`${SERVER_URL}/api/register/`, 'POST', data, doRequest.callbackRegister);
-        }
-        catch (error) {
-            console.error('Une erreur est survenue lors de l\'inscription :', error);
-        }
+        doRequest.post(`${SERVER_URL}/api/register/`, data, callback.registered);
     });
 };
-
-export function changeAvatar() {
-    const avatar = document.getElementById('avatar');
-    if (!avatar) { return; }
-
-    avatar.addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.getElementById('avatar-preview');
-            if (preview) {
-                preview.src = e.target.result;
-            }
-        }
-        reader.readAsDataURL(file);
-    });
-}

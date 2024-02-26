@@ -1,4 +1,5 @@
 import { doRequest, SERVER_URL } from '../utils/fetch.js';
+import { callback } from '../utils/callback.js';
 
 export function handleLoginFormSubmit() {
 	const client_id = 'u-s4t2ud-19bb21faf559dbd098d85eea58ab84e1a45b6f5e10a0008bac8679bac0c91d1a';
@@ -18,22 +19,13 @@ export function handleLoginFormSubmit() {
 			'username': username,
 			'password': password
 		};
-		doRequest.Fetch(`${SERVER_URL}/api/login/`, 'POST', data, doRequest.callbackLogin);
+
+		console.log(data);
+		doRequest.post(`${SERVER_URL}/api/login/`, data, callback.login);
 	});
 
 	login42.addEventListener('click', function(event) {
 		event.preventDefault();
 		window.location.href = redirectURI42;
-	});
-}
-
-// logout
-export function handleLogoutFormSubmit() {
-	const logoutButton = document.getElementById('logout-button');
-	if (!logoutButton) { return; }
-	logoutButton.addEventListener('click', function(event) {
-		event.preventDefault();
-		const data = {};
-		doRequest.Fetch(`${SERVER_URL}/api/logout/`, 'POST', data, doRequest.callbackLogout);
 	});
 }

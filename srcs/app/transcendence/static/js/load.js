@@ -1,6 +1,8 @@
-import { handleLoginFormSubmit, handleLogoutFormSubmit } from './form/login.js';
-import { handleRegisterFormSubmit, changeAvatar } from './form/register.js';
+import { handleLoginFormSubmit } from './form/login.js';
+import { handleRegisterFormSubmit } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
+import { handleLogout } from './utils/logout.js';
+import { changeAvatar } from './utils/avatar.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 
@@ -67,7 +69,7 @@ function showPage(page) {
 			pageHandlers[page]();
 		if (isLogged)
 		{
-			handleLogoutFormSubmit();
+			handleLogout();
 			dropdown();
 		}
 	})
