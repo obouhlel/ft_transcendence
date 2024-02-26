@@ -1,6 +1,8 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit, changeAvatar } from './register.js';
 import { handleEditProfileFormSubmit, gameTab } from './profile.js';
+import { handleRegisterFormSubmit } from './register.js';
+import { handleEditProfileFormSubmit, gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 // import { game, listenerGame } from './game.js';
 
@@ -39,6 +41,11 @@ const pageHandlers = {
 		handleEditProfileFormSubmit();
 		changeAvatar();
 	},
+	'profile': () => {
+        gameTab();
+        friendsTab();
+    },
+    'edit_profile': handleEditProfileFormSubmit,
     // 'game-1': () => {
     //     game();
     //     listenerGame();

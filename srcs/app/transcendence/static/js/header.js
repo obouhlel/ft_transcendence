@@ -22,7 +22,6 @@ export function dropdown() {
 		event.stopPropagation();
 	}
 	
-// Listen for clicks outside the dropdowns to close them
 	window.addEventListener('click', function() {
 		hideDropdowns();
 	});
@@ -41,7 +40,6 @@ export function dropdown() {
 		});
 	}
 	
-// Attach an event listener to the cross element to hide the userDropdown specifically
 	const cross = document.getElementById('cross');
 	if (cross) {
 		cross.addEventListener('click', function(event) {
