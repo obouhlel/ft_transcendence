@@ -1,4 +1,5 @@
 {% include 'header.html' %}
+{% load templatetags %}
 {% load static %}
 <main class="main-content">
 	<div class="wrapper wrapper-register">
@@ -15,23 +16,18 @@
 				<div class="image-upload-area">
 					<label for="avatar" id="avatar" name="avatar">
 						<img src="{% static 'img/pencil.png' %}" class="avatar-upload-icon" width="40" height="40"
-							alt="user" />
+						alt="user" />
 					</label>
 				</div>
 			</div>
-			<div class="input-box-group">
-				<div class="input-box input-box-reg">
-					<input type="text" placeholder="First Name" id="firstname" required />
-				</div>
-				<div class="input-box input-box-reg">
-					<input type="text" placeholder="Last Name" id="lastname" required />
-				</div>
+			<div class="input-box input-box-reg">
+				<input type="text" placeholder="First Name" id="firstname" value="{{ user.first_name }}" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="text" placeholder="Username" id="username" required />
+				<input type="text" placeholder="Last Name" id="lastname" value="{{ user.last_name }}" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="email" placeholder="Email" id="email" required />
+				<input type="text" placeholder="Username" id="username" value="{{ user.username }}" required />
 			</div>
 			<div class="input-box input-box-reg">
 				<input type="password" placeholder="Password" id="password" required />
@@ -39,15 +35,16 @@
 			<div class="input-box input-box-reg">
 				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
 			</div>
-			<label class="birthdate-label">Date of birth:</label>
-			<div class="input-box input-box-reg date-input-box">
-				<input type="date" placeholder="Date of Birth" id="birthdate" required />
+			<div class="input-box input-box-reg">
+				<input type="email" placeholder="Email" id="email" value="{{ user.email }}" required />
 			</div>
-			<label class="sex-label">Sex:</label>
+			<div class="input-box input-box-reg">
+				<input type="date" placeholder="Date of Birth" id="birthdate" value="{{ user.birthdate|to_date_string }}" required />
+			</div>
 			<select id="sexe" name="sexe" class="input-box input-box-reg">
-				<option value="F" title="Female">Female</option>
-				<option value="M" title="Male">Male</option>
-				<option value="N" title="Other">Other</option>
+				<option value="F" title="Female" {% if user.sexe == 'F' %}selected{% endif %}>Female</option>
+				<option value="M" title="Male" {% if user.sexe == 'M' %}selected{% endif %}>Male</option>
+				<option value="N" title="Other" {% if user.sexe == 'N' %}selected{% endif %}>Other</option>
 			</select>
 			<button type="submit" class="btn">Save changes</button>
 		</form>
