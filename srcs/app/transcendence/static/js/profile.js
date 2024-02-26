@@ -50,6 +50,29 @@ export function show_dynamic_profile()
 	});
 }
 
+function	show_dynamic_stats(gameID)
+{
+	fetch(`/api/get_stats_users_by_game/${gameID}`)
+	.then(response => response.json())
+	.then(data => {
+		console.log("data: ", data);
+		if (data.status === 'ok') {
+			document.querySelector('.card:nth-child(1) h1').textContent = data.stat.nb_win;
+			document.querySelector('.card:nth-child(2) h1').textContent = data.stat.nb_lose;
+			if (data.stat.nb_win + data.stat.nb_lose === 0)
+				document.querySelector('.card:nth-child(3) h1').textContent = 0;
+			else
+				document.querySelector('.card:nth-child(3) h1').textContent = (data.stat.nb_win / (data.stat.nb_win + data.stat.nb_lose)).toFixed(2);
+			document.querySelector('.card:nth-child(4) h1').textContent = data.stat.nb_played;
+		} else {
+			console.error(data.message);
+		}
+	})
+	.catch(error => {
+		console.error(error);
+	});
+}
+
 /*ACTIVE GAME-TAB FUNCTIONALITY IN USER PROFILE*/
 export function gameTab()
 {
@@ -69,35 +92,9 @@ export function gameTab()
             // Add active class to the current tab link
             this.classList.add('active');
 
-            // // Hide all tab contents
-            // document.querySelectorAll('.tab-content').forEach(function(tab) {
-            //     tab.classList.remove('active-tab');
-            // });
-
-            // // Show the current tab content
-            // document.getElementById(tabId).classList.add('active-tab');
-
             // Fetch game stats
             const gameID = tabId.slice(3);
-            fetch(`/api/get_stats_users_by_game/${gameID}`)
-            .then(response => response.json())
-            .then(data => {
-				console.log("data: ", data);
-                if (data.status === 'ok') {
-                    document.querySelector('.card:nth-child(1) h1').textContent = data.stat.nb_win;
-                    document.querySelector('.card:nth-child(2) h1').textContent = data.stat.nb_lose;
-					if (data.stat.nb_win + data.stat.nb_lose === 0)
-						document.querySelector('.card:nth-child(3) h1').textContent = 0;
-					else
-                    	document.querySelector('.card:nth-child(3) h1').textContent = (data.stat.nb_win / (data.stat.nb_win + data.stat.nb_lose)).toFixed(2);
-                    document.querySelector('.card:nth-child(4) h1').textContent = data.stat.nb_played;
-                } else {
-                    console.error(data.message);
-                }
-            })
-            .catch(error => {
-                console.error(error);
-            });
+			show_dynamic_stats(gameID);
         });
     });
 }

@@ -55,7 +55,7 @@ class Party(models.Model):
 	# is_full = models.BooleanField(default=False)
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(auto_now=True)
-	# status = models.CharField(max_length=30, default='Waiting')
+	status = models.CharField(max_length=30, default='Waiting')
 	player1 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player1')
 	player2 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player2')
 	score1 = models.IntegerField(default=0)
