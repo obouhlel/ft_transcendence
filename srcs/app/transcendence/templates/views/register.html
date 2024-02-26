@@ -1,134 +1,61 @@
-<!-- <main>
-	{% if messages %}
-	<ul class="messages">
-		{% for message in messages %}
-			<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	<form method="post" id="register-form">
-		{% csrf_token %}
-		<label for="username">Username</label>
-		<input type="text" id="username" name="username" required>
-		<br>
-		<label for="email">Email</label>
-		<input type="email" id="email" name="email" required>
-		<br>
-		<label for="password">Password</label>
-		<input type="password" id="password" name="password" required>
-		<br>
-		<label for="confirm password">Confirm password</label>
-		<input type="password" id="password_confirm" name="password_confirm" required>
-		<br>
-		<label for="firstname">Firstname</label>
-		<input type="text" id="firstname" name="firstname">
-		<br>
-		<label for="lastname">Lastname</label>
-		<input type="text" id="lastname" name="lastname">
-		<br>
-		<label for="sexe">Sexe</label>
-		<select id="sexe" name="sexe">
-			<option value="F">F</option>
-			<option value="M">M</option>
-			<option value="N">N</option>
-		</select>
-		<br>
-		<label for="birthdate">Birthdate</label>
-		<input type="date" id="birthdate" name="birthdate">
-		<br>
-		<label for="avatar">Avatar</label>
-		<input type="file" id="avatar" name="avatar">
-		<br>
-		<button type="submit">S'inscrire</button>
-		<br>
-		<button type="button" id="login-42">S'inscrire avec 42</button>
-		<br>
-		<button type="button" id="login">Se connecter</button>
-	</form>
-</main> -->
 {% include 'header.html' %} {% load static %}
 <main class="main-content">
-  <section class="wrapper wrapper-register">
-    <h1>Register</h1>
-    {% if messages %}
-	<ul class="messages">
-		{% for message in messages %}
-			<li{% if message.tags %} id="{{ message.tags }}"{% endif %}>{{ message }}</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-    <form method="post" id="register-form">
-      {% csrf_token %}
-      <div class="avatar-upload-container">
-        <img
-          src="{% static 'img/avatar-placeholder.png' %}"
-          class="avatar-placeholder"
-          id="avatar-preview"
-          alt="user"
-        />
-        <input
-          type="file"
-          id="avatar"
-          name="avatar"
-          accept="image/*"
-          style="display: none"
-        />
-        <div class="image-upload-area">
-          <label for="avatar" id="avatar" name="avatar">
-            <img
-              src="{% static 'img/camera-2.png' %}"
-              class="avatar-upload-icon"
-              width="40"
-              height="40"
-              alt="user"
-            />
-          </label>
-        </div>
-      </div>
-      <div class="input-box-group">
-        <div class="input-box input-box-reg">
-          <input type="text" placeholder="First Name" id="firstname" required />
-        </div>
-        <div class="input-box input-box-reg">
-          <input type="text" placeholder="Last Name" id="lastname" required />
-        </div>
-      </div>
-      <div class="input-box input-box-reg">
-        <input type="text" placeholder="Username" id="username" required />
-      </div>
-      <div class="input-box input-box-reg">
-        <input type="email" placeholder="Email" id="email" required />
-      </div>
-      <div class="input-box input-box-reg">
-        <input type="password" placeholder="Password" id="password" required />
-      </div>
-      <div class="input-box input-box-reg">
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          id="password_confirm"
-          required
-        />
-      </div>
-      <label class="birthdate-label">Date of birth:</label>
-      <div class="input-box input-box-reg date-input-box">
-        <input
-          type="date"
-          placeholder="Date of Birth"
-          id="birthdate"
-          required
-        />
-      </div>
-      <label class="sex-label">Sex:</label>
-      <select id="sexe" name="sexe" class="input-box input-box-reg">
-        <option value="F" title="Female">Female</option>
-        <option value="M" title="Male">Male</option>
-        <option value="N" title="Other">Other</option>
-      </select>
-      <button type="submit" class="btn">Register</button>
-      <div class="register-link">
-        <p>Already have an account? <a href="#login"> Login </a></p>
-      </div>
-    </form>
-  </section>
+	<section class="wrapper wrapper-register">
+		<h1>Register</h1>
+		{% if messages %}
+		<ul class="messages">
+			{% for message in messages %}
+			<li{% if message.tags %} id="{{ message.tags }}" {% endif %}>{{ message }}</li>
+				{% endfor %}
+		</ul>
+		{% endif %}
+		<form method="post" id="register-form">
+			{% csrf_token %}
+			<div class="avatar-upload-container">
+				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
+					alt="user" />
+				<input type="file" id="avatar" name="avatar" accept="image/*" style="display: none" />
+				<div class="image-upload-area">
+					<label for="avatar" id="avatar" name="avatar">
+						<img src="{% static 'img/camera-2.png' %}" class="avatar-upload-icon" width="40" height="40"
+							alt="user" />
+					</label>
+				</div>
+			</div>
+			<div class="input-box-group">
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="First Name" id="firstname" required />
+				</div>
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="Last Name" id="lastname" required />
+				</div>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="text" placeholder="Username" id="username" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="email" placeholder="Email" id="email" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Password" id="password" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
+			</div>
+			<label class="birthdate-label">Date of birth:</label>
+			<div class="input-box input-box-reg date-input-box">
+				<input type="date" placeholder="Date of Birth" id="birthdate" required />
+			</div>
+			<label class="sex-label">Sex:</label>
+			<select id="sexe" name="sexe" class="input-box input-box-reg">
+				<option value="F" title="Female">Female</option>
+				<option value="M" title="Male">Male</option>
+				<option value="N" title="Other">Other</option>
+			</select>
+			<button type="submit" class="btn">Register</button>
+			<div class="register-link">
+				<p>Already have an account? <a href="#login"> Login </a></p>
+			</div>
+		</form>
+	</section>
 </main>
