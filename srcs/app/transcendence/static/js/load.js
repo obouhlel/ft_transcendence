@@ -3,11 +3,13 @@ import { handleRegisterFormSubmit } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
 import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
+import { message } from './utils/message.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 
 window.addEventListener('hashchange', function() {
-	let page = window.location.hash.substring(1);
+	let hash = window.location.hash.substring(1);
+	let page = hash.split('?')[0];
 	if (!page) {
 		page = 'home';
 	}
@@ -15,7 +17,8 @@ window.addEventListener('hashchange', function() {
 });
 
 window.addEventListener('load', function() {
-	let page = window.location.hash.substring(1);
+	let hash = window.location.hash.substring(1);
+	let page = hash.split('?')[0];
 	if (!page) {
 		page = 'home';
 	}
@@ -31,6 +34,7 @@ function is_logged_in()
 }
 
 const pageHandlers = {
+	'400': message,
     'login': handleLoginFormSubmit,
     'register': () => {
 		handleRegisterFormSubmit();
