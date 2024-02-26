@@ -93,14 +93,12 @@ export const doRequest = {
 		{
 			console.log('INSCRIPTION REUSSIE');
 			messageElement.textContent = data.message;
-			messageElement.style.color = 'green';
 			window.location.hash = 'login';
 		}
 		else if (data.status === 'error')
 		{
 			console.log('ERREUR D\'INSCRIPTION');
 			messageElement.textContent = data.message;
-			messageElement.style.color = 'red';
 		}
 	},
 
@@ -118,7 +116,6 @@ export const doRequest = {
 		{
 			console.log('ERREUR DE MODIFICATION');
 			messageElement.textContent = data.message;
-			messageElement.style.color = 'red';
 		}
 	},
 

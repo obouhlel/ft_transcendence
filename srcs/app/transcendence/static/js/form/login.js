@@ -1,7 +1,7 @@
 import { doRequest, SERVER_URL } from '../utils/fetch.js';
 
 export function handleLoginFormSubmit() {
-	const client_id = 'u-s4t2ud-84e176c6a1992e86e989e64db2d8abfb1aed667b9f913f5df3042bab89330f09';
+	const client_id = 'u-s4t2ud-19bb21faf559dbd098d85eea58ab84e1a45b6f5e10a0008bac8679bac0c91d1a';
 	const redirectURI42 = `https://api.intra.42.fr/oauth/authorize?client_id=${client_id}&redirect_uri=${encodeURIComponent(window.location.origin + '/api/login42/')}&response_type=code`;
 	console.log(redirectURI42);
 	const form = document.getElementById('login-form');

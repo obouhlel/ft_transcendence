@@ -5,8 +5,8 @@ from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods
 from django.core.files.base import ContentFile
-import requests
 from urllib.parse import urlencode
+import requests
 
 def get_access_token(code, request):
     token_url = 'https://api.intra.42.fr/oauth/token'
