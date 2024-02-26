@@ -1,4 +1,4 @@
-import { doRequest, SERVER_URL } from './fetch.js';
+import { doRequest, SERVER_URL } from '../utils/fetch.js';
 
 export function handleRegisterFormSubmit() {
     const form = document.getElementById('register-form');
