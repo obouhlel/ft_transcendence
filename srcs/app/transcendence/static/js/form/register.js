@@ -8,7 +8,17 @@ export function handleRegisterFormSubmit() {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-        const fields = ['username', 'firstname', 'lastname', 'email', 'password', 'password_confirm', 'avatar', 'birthdate', 'sexe'];
+        const fields = [
+			'username',
+			'firstname',
+			'lastname',
+			'email',
+			'password',
+			'password_confirm',
+			'avatar',
+			'birthdate',
+			'sexe'
+		];
         let data = new FormData();
 
 		fields.forEach(field => {
@@ -21,6 +31,7 @@ export function handleRegisterFormSubmit() {
 				console.log(`Element with ID ${field} not found`);
 			}
 		});
+
         doRequest.post(`${SERVER_URL}/api/register/`, data, callback.registered);
     });
 };

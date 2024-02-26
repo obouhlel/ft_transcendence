@@ -31,9 +31,9 @@ export const doRequest = {
         };
         options.body = JSON.stringify(data);
         fetch(url, options)
-        .then(response => response.json())
-        .then(data => { callback(data); })
-        .catch(error => { console.error(error); });
+            .then(response => response.json())
+            .then(data => { callback(data); })
+            .catch(error => { console.error(error); });
     },
 
     get: function(url) {
@@ -44,7 +44,7 @@ export const doRequest = {
             credentials: 'include'
         };
         return fetch(url, options)
-        .then(response => response.json())
-        .catch(error => { console.error(error); });
+            .then(response => response.json())
+            .catch(error => { console.error(error); });
     },
 };
