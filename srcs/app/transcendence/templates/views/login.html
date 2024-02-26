@@ -2,8 +2,9 @@
 {% include 'header.html' %}
 <main class="main-content">
     <section class="wrapper wrapper-login">
+        <h1>Login</h1>
         <form method="post" id="login-form">
-            <h1>Login</h1>
+            {% csrf_token %}
             <div class="input-box">
                 <input type="text" placeholder="username" id="username" required>
                 <i class='bx bxs-user'></i>
