@@ -1,20 +1,19 @@
-{% extends 'index.html' %}
-
+{% include 'header.html' %}
 {% load static %}
-
-{% block title %}Games{% endblock %}
-
-{% block extra_head %}
-	<link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock %}
-
-{% block content %}
-	<main>
-		<a href="/pong/">
-			<div id="pong"></div>
-		</a>
-		<a href="/shooter/">
-			<div id="shooter"></div>
-		</a>
-	</main>
-{% endblock %}
+<main class="games-section">
+    <h1>Games</h1>
+    <div class="games-grid">
+        <div>
+            <a href="#game-1">
+                <img src="{% static 'img/pong.jpg' %}" class="game-image" alt="pong">
+                <h2>Pong</h2>
+            </a>
+        </div>
+        <div>
+            <a href="#game-2">
+                <img src="{% static 'img/pew.jpg' %}" class="game-image" alt="shooter">
+                <h2>Shooter</h2>
+            </a>
+        </div>
+    </div>
+</main>

@@ -1,9 +1,17 @@
-*
-{
-	margin: 0;
-	padding: 0;
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
 body {
-	background-color: #F5F5F5;
+  max-width: 100%;
+  overflow-x: hidden;
+  background-image: url("../img/background.png");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
 }

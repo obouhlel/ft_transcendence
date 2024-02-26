@@ -1,0 +1,10 @@
+@import "base.css";
+@import "components.css";
+@import "login-register.css";
+@import "navbar.css";
+@import "dropdowns.css";
+@import "games.css";
+@import "user-profile.css";
+@import "friends-list.css";
+@import "responsive.css";
+@import "error-pages.css"

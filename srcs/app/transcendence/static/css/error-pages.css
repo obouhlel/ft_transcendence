@@ -1,0 +1,37 @@
+.error-main-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 100vh;
+    width: 100vw; 
+  }
+  
+.error-wrapper {
+    width: 90%;
+    max-width: 600px; 
+    background: transparent;
+    border:2px solid rgba(255, 255, 255, .2);
+    backdrop-filter:blur(20px);
+    box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
+    color: #fff;
+    border-radius: 10px;
+    padding: 30px 40px;
+  }
+  
+.error-wrapper h1 {
+    font-size: 166px;
+    font-weight: 400;
+}
+  
+.error-wrapper h2 {
+    font-size: 40px;
+    margin-bottom: 30px; 
+    color: #fff;
+}
+  
+.error-wrapper p {
+      font-size: 23px;
+      color: #ffffffd1; 
+      margin-bottom: 60px;
+}

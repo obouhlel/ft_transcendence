@@ -9,4 +9,11 @@ tzdata
 channels[daphne]
 # cors
 django-cors-headers
+#timezone
 pytz
+# Images
+Pillow
+# Authentication (pour faire des requête en backend à l'API de 42)
+requests
+# Update the front end (need to remove after the end of the project)
+watchfiles

@@ -1,22 +1,25 @@
-{% extends 'index.html' %}
-
 {% load static %}
-
-{% block title %}Login{% endblock %}
-
-{% block extra_head %}
-	<link rel="stylesheet" href="{% static 'css/login.css' %}">
-{% endblock %}
-
-{% block content %}
-	<main>
-		<div id="message"></div>
-		<form method="post" id="login-form" >
-			{% csrf_token %}
-			{{ form.as_p }}
-			<input type="submit" value="Se connecter">
-			<br>
-			<button type="button" id="Auth42">42</button>
-		</form>
-	</main>
-{% endblock %}
+{% include 'header.html' %}
+<main class="main-content">
+    <section class="wrapper wrapper-login">
+        <h1>Login</h1>
+        <p id="message"></p>
+        <form method="post" id="login-form">
+            <div class="input-box">
+                <input type="text" placeholder="username" id="username" required>
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="password" id="password" required>
+                <i class='bx bxs-lock-alt'></i>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <button type="button" class="btn btn-42" id="login-42">Login with 42</button>
+            <div class="register-link">
+                <p>Dont't have an account? <a href="#register">
+                        Register
+                    </a></p>
+            </div>
+        </form>
+    </section>
+</main>
