@@ -4,6 +4,7 @@ from django.utils import timezone
 from transcendence.models import CustomUser  # Remplacez 'transcendence' par le nom de votre application
 from transcendence.models import Game  # Remplacez 'transcendence' par le nom de votre application
 from transcendence.models import Stat_Game, Lobby  # Remplacez 'transcendence' par le nom de votre application
+from transcendence.models import Stat_User_by_Game  # Ajoutez cette ligne en haut du fichier
 
 class Command(BaseCommand):
 	help = 'Add default users to the database'
@@ -51,3 +52,8 @@ class Command(BaseCommand):
 		stat_game2.save()
 
 		game2 = Game.objects.create(name='shooter',description='description2',genre='genre2',stat=stat_game2)
+
+		Stat_User_by_Game.objects.create(id_user=user1, id_game=game1)
+		Stat_User_by_Game.objects.create(id_user=user2, id_game=game1)
+		Stat_User_by_Game.objects.create(id_user=user1, id_game=game2)
+		Stat_User_by_Game.objects.create(id_user=user2, id_game=game2)

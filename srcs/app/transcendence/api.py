@@ -24,4 +24,6 @@ urlpatterns = [
 	path('get_all_friends/', methods.get_all_friends, name='get_all_friends'),
 	path('get_all_blocked/', methods.get_all_blocked, name='get_all_blocked'),
 	path('get_all_request/', methods.get_all_request, name='get_all_request'),
+	path('get_stats_users_by_game/<int:id_game>', methods.get_stats_users_by_game, name='get_stats_users_by_game'),
+	path('add_win_to_user/<int:id_game>', methods.add_win_to_user, name='add_win_to_user'),
 ]

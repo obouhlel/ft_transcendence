@@ -12,7 +12,7 @@ from django.conf import settings
 from django.shortcuts import redirect
 import requests
 from django.core.files.base import ContentFile
-from .models import Game, Party, Stat_Game, Lobby
+from .models import Game, Party, Stat_Game, Lobby, Stat_User_by_Game
 
 def login_user(request):
 	if request.method == 'POST':
@@ -127,6 +127,9 @@ def register_user(request):
 		else :
 			user.avatar = 'no_avatar.png'
 		user.save()
+		games = Game.objects.all()
+		for game in games:
+			Stat_User_by_Game.objects.create(id_user=user, id_game=game)
 		return JsonResponse({'status': 'ok', 'message': 'Votre compte a été créé avec succès.'})
 	else:
 		return JsonResponse({'status': 'error', 'message': 'Cette méthode n\'est pas autorisée.'}, status=405)
@@ -588,6 +591,46 @@ def end_party(request, id_party):
 				return JsonResponse({'status': 'ok', 'message': 'Partie terminée avec succès.'})
 			except Party.DoesNotExist:
 				return JsonResponse({'status': 'error', 'message': 'This party doesn\'t exist.'}, status=404)
+		else:
+			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
+	else:
+		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+def get_stats_users_by_game(request, id_game):
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            try:
+                game = Game.objects.get(id=id_game)
+                try:
+                    stat_user = request.user.stat_user_by_game_set.get(id_game=game)
+                    data = {
+                        'nb_played': stat_user.nb_played,
+                        'time_played': stat_user.time_played,
+                        'nb_win': stat_user.nb_win,
+                        'nb_lose': stat_user.nb_lose,
+                    }
+                    return JsonResponse({'status': 'ok', 'stat': data})
+                except Stat_User_by_Game.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'No game stats for this user.'}, status=404)
+            except Game.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
+        else:
+            return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+
+#TEST
+def add_win_to_user(request, id_game):
+	if request.method == 'POST':
+		if request.user.is_authenticated:
+			try:
+				game = Game.objects.get(id=id_game)
+				stat_user = request.user.stat_user_by_game_set.get(id_game=game)
+				stat_user.nb_win += 1
+				stat_user.save()
+				return JsonResponse({'status': 'ok', 'message': 'Statistiques mises à jour avec succès.'})
+			except Game.DoesNotExist:
+				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
 		else:
 			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
 	else:

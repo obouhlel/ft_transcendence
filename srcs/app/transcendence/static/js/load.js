@@ -1,7 +1,8 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './login.js';
 import { handleRegisterFormSubmit } from './register.js';
-import { handleEditProfileFormSubmit, gameTab } from './profile.js';
+import { handleEditProfileFormSubmit, gameTab, show_dynamic_profile } from './profile.js';
 import { dropdown } from './header.js';
+import { doRequest } from './fetch.js';
 // import { game, listenerGame } from './game.js';
 
 window.addEventListener('hashchange', function() {
@@ -29,18 +30,12 @@ function is_logged_in()
 }
 
 const pageHandlers = {
-    'login': handleLoginFormSubmit,
-    'register': handleRegisterFormSubmit,
-	'profile': gameTab,
-    'edit_profile': handleEditProfileFormSubmit,
-    // 'game-1': () => {
-    //     game();
-    //     listenerGame();
-    // },
-	// 'game-2': () => {
-    //     game();
-    //     listenerGame();
-    // }
+    'login': [handleLoginFormSubmit],
+    'register': [handleRegisterFormSubmit],
+    'profile': [show_dynamic_profile, gameTab],
+    'edit_profile': [handleEditProfileFormSubmit],
+    // 'game-1': [game, listenerGame],
+    // 'game-2': [game, listenerGame]
 };
 
 function showPage(page) {
@@ -55,7 +50,7 @@ function showPage(page) {
 		if (!isLogged && page === 'home')
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
-			pageHandlers[page]();
+			pageHandlers[page].reduce((promise, func) => promise.then(func), Promise.resolve());
 		if (isLogged)
 		{
 			handleLogoutFormSubmit();
