@@ -5,8 +5,12 @@
 		<form method="post" id="profile-form">
 			<p id="message"></p>
 			<div class="avatar-upload-container">
+				{% if user.avatar %}
+				<img src="{{ user.avatar.url }}" class="avatar-placeholder" id="avatar-preview" alt="user" />
+				{% else %}
 				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
 					alt="user" />
+				{% endif %}
 				<input type="file" id="avatar" name="avatar" accept="image/*" style="display: none" />
 				<div class="image-upload-area">
 					<label for="avatar" id="avatar" name="avatar">
