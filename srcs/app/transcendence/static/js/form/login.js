@@ -17,7 +17,7 @@ export function handleLoginFormSubmit() {
 		};
 		
 		console.log(data);
-		doRequest.post(`${SERVER_URL}/api/login/`, data, callback.login);
+		doRequest.postJSON(`${SERVER_URL}/api/login/`, data, callback.login);
 	});
 
 	// 42 login

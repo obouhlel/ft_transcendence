@@ -18,7 +18,7 @@ export const doRequest = {
         return cookieValue;
     },
 
-    post: function(url, data, callback)
+    postJSON: function(url, data, callback)
     {
         const csrftoken = this._getCookie('csrftoken');
         const options = {
@@ -30,6 +30,21 @@ export const doRequest = {
             credentials: 'include'
         };
         options.body = JSON.stringify(data);
+        fetch(url, options)
+            .then(response => response.json())
+            .then(data => { callback(data); })
+            .catch(error => { console.error(error); });
+    },
+
+    post: function(url, data, callback)
+    {
+        const csrftoken = this._getCookie('csrftoken');
+        const options = {
+            method: 'POST',
+            headers: {'X-CSRFToken': csrftoken,},
+            credentials: 'include',
+            body: data
+        };
         fetch(url, options)
             .then(response => response.json())
             .then(data => { callback(data); })

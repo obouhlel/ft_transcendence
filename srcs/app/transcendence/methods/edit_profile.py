@@ -46,6 +46,8 @@ def edit_profile(request):
 			return JsonResponse({'status': 'error', 'message': 'Invalid birthdate.'}, status=400)
 
 	if 'avatar' in request.FILES:
+		if user.avatar:
+			user.avatar.delete()
 		user.avatar = request.FILES['avatar']
 
 	password = data.get('password')
@@ -55,7 +57,8 @@ def edit_profile(request):
 			return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
 		if len(password) < 8:
 			return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
-		user.password = make_password(password)
+		user.set_password(password)
 
+	user.status = 'offline'
 	user.save()
 	return JsonResponse({'status': 'ok', 'message': 'Your profile has been successfully updated!'})
