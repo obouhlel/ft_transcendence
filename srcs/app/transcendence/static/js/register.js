@@ -22,11 +22,9 @@ export function handleRegisterFormSubmit() {
         try {
             console.log('data register:', Object.fromEntries(data.entries()));
             doRequest.Fetch(`${SERVER_URL}/api/register/`, 'POST', data, doRequest.callbackRegister);
-            window.location.hash = 'login';
         }
         catch (error) {
             console.error('Une erreur est survenue lors de l\'inscription :', error);
-            window.location.hash = 'register';
         }
     });
 };

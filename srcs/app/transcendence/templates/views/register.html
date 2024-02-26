@@ -2,13 +2,7 @@
 <main class="main-content">
 	<section class="wrapper wrapper-register">
 		<h1>Register</h1>
-		{% if messages %}
-		<ul class="messages">
-			{% for message in messages %}
-			<li{% if message.tags %} id="{{ message.tags }}" {% endif %}>{{ message }}</li>
-				{% endfor %}
-		</ul>
-		{% endif %}
+		<p id="message"></p>
 		<form method="post" id="register-form">
 			{% csrf_token %}
 			<div class="avatar-upload-container">

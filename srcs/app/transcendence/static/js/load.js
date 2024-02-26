@@ -35,7 +35,10 @@ const pageHandlers = {
 		changeAvatar();
 	},
 	'profile': gameTab,
-    'edit_profile': handleEditProfileFormSubmit,
+    'edit_profile': () => {
+		handleEditProfileFormSubmit();
+		changeAvatar();
+	},
     // 'game-1': () => {
     //     game();
     //     listenerGame();

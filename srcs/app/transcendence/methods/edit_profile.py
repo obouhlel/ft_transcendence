@@ -3,10 +3,8 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from transcendence.models  import CustomUser
 from django.views.decorators.csrf import csrf_exempt
-import json
+import pytz
 
-
-@csrf_exempt
 def edit_profile(request):
 	if request.method == 'POST':
 		data = request.POST

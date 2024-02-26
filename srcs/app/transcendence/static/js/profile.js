@@ -20,7 +20,7 @@ export function handleEditProfileFormSubmit() {
 		});
 
 		console.log("data edit: ", Object.fromEntries(data.entries()));
-
+		
 		doRequest.Fetch(`${SERVER_URL}/api/edit_profile/`, 'POST', data, doRequest.callbackProfile);
 	});
 };
