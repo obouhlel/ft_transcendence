@@ -6,6 +6,8 @@ import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
+import { matchmacking } from './games/matchmaking.js';
+import { pong3D } from './games/pong.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -48,14 +50,13 @@ const pageHandlers = {
         gameTab();
         friendsTab();
     },
-    // 'game-1': () => {
-    //     game();
-    //     listenerGame();
-    // },
-	// 'game-2': () => {
-    //     game();
-    //     listenerGame();
-    // }
+    'game-1': () => {
+		matchmacking('pong');
+	},
+	'game-2': () => {
+		matchmacking('shooter');
+	},
+	'pong': pong3D,
 };
 
 function showPage(page) {

@@ -60,11 +60,7 @@ function parseMessage(message, infos) {
             button.innerHTML = 'Matchmaking';
         } else if (message['matchmaking'] == 'match found') {
             JS_UTILS.createCookie('url', message['url'], 1);
-            const url = window.location.href;
-            let segments = url.split('/');
-            segments[segments.length - 2] = message['game'];
-            const gameURL = segments.join('/');
-            window.location.href = gameURL;
+            window.location.hash = message['game'];
         }
     }
 }
@@ -101,10 +97,10 @@ function generateRandomString(length) {
     return result;
 }
 
-export function listenerGame() {
+export function matchmacking(gameName) {
     const url = `wss://${window.location.host}/ws/matchmaking/`;
     const socketMatchmaking = new WebSocket(url);
-    let infos = { username: generateRandomString(10), mmr: 0, registered: false, gameName: 'pong' };
+    let infos = { username: generateRandomString(10), mmr: 0, registered: false, gameName: gameName };
     JS_UTILS.createCookie('username', infos['username'], 1);
     socketListener(socketMatchmaking, infos);
 
