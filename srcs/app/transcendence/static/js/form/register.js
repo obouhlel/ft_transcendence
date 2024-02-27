@@ -3,8 +3,19 @@ import { callback } from '../utils/callback.js';
 import { dataForm } from '../utils/data.js';
 
 export function handleRegisterFormSubmit() {
-    const form = document.getElementById('register-form');
-    if (!form) { return; }
+	const form = document.getElementById('profile-form');
+	const uploadField = document.getElementById("avatar");
+	if ( !form || !uploadField ) { return; }
+
+	uploadField.onchange = function() {
+		if(this.files[0].size > 1048576) {
+			const messageElement = document.getElementById('message');
+			if (messageElement) {
+				messageElement.innerHTML = "File is too big! Max size is 1MB!";
+			}
+			this.value = "";
+		}
+	};
 
     form.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -22,14 +33,6 @@ export function handleRegisterFormSubmit() {
 		];
 
 		const data = dataForm(fields);
-
-		if (!data) { 
-			const messageElement = document.getElementById('message');
-			if (messageElement) {
-				messageElement.textContent = 'Image size exceeds the limit';
-			}
-			return ;
-		}
 
         doRequest.post(`${SERVER_URL}/api/register/`, data, callback.registered);
     });

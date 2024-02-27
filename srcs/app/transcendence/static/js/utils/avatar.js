@@ -4,6 +4,8 @@ export function changeAvatar() {
 
     avatar.addEventListener('change', function(event) {
         const file = event.target.files[0];
+        if (!(file instanceof Blob)) { return; }
+
         const reader = new FileReader();
         reader.onload = function(e) {
             const preview = document.getElementById('avatar-preview');
