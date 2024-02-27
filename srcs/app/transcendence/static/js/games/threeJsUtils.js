@@ -3,26 +3,28 @@ import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 
 // Font gestion
 export let theFont;
-function loadFont(url) {
-	return new Promise((resolve, reject) => {
-		const loader = new FontLoader();
 
-		loader.load(url, function (font) {
-			resolve(font);
-		}, undefined, function (error) {
-			reject(error);
-		});
-	});
+async function loadAndSetFont(url) {
+    try {
+        const font = await new Promise((resolve, reject) => {
+            const loader = new FontLoader();
+
+            loader.load(url, function (font) {
+                resolve(font);
+            }, undefined, function (error) {
+                reject(error);
+            });
+        });
+
+        theFont = font;
+    }
+	catch (error) {
+        console.log("the font could not be loaded: " + error);
+    }
 }
 
-// Wait for the font to be loaded (async)
-await loadFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json')
-	.then(font => {
-		theFont = font;
-	})
-	.catch(error => {
-		console.log("the font could not be loaded: " + error);
-	});
+// loadAndSetFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json');
+loadAndSetFont('./font/helvetiker_regular.typeface.json');
 
 export function doTextGeo(text, fontSize, threeD = false) {
 	return new TextGeometry( text, {
