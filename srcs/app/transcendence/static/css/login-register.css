@@ -263,6 +263,14 @@
     pointer-events: none;
     font-size: 19px;
   }
+
+/*error messages*/
+
+.wrapper-login #message, .wrapper-register #message {
+  color: rgba(255, 25, 0, 0.916);
+  text-align: center;
+  margin-top: 15px;
+}
   
 
 /* ----Nav Bar Login/Register--- */
