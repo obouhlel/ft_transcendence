@@ -4,7 +4,7 @@ import { handleEditProfileFormSubmit } from './form/edit_profile.js';
 import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
-import { gameTab, friendsTab } from './profile.js';
+import { gameTab, friendsTab, openModal } from './profile.js';
 import { dropdown } from './header.js';
 
 window.addEventListener('hashchange', function() {
@@ -47,6 +47,7 @@ const pageHandlers = {
 	'profile': () => {
         gameTab();
         friendsTab();
+		openModal();
     },
     // 'game-1': () => {
     //     game();

@@ -233,18 +233,7 @@
     background: #fff;
     color: #333; 
   }
-  
-  .input-select:after {
-    content: '\25BC';
-    position: absolute;
-    top: 50%;
-    right: 20px;
-    transform: translateY(-50%);
-    color: #fff;
-    pointer-events: none;
-    font-size: 20px;
-  }
-  
+   
   .select-wrapper {
     position: relative;
     width: 100%;

@@ -150,7 +150,7 @@
     position: relative;
     left: 17px;
   }
-  .friend-list .friend-list-members .add-friend {
+  .friend-list .add-friend-btn .add-friend {
     width: 100%;
     height: 63px;
     border-radius: 13px;
@@ -160,7 +160,7 @@
     color: white;
     transition: all ease 0.5s;
   }
-  .friend-list .friend-list-members .add-friend:hover {
+  .friend-list .add-friend-btn .add-friend:hover {
     background-color: #fff;
     color: #3a3efd;
     cursor: pointer;
