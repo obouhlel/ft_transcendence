@@ -189,14 +189,13 @@ class Player {
 				vecMove.x = 0;
 			}
 		}
-		console.log(vecMove);
 		this.pos.add(vecMove);
 		this.body.position.set(this.pos.x, this.pos.y + 1, this.pos.z + 1);
 	}
 
 	shoot() {
 		if (this.ammo > 0) {
-			console.log("shooter");
+			console.log("shoot");
 			this.ammo--;
 		}
 	}
@@ -213,6 +212,7 @@ export function shooter() {
 
 	const scene = UTILS.createScene(0xFF0000);
 	const renderer = UTILS.createRenderer();
+	UTILS.createContainerForGame("shooter", renderer);
 
 	// Player
 	let player = new Player("test", 10, 10, scene);
