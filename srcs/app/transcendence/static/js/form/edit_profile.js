@@ -1,5 +1,6 @@
 import { doRequest, SERVER_URL } from '../utils/fetch.js';
 import { callback } from '../utils/callback.js';
+import { dataForm } from '../utils/data.js';
 
 export function handleEditProfileFormSubmit() {
 	const form = document.getElementById('profile-form');
@@ -14,21 +15,20 @@ export function handleEditProfileFormSubmit() {
 			'email',
 			'password',
 			'password_confirm',
-			'avatar', 'birthdate',
+			'avatar',
+			'birthdate',
 			'sexe'
 		];
 
-		let data = new FormData();
-		fields.forEach(field => {
-			let element = document.getElementById(field);
-			if (element) {
-				let value = field === 'avatar' ? element.files[0] : element.value;
-				data.append(field, value);
+		const data = dataForm(fields);
+
+		if (!data) { 
+			const messageElement = document.getElementById('message');
+			if (messageElement) {
+				messageElement.textContent = 'Image size exceeds the limit';
 			}
-			else {
-				console.log(`Element with ID ${field} not found`);
-			}
-		});
+			return ;
+		}
 
 		doRequest.post(`${SERVER_URL}/api/edit_profile/`, data, callback.editProfile);
 	});
