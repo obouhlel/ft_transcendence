@@ -1,9 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
-from transcendence.models import CustomUser  # Remplacez 'transcendence' par le nom de votre application
-from transcendence.models import Game  # Remplacez 'transcendence' par le nom de votre application
-from transcendence.models import Stat_Game, Lobby  # Remplacez 'transcendence' par le nom de votre application
+from transcendence.models import Party , CustomUser, Game, Stat_Game, Lobby, Stat_User_by_Game
 
 class Command(BaseCommand):
 	help = 'Add default users to the database'
@@ -51,3 +49,85 @@ class Command(BaseCommand):
 		stat_game2.save()
 
 		game2 = Game.objects.create(name='shooter',description='description2',genre='genre2',stat=stat_game2)
+
+		Stat_User_by_Game.objects.create(id_user=user1, id_game=game1)
+		Stat_User_by_Game.objects.create(id_user=user2, id_game=game1)
+		Stat_User_by_Game.objects.create(id_user=user1, id_game=game2)
+		Stat_User_by_Game.objects.create(id_user=user2, id_game=game2)
+
+		# Créer des parties
+		party1 = Party.objects.create(
+			id_game=game1,
+			name='Party 1',
+			started_at=timezone.now(),
+			ended_at=timezone.now() + timezone.timedelta(minutes=10),
+			status='Finished',
+			player1=user1,
+			player2=user2,
+			score1=10,
+			score2=5,
+			winner_party=user1,
+			loser_party=user2
+		)
+
+		party2 = Party.objects.create(
+			id_game=game2,
+			name='Party 2',
+			started_at=timezone.now(),
+			ended_at=timezone.now() + timezone.timedelta(minutes=15),
+			status='Finished',
+			player1=user1,
+			player2=user2,
+			score1=7,
+			score2=10,
+			winner_party=user2,
+			loser_party=user1
+		)
+
+		party3 = Party.objects.create(
+			id_game=game1,
+			name='Party 3',
+			started_at=timezone.now(),
+			ended_at=timezone.now() + timezone.timedelta(minutes=20),
+			status='Finished',
+			player1=user1,
+			player2=user2,
+			score1=3,
+			score2=10,
+			winner_party=user2,
+			loser_party=user1
+		)
+
+		# Ajouter les parties aux statistiques des jeux
+		stat_game1.id_party.add(party1)
+		stat_game2.id_party.add(party2)
+		stat_game1.id_party.add(party3)
+
+		# Ajouter les parties aux statistiques des utilisateurs
+		user1_stat_game1 = Stat_User_by_Game.objects.get(id_user=user1, id_game=game1)
+		user1_stat_game1.nb_played += 1
+		user1_stat_game1.nb_win += 1
+		user1_stat_game1.save()
+
+		user2_stat_game1 = Stat_User_by_Game.objects.get(id_user=user2, id_game=game1)
+		user2_stat_game1.nb_played += 1
+		user2_stat_game1.nb_lose += 1
+		user2_stat_game1.save()
+
+		user1_stat_game1.nb_played += 1
+		user1_stat_game1.nb_lose += 1
+		user1_stat_game1.save()
+
+		user2_stat_game1.nb_played += 1
+		user2_stat_game1.nb_win += 1
+		user2_stat_game1.save()
+
+		user1_stat_game2 = Stat_User_by_Game.objects.get(id_user=user1, id_game=game2)
+		user1_stat_game2.nb_played += 1
+		user1_stat_game2.nb_lose += 1
+		user1_stat_game2.save()
+
+		user2_stat_game2 = Stat_User_by_Game.objects.get(id_user=user2, id_game=game2)
+		user2_stat_game2.nb_played += 1
+		user2_stat_game2.nb_win += 1
+		user2_stat_game2.save()

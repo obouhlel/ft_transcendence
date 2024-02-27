@@ -1,7 +1,7 @@
 import { handleLoginFormSubmit, handleLogoutFormSubmit } from './form/login.js';
 import { handleRegisterFormSubmit, changeAvatar } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
-import { gameTab, friendsTab } from './profile.js';
+import { gameTab, show_dynamic_profile } from './profile.js';
 import { dropdown } from './header.js';
 
 window.addEventListener('hashchange', function() {
@@ -29,42 +29,38 @@ function is_logged_in()
 }
 
 const pageHandlers = {
-    'login': handleLoginFormSubmit,
-    'register': () => {
-		handleRegisterFormSubmit();
-		changeAvatar();
-	},
-    'edit_profile': () => {
-		handleEditProfileFormSubmit();
-		changeAvatar();
-	},
-	'profile': () => {
-        gameTab();
-        friendsTab();
-    },
-    // 'game-1': () => {
-    //     game();
-    //     listenerGame();
-    // },
-	// 'game-2': () => {
-    //     game();
-    //     listenerGame();
-    // }
+    'login': [handleLoginFormSubmit],
+    'register': [handleRegisterFormSubmit],
+    'profile': [show_dynamic_profile, gameTab],
+    'edit_profile': [handleEditProfileFormSubmit],
+    // 'game-1': [game, listenerGame],
+    // 'game-2': [game, listenerGame]
 };
+
+async function executeHandlers(page) {
+    for (const func of pageHandlers[page]) {
+        await func();
+    }
+}
 
 function showPage(page) {
 	fetch(`/pages/${page}`)
 	.then(response => response.json())
 	.then(data => {
-		console.log(data);
-		console.log(page);
 		const page_content = document.getElementById('page');
+		if (!page_content) {
+			console.error('Element with ID "page" not found');
+			return;
+		}
 		page_content.innerHTML = data.page;
 		const isLogged = is_logged_in();
 		if (!isLogged && page === 'home')
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
-			pageHandlers[page]();
+			executeHandlers(page);
+		else
+			console.error('Unknown page:', page);
+
 		if (isLogged)
 		{
 			handleLogoutFormSubmit();

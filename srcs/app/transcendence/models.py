@@ -212,7 +212,6 @@ class Tournament(models.Model):
 			'nb_player': len(self.user_tournament)
 	}
 
-	
 
 class Party(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -231,7 +230,7 @@ class Party(models.Model):
 	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='loser_party')
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
 	round_nb = models.IntegerField(default=0)
-	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, default=None)
+	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __str__(self):
 		return self.id
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -240,31 +239,31 @@ class Party(models.Model):
 		self.ended_at = timezone.now()
 		self.status = 'Ended'
 		if self.score1 > self.score2:
-			self.id_winner = self.player1
-			self.id_loser = self.player2
+			self.winner_party = self.player1
+			self.loser_party = self.player2
 		else:
-			self.id_winner = self.player2
-			self.id_loser = self.player1
+			self.winner_party = self.player2
+			self.loser_party = self.player1
 		self.time_played = (self.ended_at - self.started_at).seconds
 		self.save()
-	def Party_data(self):
+	def party_data(self):
 		return {
 			'id': self.id,
-			'id_game': self.id_game,
+			'id_game': self.id_game.id,
 			'name': self.name,
 			'started_at': self.started_at,
 			'ended_at': self.ended_at,
 			'time_played': self.time_played,
 			'status': self.status,
-			'player1': self.player1,
-			'player2': self.player2,
+			'player1': self.player1.id,
+			'player2': self.player2.id,
 			'score1': self.score1,
 			'score2': self.score2,
-			'id_winner': self.id_winner,
-			'id_loser': self.id_loser,
+			'winner_party': self.winner_party.id if self.winner_party else None,
+			'loser_party': self.loser_party.id if self.loser_party else None,
 			'type': self.type,
 			'round_nb': self.round_nb,
-			'id_tournament': self.id_tournament
+			'id_tournament': self.id_tournament.id if self.id_tournament else None
 	}
 
 class PartyInTournament(models.Model):
