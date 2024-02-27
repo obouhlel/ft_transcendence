@@ -8,8 +8,8 @@ export function dataForm(fields)
 			let value;
 			if (field === 'avatar') {
 				const file = element.files[0];
-				if (file.size > 5000000) {
-					console.log('Image size exceeds the limit');
+				if (file.size > 1000000) {
+					console.log('Image size exceeds the limit (maximal size: 1MB)');
 					return null;
 				}
 				value = file;
