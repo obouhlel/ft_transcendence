@@ -240,14 +240,45 @@
 					</div>
 					<div class="modal hidden">
 						<button class="close-modal">&times;</button>
-						<h1>I'm a modal window 😍</h1>
-						<p>
-						  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						  tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-						  veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-						  commodo consequat.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-						  tempor incididunt
-						</p>
+						<div class="find-friends-container">
+							<div class="find-friends-header">
+								<div class="heading">Find Friends</div>
+								<div class="search">
+									<form action="">
+										<input type="text" placeholder="Enter a friend's name">
+									</form>
+								</div>
+							</div>
+							<div class="find-friends-result">
+								<div class="user-row">
+									<div class="user-info">
+										<img src="{% static 'img/user-image.png' %}" alt=""/>
+										<span>Robert Hudson</span>
+									</div>
+									<button class="modal-add-btn">
+										Add friend
+									</button>
+								</div>
+								<div class="user-row">
+									<div class="user-info">
+										<img src="{% static 'img/user-image.png' %}" alt=""/>
+										<span>Robert Hudson</span>
+									</div>
+									<button class="modal-add-btn">
+										Add friend
+									</button>
+								</div>
+								<div class="user-row">
+									<div class="user-info">
+										<img src="{% static 'img/user-image.png' %}" alt=""/>
+										<span>Robert Hudson</span>
+									</div>
+									<button class="modal-add-btn">
+										Add friend
+									</button>
+								</div>
+							</div>
+						</div>
 					</div>
 					<div class="overlay hidden"></div>
 				</div>
