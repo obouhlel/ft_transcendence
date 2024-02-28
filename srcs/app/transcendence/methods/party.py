@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from transcendence.models  import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game 
+from transcendence.models  import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game
 import json
 from django.utils import timezone
 
@@ -32,6 +32,18 @@ def getAllParties(request):
 	for party in parties:
 		data += [party.party_data()]
 	return JsonResponse({'status': 'ok', 'parties': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getUserHistoryByGame(request, id_game):
+    try:
+        game = Game.objects.get(id=id_game)
+        user = request.user
+        parties = Party.objects.filter(id_game=game, player1=user) | Party.objects.filter(id_game=game, player2=user)
+        data = [party.party_data() for party in parties]
+        return JsonResponse({'status': 'ok', 'parties': data})
+    except Game.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
 
 @login_required
 @require_http_methods(['GET'])
@@ -97,19 +109,16 @@ def addUserToParty(request, id_party):
 		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
-	
+
 
 def isUserInParty(party, user):
 	if party.player1 == user or party.player2 == user:
 		return True
 	else:
 		return False
-
 def EndPartyinTournament(tournament, party):
 	#End party first
 	party.update_end()
-
-
 
 
 @login_required

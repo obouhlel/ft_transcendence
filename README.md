@@ -18,3 +18,9 @@ The CLIENT_SECRET need to be secret and don't print it
 
 - Need to remove the DEBUG = True on settings.py
 - Need to remove the watchdir
+
+# Remove all pycache command
+
+```
+sudo find . -type d -name __pycache__ -exec rm -r {} +
+```

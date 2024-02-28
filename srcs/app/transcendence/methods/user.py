@@ -77,6 +77,16 @@ def getOfflineFriends(request):
 	return JsonResponse({'status': 'ok', 'friends': data})
 
 
+@login_required
+@require_http_methods(['GET'])
+def getUserConnected(request):
+	if request.user.is_authenticated:
+		user = request.user
+		data = user.user_data()
+		return JsonResponse({'status': 'ok', 'user': data})
+	else:
+		return JsonResponse({'status': 'error', 'message': 'No user connected'}, status=404)
+
 
 # -------------------------------POST USER-----------------------------#
 #=> register_user.py
@@ -86,4 +96,3 @@ def getOfflineFriends(request):
 
 # -------------------------------DELETE USER-----------------------------#
 #not implemented
-	

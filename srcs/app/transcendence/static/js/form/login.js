@@ -1,4 +1,4 @@
-import { SERVER_URL, doRequest } from './fetch.js';
+import { doRequest, SERVER_URL } from '../utils/fetch.js';
 
 export function handleLoginFormSubmit() {
 	const client_id = 'u-s4t2ud-ecdf3141d39f400a2eef9675f111895a2583c1233a58a5ac0eebadd15ffb8e9e';

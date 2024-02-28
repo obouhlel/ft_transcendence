@@ -1,0 +1,111 @@
+.games-section {
+    background-color: #21194a;
+    border-radius: 10px;
+    padding: 40px;
+    margin: 30px 60px;
+    color: white;
+  }
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    margin-top: 20px;
+  }
+  .game-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+  .games-grid a {
+    text-decoration: none;
+    color: white;
+  }
+  
+  .game-wrapper{
+    border-radius: 10px;
+    padding: 40px;
+    margin: 30px 150px;
+    color: white;
+    background: transparent;
+    border:2px solid rgba(255, 255, 255, .2);
+    backdrop-filter:blur(20px);
+    box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
+  }
+  
+  .game-tour-wrapper{
+    color: white;
+    background: transparent;
+    border:2px solid rgba(255, 255, 255, .2);
+    backdrop-filter:blur(20px);
+    box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
+    border-radius: 10px;
+    padding: 40px;
+    margin: 30px 60px;
+  }
+  .game-1-header {
+    text-align: center;
+  }
+  .game-rules {
+    max-width: 80%;
+    margin: 20px auto;
+  }
+  .game-rules li {
+    padding-top: 10px;
+  }
+  
+  .game-tour-wrapper .table {
+    text-align: center;
+    max-width: 80%;
+    margin: 20px auto;
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 15px;
+    table-layout: fixed;
+  }
+  .table tbody {
+    background: #ffffff21;
+  }
+  .table tbody th,
+  .table tbody td {
+    padding: 15px;
+  }
+  .table tbody tr td:nth-child(1) {
+    border-top-left-radius: 50px;
+    border-bottom-left-radius: 50px;
+  }
+  .table tbody tr td:nth-child(4) {
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+  }
+  
+  .button-container {
+    text-align: center;
+    margin-top: 20px;
+  }
+  .button-container a {
+    position: relative;
+    left: 10px;
+  }
+  
+  .tournament-create-form input {
+    width: 100%;
+    margin-top: 15px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .2);
+    border-radius: 40px;
+    font-size: 16px;
+    color: #fff;
+    padding: 20px 45px 20px 20px;
+  }
+  .tournament-create-form {
+    max-width: 50%;
+    margin: 40px auto;
+  }
+  .tournament-create-form label {
+    position: relative;
+    top: 20px;
+  }
+
+

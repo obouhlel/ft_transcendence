@@ -1,4 +1,4 @@
-import { doRequest, SERVER_URL } from './fetch.js';
+import { doRequest, SERVER_URL } from '../utils/fetch.js';
 
 export function handleRegisterFormSubmit() {
     const form = document.getElementById('register-form');
@@ -22,11 +22,26 @@ export function handleRegisterFormSubmit() {
         try {
             console.log('data register:', Object.fromEntries(data.entries()));
             doRequest.Fetch(`${SERVER_URL}/api/register/`, 'POST', data, doRequest.callbackRegister);
-            window.location.hash = 'login';
         }
         catch (error) {
             console.error('Une erreur est survenue lors de l\'inscription :', error);
-            window.location.hash = 'register';
         }
     });
 };
+
+export function changeAvatar() {
+    const avatar = document.getElementById('avatar');
+    if (!avatar) { return; }
+
+    avatar.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('avatar-preview');
+            if (preview) {
+                preview.src = e.target.result;
+            }
+        }
+        reader.readAsDataURL(file);
+    });
+}
