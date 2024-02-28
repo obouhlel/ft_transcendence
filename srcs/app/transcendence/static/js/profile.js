@@ -19,8 +19,6 @@ export function show_dynamic_profile()
 					link.classList.add('active');
 				}
 				navs.appendChild(link);
-				show_dynamic_stats(game.id);
-				show_dynamic_history(game.id);
 			});
 		}
 		else {
@@ -29,7 +27,7 @@ export function show_dynamic_profile()
 	});
 }
 
-function	show_dynamic_stats(gameID)
+export	function	show_dynamic_stats(gameID)
 {
 	if (!gameID)
 	{
@@ -41,7 +39,6 @@ function	show_dynamic_stats(gameID)
 	fetch(`/api/get_stats_users_by_game/${gameID}`)
 	.then(response => response.json())
 	.then(data => {
-		console.log("data: ", data);
 		if (data.status === 'ok') {
 			document.querySelector('.card:nth-child(1) h1').textContent = data.stat.nb_win;
 			document.querySelector('.card:nth-child(2) h1').textContent = data.stat.nb_lose;
@@ -60,9 +57,9 @@ function	show_dynamic_stats(gameID)
 }
 
 // ! utiliser doRequest.GET de ous apres merge
-function getUserDataById(userID)
+async	function getUserDataById(userID)
 {
-	fetch(`/api/get_user/${userID}`)
+	return fetch(`/api/get_user_by_id/${userID}`)
 	.then(response => response.json())
 	.then(data => {
 		if (data.status === 'ok') {
@@ -78,9 +75,9 @@ function getUserDataById(userID)
 	});
 }
 
-function getUserConnected()
+async	function getUserConnected()
 {
-	fetch(`/api/get_user_connected`)
+	return fetch(`/api/get_user_connected`)
 	.then(response => response.json())
 	.then(data => {
 		if (data.status === 'ok') {
@@ -97,34 +94,39 @@ function getUserConnected()
 
 }
 
-function show_dynamic_history(gameID) {
+export	function show_dynamic_history(gameID) {
     fetch(`/api/get_user_history_by_game/${gameID}`)
     .then(response => response.json())
-    .then(data => {
+    .then(async data => {
         if (data.status === 'ok') {
-			console.log("data HISTORY: ", data);
             const tbody = document.querySelector('.Matches .table .tbody');
-			if (!tbody)
-				console.error('Element with class "Matches table tbody" not found');
-            tbody.innerHTML = ''; // Supprime les anciennes lignes
-            data.parties.forEach(party => {
+            if (!tbody)
+                console.error('Element with class "Matches table tbody" not found');
+            tbody.innerHTML = '';
+            for (const party of data.parties) {
                 const tr = document.createElement('div');
                 tr.className = 'tr';
 
                 const td1 = document.createElement('div');
-				const adversary = getUserDataById(party.player2);
+                const adversary = await getUserDataById(party.player2);
                 td1.className = 'td data-one';
-                td1.textContent = 'Unknown';
+                td1.textContent = adversary ? adversary.username : 'Unknown';
                 tr.appendChild(td1);
 
                 const td2 = document.createElement('div');
+                const score = party.score1 + ' - ' + party.score2;
                 td2.className = 'td data-two';
-                td2.textContent = party.score;
+                td2.textContent = score;
                 tr.appendChild(td2);
+
+				if (party.score1 > party.score2)
+					tr.style.backgroundColor = 'rgba(0, 255, 0, 0.2)';
+				else if (party.score1 < party.score2)
+					tr.style.backgroundColor = 'rgba(255, 0, 0, 0.2)';
 
                 const td3 = document.createElement('div');
                 td3.className = 'td data-three';
-                td3.textContent = party.date;
+                td3.textContent = new Date(party.ended_at).toLocaleDateString();
                 tr.appendChild(td3);
 
                 const td4 = document.createElement('div');
@@ -133,6 +135,63 @@ function show_dynamic_history(gameID) {
                 tr.appendChild(td4);
 
                 tbody.appendChild(tr);
+            }
+        } else {
+            console.error(data.message);
+        }
+    })
+    .catch(error => {
+        console.error(error);
+    });
+}
+
+export async	function show_dynamic_friends() {
+	const	userConnected = await getUserConnected();
+	const	userID = userConnected.id;
+    fetch(`/api/get_all_friends/${userID}`)
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            const friendList = document.querySelector('.friend-list-membersdsds');
+            if (!friendList) {
+				console.error('Element with class "friend-list-members" not found');
+                return;
+            }
+			const friendCards = document.querySelectorAll('.friend-card.online-friend');
+            friendCards.forEach((card) => {
+				card.remove();
+			});
+            data.friends.forEach((friend) => {
+                const friendCard = document.createElement('div');
+                friendCard.className = `friend-card ${friend.status === 'Online' ? 'online-friend' : 'offline-friend'}`;
+
+                const memberDetails = document.createElement('div');
+                memberDetails.className = 'member-details';
+
+                const img = document.createElement('img');
+                img.src = friend.avatar || '{% static "img/user-image-s.png" %}';
+                img.alt = '';
+
+                const div = document.createElement('div');
+                const h2 = document.createElement('h2');
+                h2.textContent = friend.username;
+                div.appendChild(h2);
+
+                memberDetails.appendChild(img);
+                memberDetails.appendChild(div);
+
+                const activeMemberBtn = document.createElement('button');
+                activeMemberBtn.className = 'active-member-btn';
+                activeMemberBtn.textContent = friend.status;
+
+                const i = document.createElement('i');
+                i.className = 'fa-solid fa-user-xmark';
+
+                friendCard.appendChild(memberDetails);
+                friendCard.appendChild(activeMemberBtn);
+                friendCard.appendChild(i);
+
+                friendList.appendChild(friendCard);
             });
         } else {
             console.error(data.message);

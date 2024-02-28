@@ -27,4 +27,6 @@ urlpatterns = [
 	path('get_all_tournaments/', getAllTournaments, name='getAllTournaments'),
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
+
+	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 ]
