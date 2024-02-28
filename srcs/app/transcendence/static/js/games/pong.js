@@ -115,7 +115,7 @@ function sendLeaveGame(game) {
     JS_UTILS.sendMessageToSocket(game.socket, message);
 }
 
-function parseMessage(message, game, scene) {
+function parseMessage(message, game) {
     if ('game' in message) {
         if (message['game'] == 'starting') {
             game.side = message['side'];
@@ -127,7 +127,7 @@ function parseMessage(message, game, scene) {
             game.ballPosition.z = message['positionBallZ'];
         }
         if (message['game'] == 'score') {
-            PONG.updateScore(scene, message['score'], game);
+            PONG.updateScore(game.scene, message['score'], game);
             game.playerLocal.reset();
         }
         if (message['game'] == 'end') {
@@ -136,7 +136,7 @@ function parseMessage(message, game, scene) {
     }
 }
 
-function socketListener(game, scene) {
+function socketListener(game) {
     game.socket.onopen = function () {
         console.log('Connection established');
         sendStartingGame(game);
@@ -145,7 +145,7 @@ function socketListener(game, scene) {
     game.socket.onmessage = function (e) {
         let data = JSON.parse(e.data);
         // console.log('Received message: ' + e.data);
-        parseMessage(data, game, scene);
+        parseMessage(data, game);
     };
 
     game.socket.onclose = function () {
@@ -164,6 +164,10 @@ function socketListener(game, scene) {
             sendLeaveGame(game);
             game.socket.close();
         }
+    });
+    window.addEventListener('resize', function () {
+        console.log('window size: ' + window.innerWidth + 'x' + window.innerHeight);
+        UTILS.resizeRenderer(game.renderer, game.display.camera);
     });
 }
 
@@ -216,44 +220,46 @@ export async function pong3D() {
         playerSocket: null,
         ball: null,
         arena: null,
+        scene: UTILS.createScene(),
+        renderer: UTILS.createRenderer(),
+        display: null,
     };
+    game.display = PONG.createCamera(game.renderer, X_SIZE_MAP)
     JS_UTILS.eraseCookie('username');
 
-    const scene = UTILS.createScene();
-    socketListener(game, scene);
-    const renderer = UTILS.createRenderer();
-    UTILS.createContainerForGame('pong', renderer);
-    PONG.putTitle(scene);
-    PONG.putFloor(scene, X_SIZE_MAP);
+    UTILS.createContainerForGame('pong', game.renderer);
+    PONG.putTitle(game.scene);
+    PONG.putFloor(game.scene, X_SIZE_MAP);
 
-    const light = PONG.createLight(scene, X_SIZE_MAP);
+    const light = PONG.createLight(game.scene, X_SIZE_MAP);
 
     // ------------------------------------keys------------------------------------
     let keys = {};
     document.addEventListener('keydown', (e) => (keys[e.key] = true));
     document.addEventListener('keyup', (e) => (keys[e.key] = false));
 
-    let display = PONG.createCamera(renderer, X_SIZE_MAP);
-    game.arena = new Arena(scene);
-    game.ball = new Ball(scene);
+    game.arena = new Arena(game.scene);
+    game.ball = new Ball(game.scene);
+
+    socketListener(game);
 
     await sideDefinedPromise(game);
 
-    game.playerLocal = new Player(game.side, scene, game);
+    game.playerLocal = new Player(game.side, game.scene, game);
     let otherSide = 'left';
     if (game.side == otherSide) otherSide = 'right';
-    game.playerSocket = new Player(otherSide, scene, game);
-    PONG.updateScore(scene, '0 - 0', game);
+    game.playerSocket = new Player(otherSide, game.scene, game);
+    PONG.updateScore(game.scene, '0 - 0', game);
 
     let lastTime = 0;
     // ------------------------------------loop------------------------------------
     function animate(currentTime) {
         if (lastTime && game.going == true) {
             let delta = (currentTime - lastTime) / 10;
-            display.controls.update();
+            game.display.controls.update();
             communication(game, keys, delta);
             PONG.lightFollowTarget(light.spot, game.ball.cube);
-            renderer.render(scene, display.camera);
+            game.renderer.render(game.scene, game.display.camera);
         }
         lastTime = currentTime;
         requestAnimationFrame(animate);

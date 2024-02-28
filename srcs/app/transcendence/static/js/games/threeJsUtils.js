@@ -60,17 +60,21 @@ export function createRenderer() {
 export function resizeRenderer(renderer, camera, fullScreen = false) {
 	const headerRect = document.querySelector('header');
 	const footerRect = document.querySelector('footer');
+	let headerHeight = headerRect.getBoundingClientRect().height;
+	let footerHeight = footerRect.getBoundingClientRect().height;
 
 	camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-	if (fullScreen) {
+	if (fullScreen == true) {
 		headerRect.style.display = "none";
 		footerRect.style.display = "none";
+		headerHeight = 0;
+		footerHeight = 0;
 	} else {
 		headerRect.style.display = "block";
 		footerRect.style.display = "block";
 	}
-	renderer.setSize(window.innerWidth, window.innerHeight - headerRect.bottom - footerRect.bottom);
+	renderer.setSize(window.innerWidth, window.innerHeight - headerHeight - footerHeight);
 }
 
 export function createContainerForGame(gameName, gameRenderer) {
