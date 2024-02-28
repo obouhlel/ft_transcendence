@@ -108,8 +108,10 @@ export function matchmacking(gameName) {
     btn.addEventListener('click', function () {
         doMatchmaking(socketMatchmaking, infos, btn);
     });
-    window.addEventListener('beforeunload', function () {
-        sendUnregister(socketMatchmaking, infos);
-        socketMatchmaking.close();
+    window.addEventListener('hashchange', function () {
+        if (socketMatchmaking.readyState == 1) {
+            sendUnregister(socketMatchmaking, infos);
+            socketMatchmaking.close();
+        }
     });
 }

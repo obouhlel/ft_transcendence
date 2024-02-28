@@ -1,5 +1,6 @@
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import * as THREE from 'three';
 
 // Font gestion
 export let theFont;
@@ -23,8 +24,8 @@ async function loadAndSetFont(url) {
     }
 }
 
-// loadAndSetFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json');
-loadAndSetFont('./font/helvetiker_regular.typeface.json');
+loadAndSetFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json');
+// loadAndSetFont('./font/helvetiker_regular.typeface.json');
 
 export function doTextGeo(text, fontSize, threeD = false) {
 	return new TextGeometry( text, {
@@ -50,7 +51,7 @@ export function createRenderer() {
 	const headerRect = document.querySelector('header').getBoundingClientRect();
 	const footerRect = document.querySelector('footer').getBoundingClientRect();
 	const renderer = new THREE.WebGLRenderer();
-	renderer.setSize(window.innerWidth, window.innerHeight - headerRect.bottom - footerRect.bottom);
+	renderer.setSize(window.innerWidth, window.innerHeight - headerRect.height - footerRect.height);
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 	return renderer;
@@ -74,6 +75,7 @@ export function resizeRenderer(renderer, camera, fullScreen = false) {
 
 export function createContainerForGame(gameName, gameRenderer) {
 	const main = document.querySelector("main");
+	main.style = null;
 
 	const container = document.createElement("div");
 	container.id = gameName;

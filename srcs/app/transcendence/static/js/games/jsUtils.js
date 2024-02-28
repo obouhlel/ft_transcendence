@@ -1,6 +1,6 @@
 export function sendMessageToSocket(socket, message) {
     socket.send(JSON.stringify(message));
-    console.log("Sent message: " + JSON.stringify(message));
+    // console.log("Sent message: " + JSON.stringify(message));
 }
 
 export function createCookie(name, value, days) {

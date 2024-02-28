@@ -144,7 +144,7 @@ function socketListener(game, scene) {
 
     game.socket.onmessage = function (e) {
         let data = JSON.parse(e.data);
-        console.log('Received message: ' + e.data);
+        // console.log('Received message: ' + e.data);
         parseMessage(data, game, scene);
     };
 
@@ -157,9 +157,13 @@ function socketListener(game, scene) {
         console.error(error);
     };
 
-    window.addEventListener('beforeunload', function () {
-        sendLeaveGame(game);
-        game.socket.close();
+    window.addEventListener('hashchange', function () {
+        game.going = false;
+        if (game.socket.readyState == 1)
+        {
+            sendLeaveGame(game);
+            game.socket.close();
+        }
     });
 }
 
@@ -183,7 +187,7 @@ function communication(game, keys, delta) {
         game.ball.cube.position.z = game.ballPosition.z;
         sendPlayerPosition(game.playerLocal, game);
     } else {
-        game.going = true;
+        game.going = false;
         game.playerLocal.reset();
         game.playerSocket.reset();
         game.ball.cube.position.x = 0;
@@ -230,16 +234,16 @@ export async function pong3D() {
     document.addEventListener('keyup', (e) => (keys[e.key] = false));
 
     let display = PONG.createCamera(renderer, X_SIZE_MAP);
-    // game.arena = new Arena(scene);
-    // game.ball = new Ball(scene);
+    game.arena = new Arena(scene);
+    game.ball = new Ball(scene);
 
     await sideDefinedPromise(game);
 
-    // game.playerLocal = new Player(game.side, scene, game);
-    // let otherSide = 'left';
-    // if (game.side == otherSide) otherSide = 'right';
-    // game.playerSocket = new Player(otherSide, scene, game);
-    // PONG.updateScore(scene, '0 - 0', game);
+    game.playerLocal = new Player(game.side, scene, game);
+    let otherSide = 'left';
+    if (game.side == otherSide) otherSide = 'right';
+    game.playerSocket = new Player(otherSide, scene, game);
+    PONG.updateScore(scene, '0 - 0', game);
 
     let lastTime = 0;
     // ------------------------------------loop------------------------------------
