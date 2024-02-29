@@ -45,7 +45,9 @@ export const doRequest = {
         const csrftoken = this._getCookie('csrftoken');
         const options = {
             method: 'GET',
-            headers: {'X-CSRFToken': csrftoken},
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
             credentials: 'include'
         };
         return fetch(url, options)
