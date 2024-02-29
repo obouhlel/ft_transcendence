@@ -18,40 +18,33 @@ export const doRequest = {
         return cookieValue;
     },
 
-    postJSON: function(url, data, callback)
-    {
-        const csrftoken = this._getCookie('csrftoken');
-        const options = {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        };
-        options.body = JSON.stringify(data);
-        fetch(url, options)
-            .then(response => response.json())
-            .then(data => { callback(data); })
-            .catch(error => { console.error(error); });
-    },
-
     post: function(url, data, callback)
     {
         const csrftoken = this._getCookie('csrftoken');
         const options = {
             method: 'POST',
-            headers: {'X-CSRFToken': csrftoken,},
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
             credentials: 'include',
-            body: data
         };
+		if (data instanceof FormData)
+        {
+            options.body = data;
+            // data.append('csrfmiddlewaretoken', csrftoken);
+        }
+		else
+		{
+			options.headers['Content-Type'] = 'application/json';
+			options.body = JSON.stringify(data);
+		}
         fetch(url, options)
             .then(response => response.json())
             .then(data => { callback(data); })
             .catch(error => { console.error(error); });
     },
 
-    get: function(url) {
+    get: async function(url) {
         const csrftoken = this._getCookie('csrftoken');
         const options = {
             method: 'GET',
