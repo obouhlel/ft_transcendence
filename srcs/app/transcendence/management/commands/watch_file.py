@@ -12,9 +12,9 @@ class Command(BaseCommand):
     help = "Automatically calls collectstatic when the staticfiles get modified."
 
     def handle(self, *args, **options):
-        print('WATCH_STATIC: Static file watchdog started.')
+        # print('WATCH_STATIC: Static file watchdog started.')
         #for changes in watch([str(x) for x in settings.STATICFILES_DIRS]):
 
         for changes in watch('./'):
-            print(f'WATCH_STATIC: {changes}', end='')
+            # print(f'WATCH_STATIC: {changes}', end='')
             call_command("collectstatic", interactive=False)
