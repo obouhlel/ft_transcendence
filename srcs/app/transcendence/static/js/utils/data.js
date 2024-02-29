@@ -21,6 +21,5 @@ export function dataForm(fields)
 	}
 	
 	data.append('csrfmiddlewaretoken', csrftoken);
-	
 	return data;
 }
