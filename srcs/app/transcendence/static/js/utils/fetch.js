@@ -29,10 +29,7 @@ export const doRequest = {
             credentials: 'include',
         };
 		if (data instanceof FormData)
-        {
             options.body = data;
-            // data.append('csrfmiddlewaretoken', csrftoken);
-        }
 		else
 		{
 			options.headers['Content-Type'] = 'application/json';
