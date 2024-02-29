@@ -1,5 +1,6 @@
 // export const SERVER_URL = 'https://localhost:8000';
-export const SERVER_URL = '';
+// export const SERVER_URL = '';
+export const SERVER_URL = window.location.origin;
 
 export const doRequest = {
     _getCookie: function getCookie(name)
