@@ -55,7 +55,7 @@ export const callback = {
 		if (data.status === 'ok')
 		{
 			console.log('MODIFICATION REUSSIE');
-			window.location.hash = 'profile';
+			window.location.hash = 'login';
 		}
 		else if (data.status === 'error')
 		{
