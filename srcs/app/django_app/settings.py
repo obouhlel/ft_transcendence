@@ -9,13 +9,13 @@ SECRET_KEY = 'django-insecure-c_dug2-$h$y^4#6c1sj2qh9@%x7wq7vd#_@=5e-7blbl%7!3sz
 DEBUG = True
 
 # DOMAINE AND HOST FOR THE API
-ALLOWED_HOSTS = ["*"]
-
-DOMAINE = config('DOMAINE')
+DOMAIN = config('DOMAIN')
 IP = config('IP')
 
-URL_DOMAINE = f"https://{DOMAINE}:8000"
+URL_DOMAIN = f"https://{DOMAIN}:8000"
 URL_IP = f"https://{IP}:8000"
+
+ALLOWED_HOSTS = ["localhost", IP, DOMAIN]
 
 # Application definition
 
@@ -138,7 +138,7 @@ SESSION_COOKIE_SAMESITE = 'Lax'
 # PROTECTION CSRF FOR THE AUTHENTICATION
 CSRF_TRUSTED_ORIGINS = [
     "https://localhost:8000",
-	URL_DOMAINE,
+	URL_DOMAIN,
 	URL_IP
 ]
 
@@ -147,7 +147,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "https://localhost:8000",
-	URL_DOMAINE,
+	URL_DOMAIN,
 	URL_IP
 ]
 
