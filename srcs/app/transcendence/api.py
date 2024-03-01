@@ -3,7 +3,7 @@ from .methods import *
 
 urlpatterns = [
 	path('login/', login_user, name='login'),
-	path('login42/', login_42, name='login42'),
+	path('login_42/', login_42, name='login42'),
 	path('register/', register_user, name='register'),
 	path('logout/', logout_user, name='logout'),
 	path('edit_profile/', edit_profile, name='edit_profile'),

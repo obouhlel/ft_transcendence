@@ -1,10 +1,5 @@
 from pathlib import Path
 from decouple import config
-import logging
-
-# Configuration of the logger
-logging.basicConfig(level=logging.DEBUG)
-LOGGER = logging.getLogger('transcendence')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,9 +8,14 @@ SECRET_KEY = 'django-insecure-c_dug2-$h$y^4#6c1sj2qh9@%x7wq7vd#_@=5e-7blbl%7!3sz
 
 DEBUG = True
 
-# The host for the front end 
-# (Need to be changed in production, need to be the IP or the domain name of the front end)
+# DOMAINE AND HOST FOR THE API
 ALLOWED_HOSTS = ["*"]
+
+DOMAINE = config('DOMAINE')
+IP = config('IP')
+
+URL_DOMAINE = f"https://{DOMAINE}:8000"
+URL_IP = f"https://{IP}:8000"
 
 # Application definition
 
@@ -90,7 +90,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Authentification 42
 API_42_UID = config('CLIENT_ID')
 API_42_SECRET = config('CLIENT_SECRET')
-API_42_REDIRECT_URI = 'https://$HOST/api/login42/'
+API_42_REDIRECT_URI = 'https://$HOST/api/login_42/'
 
 # Internationalization
 
@@ -135,13 +135,21 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 
-# CORS AND CSRF
+# PROTECTION CSRF FOR THE AUTHENTICATION
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8000",
+	URL_DOMAINE,
+	URL_IP
+]
+
+# PROTECTION XSS WITH CORS
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = []
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://localhost:8000",
-# 	"https://api.intra.42.fr",
-# ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost:8000",
+	URL_DOMAINE,
+	URL_IP
+]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = [
@@ -153,11 +161,6 @@ CORS_ALLOW_HEADERS = [
     'authorization',
     'x-csrftoken'
 ]
-CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "https://localhost:8000",
-# 	"https://api.intra.42.fr"
-# ]
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True
