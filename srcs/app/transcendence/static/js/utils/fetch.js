@@ -20,7 +20,7 @@ export const doRequest = {
 
     post: function(url, data, callback)
     {
-        const csrftoken = this._getCookie('csrftoken');
+        const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'POST',
             headers: {
@@ -42,7 +42,7 @@ export const doRequest = {
     },
 
     get: async function(url) {
-        const csrftoken = this._getCookie('csrftoken');
+        const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'GET',
             headers: {
