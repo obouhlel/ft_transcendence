@@ -97,12 +97,6 @@ class Command(BaseCommand):
 			winner_party=user2,
 			loser_party=user1
 		)
-
-		# Ajouter les parties aux statistiques des jeux
-		stat_game1.id_party.add(party1)
-		stat_game2.id_party.add(party2)
-		stat_game1.id_party.add(party3)
-
 		# Ajouter les parties aux statistiques des utilisateurs
 		user1_stat_game1 = Stat_User_by_Game.objects.get(id_user=user1, id_game=game1)
 		user1_stat_game1.nb_played += 1

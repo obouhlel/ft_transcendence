@@ -30,4 +30,8 @@ function setMessage(message) {
 	const newNotif = template.content.cloneNode(true);
 newNotif.querySelector('.message').textContent = message;
 	document.getElementById('bellDropdown').appendChild(newNotif);
+	count = document.getElementById('bellDropdown').getAttribute('data-count');	
+	count = parseInt(count) + 1;
+	document.getElementById('bellDropdown').setAttribute('data-count', count);
+	//document.getElementById('bellDropdown').classList.add('show');
 }

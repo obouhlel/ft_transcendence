@@ -59,10 +59,8 @@ const pageHandlers = {
     // }
 };
 
-async function executeHandlers(page) {
-    for (const func of pageHandlers[page]) {
-        await func();
-    }
+function executeHandlers(page) {
+	pageHandlers[page]?.();
 }
 
 function showPage(page) {

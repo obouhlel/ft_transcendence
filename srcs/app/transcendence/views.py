@@ -11,7 +11,7 @@ def page(request, page):
 	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'shooter']
 	error_pages = ['400', '401', '403', '404', '405']
 	if page == 'home':
-		html_content = render_to_string('home.html', request=request)
+		html_content = render_to_string('home.html', request=request, context={'notifications': [] if request.user.is_anonymous else request.user.get_notifications()})
 		return JsonResponse({'page': html_content})
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)

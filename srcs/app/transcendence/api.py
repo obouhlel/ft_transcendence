@@ -29,4 +29,7 @@ urlpatterns = [
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
 
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
+
+	path('join_lobby/', joinLobby, name='joinLobby'),
+
 ]

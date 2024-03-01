@@ -91,8 +91,9 @@ def getLobbyofGamebyType(request, id_game, type):
 	
 # -------------------------------POST LOBBY-----------------------------#
 	
-def newLobby(id_game, type, name):
-	lobby = Lobby.objects.create(id_game=id_game, type=type, name=name)
+def newLobby(game, type):
+	lobby = Lobby.objects.create(game=game, type=type)
+	game.lobby_game.add(lobby)
 	return lobby
 
 #when User click on Create a lobby,
@@ -109,25 +110,31 @@ def newLobby(id_game, type, name):
 #return: id_lobby
 #create a UserInLobby for the user with entry_at = now
 #type = or 'Public' or 'Tournament'
+import logging
+logger = logging.getLogger(__name__)
 @login_required
 @require_http_methods(['POST', 'PUT'])
 def joinLobby(request):
+	logger.error('joinLobbyHEHEHEHEHEHEHEHHEHEHE')
 	data = json.loads(request.body)
 	id_game = data['id_game']
 	type = data['type'] if 'type' in data else 'Public' #todo: check if type is valid
 	try:
 		game = Game.objects.get(id=id_game)
-		lobby = game.lobby_game.all()
+		lobby = game.lobby_set.all()
 		#if no lobby for this game, create a new lobby
 		if len(lobby) == 0:
-			lobby = newLobby(id_game, type, game.name)
+			logger.error('no lobby for this game')
+			lobby = newLobby(game, type)
 		#if there is a lobby of given type, join the lobby
 		else:
 			lobby = lobby.filter(type=type)
+			logger.error('lobby of given type')
 			if len(lobby) == 0:
-				lobby = newLobby(id_game, type, game.name)
+				lobby = newLobby(game, type)
 			else:
 				lobby = lobby[0]
+		logger.error('lobby created')
 		user = request.user
 		userInLobby = UserInLobby.objects.create(id_user=user, id_lobby=lobby)
 		Lobby.objects.get(id=lobby.id).user.add(userInLobby)
