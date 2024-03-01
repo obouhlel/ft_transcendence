@@ -23,7 +23,7 @@ class Map():
     def isFull(self):
         for row in self.map:
             for cell in row:
-                if cell == 0:
+                if cell == '0':
                     return False
         return True
 
@@ -80,14 +80,17 @@ class Duo():
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
+        sended = False
         while True:
             playerTurn = self.getPlayerWithPawn(self.turn)
-            await playerTurn.socket.send(json.dumps({ 'game': 'play' }))
+            if sended == False:
+                await playerTurn.socket.send(json.dumps({ 'game': 'play' }))
+                sended = True
             if playerTurn.played == True:
                 otherPlayer = self.getOtherPlayer(playerTurn.username)
-                otherPlayer.socket.send(json.dumps({ 'game': 'position',
+                await otherPlayer.socket.send(json.dumps({ 'game': 'position',
                                                      'x': self.map.lastPlayedPos['x'],
-                                                     'y': self.map.lastPlayedPos['y'],}))
+                                                     'z': self.map.lastPlayedPos['y'] }))
                 playerTurn.played = False
                 if self.map.isWin(playerTurn):
                     await self.broadcast({ 'game': 'end',
@@ -98,6 +101,7 @@ class Duo():
                                            'winner': 'draw' })
                     return
                 self.turn = 'X' if self.turn == 'O' else 'O'
+                sended = False
             await asyncio.sleep(0.1)
     
 class Game():
@@ -169,10 +173,7 @@ def position(message: dict):
         duo.map.map[message['x']][message['y']] = player.pawn
         duo.map.lastPlayedPos = { 'x': message['x'], 'y': message['y'] }
         player.played = True
-        return { 'game': 'position',
-                 'x': message['x'],
-                 'y': message['y'],
-                 'pawn': player.pawn }
+    return None
 
 def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
     if 'game' in message:
@@ -187,7 +188,7 @@ def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
 class TikTakToeConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        message = { 'message': 'Pong connection etablished !' }
+        message = { 'message': 'TikTakToe connection etablished !' }
         await self.send(json.dumps(message))
 
     async def disconnect(self, close_code):

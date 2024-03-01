@@ -84,24 +84,28 @@ function getPawn(game) {
 }
 
 function parseMessage(data, game) {
-    if (data['game'] == 'starting') {
-        game.pawnStr = data['pawn'];
-        game.pawn = getPawn(data['pawn']);
-    }
-    if (data['game'] == 'play') {
-        game.isMyTurn = true;
-    }
-    if (data['game'] == 'position') {
-        let pawn = null;
-        if (game.pawn == 'O') {
-            pawn = new PawnCross(data['x'], data['y']);
-        } else if (game.pawn == 'X') {
-            pawn = new PawnCircle(data['x'], data['y']);
+    if ('game' in data) {
+        if (data['game'] == 'starting') {
+            game.pawnStr = data['pawn'];
+            game.pawn = getPawn(game);
         }
-        game.scene.add(pawn.cube);
-    }
-    if (data['game'] == 'end') {
-        
+        if (data['game'] == 'play') {
+            game.isMyTurn = true;
+        }
+        if (data['game'] == 'position') {
+            let pawn = null;
+            if (game.pawnStr == 'O') {
+                pawn = new PawnCross(game.scene, 0, 0);
+            } else if (game.pawnStr == 'X') {
+                pawn = new PawnCircle(game.scene, 0, 0);
+            }
+            pawn.cube.position.x = game.arena[data['x']][data['z']].floor.position.x;
+            pawn.cube.position.z = game.arena[data['x']][data['z']].floor.position.z;
+            game.arena[data['x']][data['z']].pawnOnThis = pawn;
+        }
+        if (data['game'] == 'end') {
+            
+        }
     }
 }
 
@@ -123,6 +127,17 @@ function sendLeaveGame(game) {
     JS_UTILS.sendMessageToSocket(game.socket, message);
 }
 
+function sendNewPawnPosition(game, x, z) {
+    let message = {
+        game: 'position',
+        id: game.secretId,
+        username: game.username,
+        x: x,
+        y: z,
+    };
+    JS_UTILS.sendMessageToSocket(game.socket, message);
+}
+
 function socketListener(game) {
     game.socket.onopen = function () {
         console.log('Connection established');
@@ -131,7 +146,7 @@ function socketListener(game) {
 
     game.socket.onmessage = function (e) {
         let data = JSON.parse(e.data);
-        // console.log('Received message: ' + e.data);
+        console.log('Received message: ' + e.data);
         parseMessage(data, game);
     };
 
@@ -181,18 +196,30 @@ function printPrev(keys, game) {
     const arenaCase = game.arena[game.previewPosition.x][game.previewPosition.z];
     game.pawn.cube.position.x = arenaCase.floor.position.x;
     game.pawn.cube.position.z = arenaCase.floor.position.z;
-    if (arenaCase.pawnOnThis == null) {
+    if (arenaCase.pawnOnThis == null && game.isMyTurn) {
         game.pawn.cube.material.color.set('green');
-        if (keys[' '] == 'down' /*&& game.isMyTurn*/) {
+        if (keys[' '] == 'down') {
             keys[' '] = 'done';
             game.isMyTurn = false;
             arenaCase.pawnOnThis = game.pawn;
             game.pawn = getPawn(game);
+            sendNewPawnPosition(game, game.previewPosition.x, game.previewPosition.z); 
         }
     }
     else {
         game.pawn.cube.material.color.set('red');
     }
+}
+
+function waitPawnSelection(game) {
+    return new Promise((resolve) => {
+        let checkInterval = setInterval(() => {
+            if (game.pawnStr != null) {
+                clearInterval(checkInterval);
+                resolve();
+            }
+        }, 100);
+    });
 }
 
 export async function tikTakToe3D() {
@@ -202,10 +229,10 @@ export async function tikTakToe3D() {
     const splittedURL = url.split('/');
 
     const game = {
-        socket: new WebSocket(url),
-        secretID: splittedURL[splittedURL.length - 1],
+        secretId: splittedURL[splittedURL.length - 1],
+        socket: null,
         username: JS_UTILS.readCookie('username'),
-        pawnStr: 'O',
+        pawnStr: null,
         pawn: null,
         previewPosition: { x: 1, z: 1 },
         isMyTurn: false,
@@ -214,13 +241,14 @@ export async function tikTakToe3D() {
         renderer: UTILS.createRenderer(),
         display: null,
     };
+    game.socket = new WebSocket(url);
     UTILS.createContainerForGame('tikTakToe', game.renderer);
+    JS_UTILS.eraseCookie('username');
     game.arena = createArena(game.scene);
     game.display = TIK_TAK_TOE.createCamera(game.renderer, X_SIZE_MAP);
-    game.pawn = getPawn(game);
-    JS_UTILS.eraseCookie('username');
 
-    // socketListener(game);
+    socketListener(game);
+    await waitPawnSelection(game);
 
     // ------------------------------------keys------------------------------------
     const keys = {};
