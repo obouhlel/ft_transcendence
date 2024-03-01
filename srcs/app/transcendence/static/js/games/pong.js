@@ -204,9 +204,9 @@ export async function pong3D() {
     const socketPath = JS_UTILS.readCookie('url');
     JS_UTILS.eraseCookie('url');
     const url = `wss://${window.location.host}/${socketPath}`;
-    let splittedURL = url.split('/');
+    const splittedURL = url.split('/');
 
-    let game = {
+    const game = {
         going: true,
         needStop: false,
         username: JS_UTILS.readCookie('username'),
@@ -255,7 +255,7 @@ export async function pong3D() {
     // ------------------------------------loop------------------------------------
     function animate(currentTime) {
         if (lastTime && game.going == true) {
-            let delta = (currentTime - lastTime) / 10;
+            const delta = (currentTime - lastTime) / 10;
             game.display.controls.update();
             communication(game, keys, delta);
             PONG.lightFollowTarget(light.spot, game.ball.cube);
