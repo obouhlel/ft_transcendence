@@ -16,7 +16,7 @@ urlpatterns = [
 	path('get_game_by_name/<str:name>', getGameByName, name='getGameByName'),
 	path('get_all_games/', getAllGames, name='getAllGames'),
 	path('get_stats_users_by_game/<int:id_game>', getStatsUsersByGame, name='getStatsUsersByGame'),
-	path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
+	path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'), # a supprimer
 
 	path('get_user_history_by_game/<int:id_game>', getUserHistoryByGame, name='getUserHistoryByGame'),
 	path('get_all_party/', getAllParties, name='getPartyById'),

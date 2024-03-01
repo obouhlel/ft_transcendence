@@ -1,32 +1,3 @@
-export function show_dynamic_profile()
-{
-	return fetch('/api/get_all_games/')
-	.then(response => response.json())
-	.then(data => {
-		if (data.status === 'ok') {
-			const navs = document.querySelector('.navs');
-			if (!navs) {
-				console.error('Element with class "navs" not found');
-				return;
-			}
-			navs.innerHTML = '';  // Supprime les anciens liens
-			data.games.forEach((game, index) => {
-				const link = document.createElement('a');
-				link.className = 'tab-link';
-				link.dataset.tab = `tab${game.id}`;
-				link.textContent = game.name.charAt(0).toUpperCase() + game.name.slice(1);
-				if (index === 0) {
-					link.classList.add('active');
-				}
-				navs.appendChild(link);
-			});
-		}
-		else {
-			console.error(data.message);
-		}
-	});
-}
-
 export	function	show_dynamic_stats(gameID)
 {
 	if (!gameID)
@@ -91,7 +62,6 @@ async	function getUserConnected()
 		console.error(error);
 		return null;
 	});
-
 }
 
 export	function show_dynamic_history(gameID) {
@@ -203,7 +173,7 @@ export async	function show_dynamic_friends() {
 }
 
 /*ACTIVE GAME-TAB FUNCTIONALITY IN USER PROFILE*/
-export function gameTab()
+export function switchGameTab()
 {
     // if (!document.querySelector('.tab-link')) { setTimeout(gameTab, 500); return; }
     document.querySelectorAll('.tab-link').forEach(function(link) {
@@ -227,6 +197,33 @@ export function gameTab()
 			show_dynamic_history(gameID);
         });
     });
+}
+
+export function addFriend()
+{
+	const addFriendBtn = document.querySelector('.add-friend');
+	if (!addFriendBtn)
+	{
+		console.error('Element with class "add-friend" not found');
+		return;
+	}
+	addFriendBtn.addEventListener('click', function() {
+		const userConnected = getUserConnected();
+		const userID = userConnected.id;
+		const friendID = this.getAttribute('data-id');
+		fetch(`/api/add_friend/${userID}/${friendID}`)
+		.then(response => response.json())
+		.then(data => {
+			if (data.status === 'ok') {
+				console.log('Friend added');
+			} else {
+				console.error(data.message);
+			}
+		})
+		.catch(error => {
+			console.error(error);
+		});
+	});
 }
 
 /*FRIENDS BUTTONS FUNCTIONALITY*/
@@ -263,6 +260,7 @@ export function friendsTab()
 
 	allFriendsBtn.addEventListener('click', function() {
 		filterFriends(true, true);
+		console.log('allFriendsBtn');
 		updateButtonStyles(this); // 'this' refers to the clicked button
 	});
 	onlineFriendsBtn.addEventListener('click', function() {
