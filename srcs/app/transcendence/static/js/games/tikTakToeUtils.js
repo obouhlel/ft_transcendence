@@ -33,7 +33,7 @@ export function putFloor(scene, mapSize) {
 }
 
 function placeTextTurn(textTurn, str) {
-    if (str == 'Your turn' || str == 'You win' || str == 'You lose' || str == 'Draw') {
+    if (['You win', 'You lose', 'Draw', 'Your Turn'].includes(str)) {
         textTurn.position.x = 24 / 6 + 1;
     }
     else {
