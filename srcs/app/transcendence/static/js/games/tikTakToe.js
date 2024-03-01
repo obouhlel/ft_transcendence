@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import * as UTILS from './threeJsUtils.js';
 import * as JS_UTILS from './jsUtils.js';
@@ -9,26 +8,48 @@ const X_SIZE_MAP = 24;
 const SIZE_CASE = X_SIZE_MAP / 3;
 
 class PawnCross {
-    constructor(scene, x, z) {
-        this.geometry = new THREE.BoxGeometry(1, 1, 1);
-        this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        this.cube = new THREE.Mesh(this.geometry, this.material);
+    constructor(game, x, z) {
+        let color = 0xff0000;
+        if (game.pawnStr == 'X') {
+            color = 0x0000ff;
+        }
+        const geometry = new THREE.BoxGeometry(1, 1, 5);
+        const material = new THREE.MeshBasicMaterial({ color: color });
+
+        const part1 = new THREE.Mesh(geometry, material);
+        const part2 = new THREE.Mesh(geometry, material);
+
+        part1.rotation.y = 15;
+        part2.rotation.y = -15;
+
+        this.cube = new THREE.Group();
+        this.cube.add(part1);
+        this.cube.add(part2);
+
         this.cube.position.x = x;
         this.cube.position.z = z;
         this.cube.position.y = 5;
-        scene.add(this.cube);
+        game.scene.add(this.cube);
     }
 }
 
 class PawnCircle {
-    constructor(scene, x, z) {
-        let geometry = new THREE.SphereGeometry(0.5, 32, 32);
-        let material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+    constructor(game, x, z) {
+        let color = 0xff0000;
+        if (game.pawnStr == 'O') {
+            color = 0x0000ff;
+        }
+        const geometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
+        const material = new THREE.MeshBasicMaterial({ color: color });
         this.cube = new THREE.Mesh(geometry, material);
+
+        this.cube.rotation.x = Math.PI / 2;
+
         this.cube.position.x = x;
         this.cube.position.z = z;
         this.cube.position.y = 5;
-        scene.add(this.cube);
+
+        game.scene.add(this.cube);
     }
 }
 
@@ -75,12 +96,13 @@ function createArena(scene) {
 }
 
 function getPawn(game) {
+    let pawn = null;
     if (game.pawnStr == 'O') {
-        return new PawnCircle(game.scene, 0, 0);
+        pawn = new PawnCircle(game, 0, 0);
     } else if (game.pawnStr == 'X') {
-        return new PawnCross(game.scene, 0, 0);
+        pawn = new PawnCross(game, 0, 0);
     }
-    return null;
+    return pawn;
 }
 
 function parseMessage(data, game) {
@@ -91,20 +113,29 @@ function parseMessage(data, game) {
         }
         if (data['game'] == 'play') {
             game.isMyTurn = true;
+            TIK_TAK_TOE.updateTurn(game.scene, 'Your turn', game);
         }
         if (data['game'] == 'position') {
             let pawn = null;
             if (game.pawnStr == 'O') {
-                pawn = new PawnCross(game.scene, 0, 0);
+                pawn = new PawnCross(game, 0, 0);
             } else if (game.pawnStr == 'X') {
-                pawn = new PawnCircle(game.scene, 0, 0);
+                pawn = new PawnCircle(game, 0, 0);
             }
             pawn.cube.position.x = game.arena[data['x']][data['z']].floor.position.x;
             pawn.cube.position.z = game.arena[data['x']][data['z']].floor.position.z;
             game.arena[data['x']][data['z']].pawnOnThis = pawn;
         }
         if (data['game'] == 'end') {
-            
+            if (data['winner'] == game.username) {
+                TIK_TAK_TOE.updateTurn(game.scene, 'You Win', game);
+            }
+            else if (data['winner'] == 'draw') {
+                TIK_TAK_TOE.updateTurn(game.scene, '  Draw  ', game);
+            }
+            else {
+                TIK_TAK_TOE.updateTurn(game.scene, 'You Lose', game);
+            }
         }
     }
 }
@@ -197,17 +228,14 @@ function printPrev(keys, game) {
     game.pawn.cube.position.x = arenaCase.floor.position.x;
     game.pawn.cube.position.z = arenaCase.floor.position.z;
     if (arenaCase.pawnOnThis == null && game.isMyTurn) {
-        game.pawn.cube.material.color.set('green');
         if (keys[' '] == 'down') {
             keys[' '] = 'done';
             game.isMyTurn = false;
+            TIK_TAK_TOE.updateTurn(game.scene, 'Opponent turn', game);
             arenaCase.pawnOnThis = game.pawn;
             game.pawn = getPawn(game);
             sendNewPawnPosition(game, game.previewPosition.x, game.previewPosition.z); 
         }
-    }
-    else {
-        game.pawn.cube.material.color.set('red');
     }
 }
 
@@ -236,6 +264,7 @@ export async function tikTakToe3D() {
         pawn: null,
         previewPosition: { x: 1, z: 1 },
         isMyTurn: false,
+        textTurn: null,
         arena: null,
         scene: UTILS.createScene(),
         renderer: UTILS.createRenderer(),
@@ -246,6 +275,7 @@ export async function tikTakToe3D() {
     JS_UTILS.eraseCookie('username');
     game.arena = createArena(game.scene);
     game.display = TIK_TAK_TOE.createCamera(game.renderer, X_SIZE_MAP);
+    TIK_TAK_TOE.updateTurn(game.scene, 'Opponent turn', game);
 
     socketListener(game);
     await waitPawnSelection(game);

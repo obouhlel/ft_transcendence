@@ -31,3 +31,28 @@ export function putFloor(scene, mapSize) {
     scene.add(floor);
     return floor;
 }
+
+function placeTextTurn(textTurn, str) {
+    if (str == 'Your turn' || str == 'You win' || str == 'You lose' || str == 'Draw') {
+        textTurn.position.x = 24 / 6 + 1;
+    }
+    else {
+        textTurn.position.x = 24 / 12 + 1;
+    }
+    textTurn.position.z = -11;
+    textTurn.position.y = 1;
+}
+
+function createTextTurn(scene, turnString) {
+    let textGeometry = UTILS.doTextGeo(turnString, 1.5);
+    let meshMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    let textTurn = new THREE.Mesh(textGeometry, meshMaterial);
+    placeTextTurn(textTurn, turnString);
+    scene.add(textTurn);
+    return textTurn;
+}
+
+export function updateTurn(scene, turnString, game) {
+    scene.remove(game.textTurn);
+    game.textTurn = createTextTurn(scene, turnString);
+}
