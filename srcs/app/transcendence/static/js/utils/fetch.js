@@ -50,8 +50,16 @@ export const doRequest = {
             },
             credentials: 'include'
         };
-        return fetch(url, options)
-            .then(response => response.json())
-            .catch(error => { console.error(error); });
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`Error : ${data.message} - ${response.status}`);
+            }
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+        }
     },
 };
