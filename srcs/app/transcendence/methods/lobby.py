@@ -239,8 +239,8 @@ def findCompatiblesUsers(request):
 		user_found = find_compatibles_users(AllUserInLobby, current_user, lobby.id_game)
 		if user_found:
 			party = Party.objects.create(id_game=lobby.id_game, player1=current_user, player2=user_found, started_at=timezone.now())
-			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).delete()
-			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).delete()
+			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).remove()
+			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).remove()
 			return JsonResponse({'status': 'ok', 'id_party': party.id})
 			#send a notification to the user found ????????????????????
 		else:

@@ -34,7 +34,11 @@ urlpatterns = [
 
 	path('join_lobby/', joinLobby, name='joinLobby'),
 	path('quit_lobby/', quitLobby, name='quitLobby'),
-	path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
+	path('send_friend_request/', sendFriendRequest, name='sendFriendRequest'),
+	path('respond_friend_request/', RespondFriendRequest, name='acceptFriendRequest'),
+	path('remove_friend/', removeFriend, name='removeFriend'),
+	
+	# path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
 
 
 	# FRIENDS
