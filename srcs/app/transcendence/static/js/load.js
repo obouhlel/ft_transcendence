@@ -6,6 +6,7 @@ import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
+import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -76,6 +77,7 @@ function showPage(page) {
 			handleLogout();
 			dropdown();
 		}
+		test();
 	})
 	.catch(error => {
 		console.error(error);
