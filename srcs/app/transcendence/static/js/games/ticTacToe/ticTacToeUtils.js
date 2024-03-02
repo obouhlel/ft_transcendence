@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-import * as UTILS from './threeJsUtils.js';
+import * as UTILS from '../threeJsUtils.js';
 
 function placeCamera(camera, mapSize) {
     camera.position.x = mapSize / 3 + 1;
