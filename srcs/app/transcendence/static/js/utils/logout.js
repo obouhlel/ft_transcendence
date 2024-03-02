@@ -6,6 +6,6 @@ export function handleLogout() {
 	if (!logoutButton) { return; }
 	logoutButton.addEventListener('click', function(event) {
 		event.preventDefault();
-		doRequest.postJSON(`${SERVER_URL}/api/logout/`, {}, callback.logout);
+		doRequest.post(`${SERVER_URL}/api/logout/`, {}, callback.logout);
 	});
 }

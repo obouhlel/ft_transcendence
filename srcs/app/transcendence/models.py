@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
 	avatar = models.ImageField(upload_to='avatars/')
 	created_at = models.DateTimeField(default=timezone.now)
 	last_connexion = models.DateTimeField(default=timezone.now)
-	status = models.CharField(max_length=30, default='Online')
+	status = models.CharField(max_length=30, default='offline')
 	list_friends = models.ManyToManyField('CustomUser', related_name='friends')
 	list_request = models.ManyToManyField('friend_request', related_name='request')
 	list_request_sent = models.ManyToManyField('friend_request', related_name='request_sent')
@@ -45,7 +45,7 @@ class CustomUser(AbstractUser):
 			'is_admin': self.is_admin,
 			'sexe': self.sexe,
 			'birthdate': self.birthdate,
-			'avatar': self.avatar.path,
+			'avatar': self.avatar.path if self.avatar else None,
 			'created_at': self.created_at,
 			'last_connexion': self.last_connexion,
 			'status': self.status,
@@ -64,9 +64,10 @@ class CustomUser(AbstractUser):
 class Game(models.Model):
 	id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=30, unique=True)
-	description = models.TextField()
-	image = models.CharField(max_length=128, default='/var/www/static/default_game.webp')
-	genre = models.CharField(max_length=30)
+	description = models.TextField(default='No description')
+	image = models.CharField(max_length=128, default='img/default_game.jpg')
+	# genres = models.CharField(max_length=512)
+	genres = models.CharField(max_length=512, default='No genre')
 	created_at = models.DateTimeField(auto_now_add=True)
 	point_to_win = models.IntegerField(default=10)
 	stat = models.ForeignKey('Stat_Game', on_delete=models.CASCADE)

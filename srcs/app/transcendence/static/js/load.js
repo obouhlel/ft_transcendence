@@ -9,7 +9,7 @@ import { dropdown } from './header.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong.js';
 import { ticTacToe3D } from './games/ticTacToe.js';
-
+import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -80,6 +80,7 @@ function showPage(page) {
 			handleLogout();
 			dropdown();
 		}
+		test();
 	})
 	.catch(error => {
 		console.error(error);

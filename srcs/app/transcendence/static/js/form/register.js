@@ -3,7 +3,7 @@ import { callback } from '../utils/callback.js';
 import { dataForm } from '../utils/data.js';
 
 export function handleRegisterFormSubmit() {
-	const form = document.getElementById('profile-form');
+	const form = document.getElementById('register-form');
 	const uploadField = document.getElementById("avatar");
 	if ( !form || !uploadField ) { return; }
 
@@ -20,6 +20,7 @@ export function handleRegisterFormSubmit() {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
+		console.log('register form submitted');
         const fields = [
 			'username',
 			'firstname',
@@ -33,7 +34,6 @@ export function handleRegisterFormSubmit() {
 		];
 
 		const data = dataForm(fields);
-
         doRequest.post(`${SERVER_URL}/api/register/`, data, callback.registered);
     });
 };
