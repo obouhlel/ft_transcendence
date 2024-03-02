@@ -8,7 +8,7 @@ import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong.js';
-import { tikTakToe3D } from './games/tikTakToe.js';
+import { TicTacToe3D } from './games/TicTacToe.js';
 // import * as jsUtils from './games/jsUtils.js';
 // import * as threeJsUtils from './games/threeJsUtils.js';
 // import * as pongUtils from './games/pongUtils.js';
@@ -59,10 +59,10 @@ const pageHandlers = {
 		matchmacking('pong');
 	},
 	'game-2': () => {
-		matchmacking('tikTakToe');
+		matchmacking('TicTacToe');
 	},
 	'pong': pong3D,
-	'tikTakToe':  tikTakToe3D,
+	'TicTacToe':  TicTacToe3D,
 };
 
 function showPage(page) {

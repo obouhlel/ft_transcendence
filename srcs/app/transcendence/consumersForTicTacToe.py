@@ -185,10 +185,10 @@ def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
             return position(message)
     return { 'error': 'Invalid message' }
 
-class TikTakToeConsumer(AsyncWebsocketConsumer):
+class TicTacToeConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        message = { 'message': 'TikTakToe connection etablished !' }
+        message = { 'message': 'TicTacToe connection etablished !' }
         await self.send(json.dumps(message))
 
     async def disconnect(self, close_code):

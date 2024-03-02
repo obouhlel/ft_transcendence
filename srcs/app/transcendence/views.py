@@ -8,7 +8,7 @@ def index(request):
 	return render(request, 'index.html')
 
 def page(request, page):
-	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'tikTakToe']
+	allowed_pages = ['login', 'register', 'profile', 'edit_profile', 'games', 'game-1', 'game-2', 'pong', 'TicTacToe']
 	error_pages = ['400', '401', '403', '404', '405']
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request)

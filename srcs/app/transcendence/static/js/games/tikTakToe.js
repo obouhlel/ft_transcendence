@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import * as UTILS from './threeJsUtils.js';
 import * as JS_UTILS from './jsUtils.js';
-import * as TIK_TAK_TOE from './tikTakToeUtils.js';
+import * as TIK_TAK_TOE from './TicTacToeUtils.js';
 
 const X_SIZE_MAP = 24;
 const SIZE_CASE = X_SIZE_MAP / 3;
@@ -250,7 +250,7 @@ function waitPawnSelection(game) {
     });
 }
 
-export async function tikTakToe3D() {
+export async function TicTacToe3D() {
 	const socketPath = JS_UTILS.readCookie('url');
     JS_UTILS.eraseCookie('url');
     const url = `wss://${window.location.host}/${socketPath}`;
@@ -271,7 +271,7 @@ export async function tikTakToe3D() {
         display: null,
     };
     game.socket = new WebSocket(url);
-    UTILS.createContainerForGame('tikTakToe', game.renderer);
+    UTILS.createContainerForGame('TicTacToe', game.renderer);
     JS_UTILS.eraseCookie('username');
     game.arena = createArena(game.scene);
     game.display = TIK_TAK_TOE.createCamera(game.renderer, X_SIZE_MAP);
