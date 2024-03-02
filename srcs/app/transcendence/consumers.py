@@ -5,6 +5,8 @@ import asyncio
 import uuid
 from . import routing
 from . import consumersForPong
+from . import consumersForTicTacToe
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -52,7 +54,7 @@ class Game():
 
 playersConnected = Game()
 playersPong = Game()
-playersShooter = Game()
+playersTicTacToe = Game()
 
 # -----------------------------Json Message--------------------------------
 def getMatchFoundJson(game, url):
@@ -86,7 +88,11 @@ def getMatchmackingLeaveJson(username, game):
 def createUrlPattern(game):
 	url = "ws/" + game + "/" + str(uuid.uuid4())
 	newPattern = r"^" + url + "$"
-	newConsumer = consumersForPong.PongConsumer.as_asgi()
+	newConsumer = None
+	if game == "pong":
+		newConsumer = consumersForPong.PongConsumer.as_asgi()
+	elif game == "TicTacToe":
+		newConsumer = consumersForTicTacToe.TicTacToeConsumer.as_asgi()
 	routing.add_urlpattern(newPattern, newConsumer)
 	return url
 
@@ -100,6 +106,17 @@ async def matchmakingPong():
 			url = createUrlPattern("pong")
 			for player in duoPlayers:
 				await player.socket.send(getMatchFoundJson("pong", url))
+		await asyncio.sleep(1)
+
+async def matchmackingTicTacToe():
+	while True:
+		if playersTicTacToe.getLen() == 0:
+			return
+		if playersTicTacToe.getLen() >= 2:
+			duoPlayers = playersTicTacToe.doDuo()
+			url = createUrlPattern("TicTacToe")
+			for player in duoPlayers:
+				await player.socket.send(getMatchFoundJson("TicTacToe", url))
 		await asyncio.sleep(1)
 
 # -----------------------------Parser--------------------------------
@@ -119,11 +136,19 @@ def matchmakingJoined(message):
 		playersPong.append(player)
 		if playersPong.getLen() == 1:
 			asyncio.create_task(matchmakingPong())
+	if message['game'] == 'TicTacToe':
+		player = playersConnected.getPlayer(message['username'])
+		player.mmr = message['mmr']
+		playersTicTacToe.append(player)
+		if playersTicTacToe.getLen() == 1:
+			asyncio.create_task(matchmackingTicTacToe())
 	return getMatchmackingJoinJson(message['username'], message['game'])
 
 def matchmakingLeaved(message):
 	if message['game'] == 'pong':
 		playersPong.remove(message['username'])
+	elif message['game'] == 'TicTacToe':
+		playersTicTacToe.remove(message['username'])
 	return getMatchmackingLeaveJson(message['username'], message['game'])
 
 def parseMessage(self, message):
