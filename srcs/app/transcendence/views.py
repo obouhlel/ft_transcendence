@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
+from transcendence.models import *
 
 @ensure_csrf_cookie
 def index(request):
@@ -18,16 +19,11 @@ def page(request, page):
 		'game-2',
 		'join-tournament',
 		'create-tournament',
+		'lobby-tournament',
 		'pong',
 		'shooter'
 	]
-	error_pages = [
-		'400',
-		'401',
-		'403',
-		'404',
-		'405'
-	]
+	error_pages = ['400', '401', '403', '404', '405']
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request)
 		return JsonResponse({'page': html_content})
@@ -38,7 +34,8 @@ def page(request, page):
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'page': html_content})
 	elif page in allowed_pages:
-		html_content = render_to_string('views/' + page + '.html', request=request)
+		games = Game.objects.all()
+		html_content = render_to_string('views/' + page + '.html', {'games': games})
 		return JsonResponse({'page': html_content})
 	elif page in error_pages:
 		html_content = render_to_string('error/' + page + '.html', request=request)
