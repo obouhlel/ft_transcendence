@@ -25,7 +25,6 @@ async function loadAndSetFont(url) {
 }
 
 loadAndSetFont('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json');
-// loadAndSetFont('./font/helvetiker_regular.typeface.json');
 
 export function doTextGeo(text, fontSize, threeD = false) {
 	return new TextGeometry( text, {

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 import * as UTILS from './threeJsUtils.js';
 import * as JS_UTILS from './jsUtils.js';
-import * as TIK_TAK_TOE from './TicTacToeUtils.js';
+import * as TIK_TAK_TOE from './ticTacToeUtils.js';
 
 const X_SIZE_MAP = 24;
 const SIZE_CASE = X_SIZE_MAP / 3;
@@ -250,7 +250,7 @@ function waitPawnSelection(game) {
     });
 }
 
-export async function TicTacToe3D() {
+export async function ticTacToe3D() {
 	const socketPath = JS_UTILS.readCookie('url');
     JS_UTILS.eraseCookie('url');
     const url = `wss://${window.location.host}/${socketPath}`;

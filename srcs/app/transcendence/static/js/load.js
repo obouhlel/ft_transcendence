@@ -8,10 +8,7 @@ import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong.js';
-import { TicTacToe3D } from './games/TicTacToe.js';
-// import * as jsUtils from './games/jsUtils.js';
-// import * as threeJsUtils from './games/threeJsUtils.js';
-// import * as pongUtils from './games/pongUtils.js';
+import { ticTacToe3D } from './games/ticTacToe.js';
 
 
 window.addEventListener('hashchange', function() {
@@ -62,7 +59,7 @@ const pageHandlers = {
 		matchmacking('TicTacToe');
 	},
 	'pong': pong3D,
-	'TicTacToe':  TicTacToe3D,
+	'TicTacToe':  ticTacToe3D,
 };
 
 function showPage(page) {
