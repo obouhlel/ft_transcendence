@@ -6,6 +6,7 @@ import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
+import './notifs.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
@@ -62,19 +63,28 @@ const pageHandlers = {
 	'TicTacToe':  ticTacToe3D,
 };
 
+function executeHandlers(page) {
+	pageHandlers[page]?.();
+}
+
 function showPage(page) {
 	fetch(`/pages/${page}`)
 	.then(response => response.json())
 	.then(data => {
-		console.log(data);
-		console.log(page);
 		const page_content = document.getElementById('page');
+		if (!page_content) {
+			console.error('Element with ID "page" not found');
+			return;
+		}
 		page_content.innerHTML = data.page;
 		const isLogged = is_logged_in();
 		if (!isLogged && page === 'home')
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
-			pageHandlers[page]();
+			executeHandlers(page);
+		else
+			console.error('Unknown page:', page);
+
 		if (isLogged)
 		{
 			handleLogout();

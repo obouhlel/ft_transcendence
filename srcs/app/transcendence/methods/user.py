@@ -17,6 +17,13 @@ def getUserName(request):
 
 @login_required
 @require_http_methods(['GET'])
+def getMe(request):
+	user = request.user
+	data = user.user_data()
+	return JsonResponse({'status': 'ok', 'user': data})
+
+@login_required
+@require_http_methods(['GET'])
 def getUserByName(request, username):
 	try:
 		user = CustomUser.objects.get(username=username)
@@ -37,12 +44,56 @@ def getUserById(request, id):
 
 @login_required
 @require_http_methods(['GET'])
+def getUserByStatus(request, status):
+	users = CustomUser.objects.filter(status=status)
+	data = [user.user_data() for user in users]
+	return JsonResponse({'status': 'ok', 'users': data})
+
+@login_required
+@require_http_methods(['GET'])
 def getAllUsers(request):
 	users = CustomUser.objects.all()
 	data = []
 	for user in users:
 		data += [user.user_data()]
 	return JsonResponse({'status': 'ok', 'users': data})
+
+
+@login_required
+@require_http_methods(['GET'])
+def getFriends(request):
+	user = request.user
+	friends = user.friends.all()
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getOnlineFriends(request):
+	user = request.user
+	friends = user.friends.filter(status='online')
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getOfflineFriends(request):
+	user = request.user
+	friends = user.friends.filter(status='offline')
+	data = [friend.user_data() for friend in friends]
+	return JsonResponse({'status': 'ok', 'friends': data})
+
+
+@login_required
+@require_http_methods(['GET'])
+def getUserConnected(request):
+	if request.user.is_authenticated:
+		user = request.user
+		data = user.user_data()
+		return JsonResponse({'status': 'ok', 'user': data})
+	else:
+		return JsonResponse({'status': 'error', 'message': 'No user connected'}, status=404)
+
 
 # -------------------------------POST USER-----------------------------#
 #=> register_user.py
@@ -52,4 +103,3 @@ def getAllUsers(request):
 
 # -------------------------------DELETE USER-----------------------------#
 #not implemented
-	
