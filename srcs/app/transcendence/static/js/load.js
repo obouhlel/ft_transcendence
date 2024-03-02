@@ -7,8 +7,8 @@ import { message } from './utils/message.js';
 import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 import { matchmacking } from './games/matchmaking.js';
-import { pong3D } from './games/pong.js';
-import { ticTacToe3D } from './games/ticTacToe.js';
+import { pong3D } from './games/pong/pong.js';
+import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
