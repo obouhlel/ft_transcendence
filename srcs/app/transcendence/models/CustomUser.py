@@ -5,13 +5,24 @@ from django.db import models
 from django.utils import timezone
 
 
-#AbstractUser has the following fields: username, first_name, last_name, email, password, groups, user_permissions, is_staff, is_active, is_superuser, last_login, date_joined
+# AbstractUser has the following fields:
+# - username
+# - first_name
+# - last_name
+# - email
+# - password
+# - groups
+# - user_permissions
+# - is_staff
+# - is_active
+# - is_superuser
+# - last_login
+# - date_joined
 class CustomUser(AbstractUser):
 	is_admin = models.BooleanField(default=False)
 	sexe = models.CharField(max_length=64, default='Unknow')
 	birthdate = models.DateField(default=timezone.now)
 	token = models.CharField(max_length=128)
-	# avatar = models.ImageField(upload_to='avatars/', default='default_avatar.webp')
 	avatar = models.ImageField(upload_to='avatars/')
 	created_at = models.DateTimeField(default=timezone.now)
 	last_connexion = models.DateTimeField(default=timezone.now)
