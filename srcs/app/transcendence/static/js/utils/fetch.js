@@ -1,65 +1,65 @@
-// export const SERVER_URL = 'https://localhost:8000';
-export const SERVER_URL = '';
+export const SERVER_URL = window.location.origin;
 
-export const doRequest = {
-    _getCookie: function getCookie(name)
-    {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            let cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                let cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
+function getCookie(name)
+{
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
             }
         }
-        return cookieValue;
-    },
+    }
+    return cookieValue;
+}
 
-    postJSON: function(url, data, callback)
-    {
-        const csrftoken = this._getCookie('csrftoken');
-        const options = {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include'
-        };
-        options.body = JSON.stringify(data);
-        fetch(url, options)
-            .then(response => response.json())
-            .then(data => { callback(data); })
-            .catch(error => { console.error(error); });
-    },
+export const doRequest = {
 
     post: function(url, data, callback)
     {
-        const csrftoken = this._getCookie('csrftoken');
+        const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'POST',
-            headers: {'X-CSRFToken': csrftoken,},
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
             credentials: 'include',
-            body: data
         };
+		if (data instanceof FormData)
+            options.body = data;
+		else
+		{
+			options.headers['Content-Type'] = 'application/json';
+			options.body = JSON.stringify(data);
+		}
         fetch(url, options)
             .then(response => response.json())
             .then(data => { callback(data); })
             .catch(error => { console.error(error); });
     },
 
-    get: function(url) {
-        const csrftoken = this._getCookie('csrftoken');
+    get: async function(url) {
+        const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'GET',
-            headers: {'X-CSRFToken': csrftoken},
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
             credentials: 'include'
         };
-        return fetch(url, options)
-            .then(response => response.json())
-            .catch(error => { console.error(error); });
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(`Error : ${data.message} - ${response.status}`);
+            }
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+        }
     },
 };

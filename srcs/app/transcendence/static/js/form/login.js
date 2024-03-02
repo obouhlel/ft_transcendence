@@ -15,9 +15,8 @@ export function handleLoginFormSubmit() {
 			'username': username,
 			'password': password
 		};
-		
-		console.log(data);
-		doRequest.postJSON(`${SERVER_URL}/api/login/`, data, callback.login);
+
+		doRequest.post(`${SERVER_URL}/api/login/`, data, callback.login);
 	});
 
 	// 42 login

@@ -3,17 +3,17 @@
 <main class="games-section">
     <h1>Games</h1>
     <div class="games-grid">
-        <div>
-            <a href="#game-1">
-                <img src="{% static 'img/pong.jpg' %}" class="game-image" alt="pong">
-                <h2>Pong</h2>
-            </a>
-        </div>
-        <div>
-            <a href="#game-2">
-                <img src="{% static 'img/pew.jpg' %}" class="game-image" alt="shooter">
-                <h2>Shooter</h2>
-            </a>
-        </div>
+        {% if not games %}
+            <h2>No games available</h2>
+        {% else %}
+            {% for game in games %}
+                <div>
+                    <a href="#game-{{ game.id }}">
+                        <img src="{% static game.image %}" class="game-image" alt="{{ game.name }}">
+                        <h2>{{ game.name }}</h2>
+                    </a>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 </main>

@@ -38,7 +38,6 @@ export const callback = {
 		if (data.status === 'ok')
 		{
 			console.log('INSCRIPTION REUSSIE');
-			messageElement.textContent = data.message;
 			window.location.hash = 'login';
 		}
 		else if (data.status === 'error')
@@ -56,7 +55,7 @@ export const callback = {
 		if (data.status === 'ok')
 		{
 			console.log('MODIFICATION REUSSIE');
-			window.location.hash = 'profile';
+			window.location.hash = 'login';
 		}
 		else if (data.status === 'error')
 		{

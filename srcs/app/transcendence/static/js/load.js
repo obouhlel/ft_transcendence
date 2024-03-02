@@ -6,6 +6,10 @@ import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
 import { gameTab, friendsTab, openModal } from './profile.js';
 import { dropdown } from './header.js';
+import { matchmacking } from './games/matchmaking.js';
+import { pong3D } from './games/pong/pong.js';
+import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
+import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -49,14 +53,14 @@ const pageHandlers = {
         friendsTab();
 		openModal();
     },
-    // 'game-1': () => {
-    //     game();
-    //     listenerGame();
-    // },
-	// 'game-2': () => {
-    //     game();
-    //     listenerGame();
-    // }
+    'game-1': () => {
+		matchmacking('pong');
+	},
+	'game-2': () => {
+		matchmacking('TicTacToe');
+	},
+	'pong': pong3D,
+	'TicTacToe':  ticTacToe3D,
 };
 
 function showPage(page) {
@@ -77,6 +81,7 @@ function showPage(page) {
 			handleLogout();
 			dropdown();
 		}
+		test();
 	})
 	.catch(error => {
 		console.error(error);

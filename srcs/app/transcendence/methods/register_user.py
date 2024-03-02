@@ -69,7 +69,13 @@ def register_user(request):
 	)
 
 	if 'avatar' in request.FILES:
-		user.avatar = request.FILES['avatar']
+		avatar = request.FILES['avatar']
+		if avatar.size > 1024 * 1024:
+			return JsonResponse(
+				{'status': 'error', 'message': 'Image is too large. (Max 1MB)'},
+				status=400
+			)
+		user.avatar = avatar
 
 	user.save()
 	return JsonResponse({'status': 'ok', 'message': 'Your account has been successfully created.'})
