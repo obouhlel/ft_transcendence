@@ -41,7 +41,7 @@ class Command(BaseCommand):
 			name='Pong',
 			image='img/pong.jpg',
 			description=description_pong,
-			genre='Arcade, Sports, Action, Classic, Paddle, Simulation (Simple), Retro',
+			genres='Arcade, Sports, Action, Classic, Paddle, Simulation (Simple), Retro',
 			stat=stat_game1
 		)
 		game1.save()
@@ -49,10 +49,16 @@ class Command(BaseCommand):
 		stat_game2 = Stat_Game()
 		stat_game2.save()
 
+		description_tictactoe = """
+		Tic Tac Toe, also known as Naughts and Crosses, is a classic two-player game. 
+		Players take turns marking spaces in a 3x3 grid, aiming to form a row, column, or diagonal of their symbol (X or O). 
+		Simple yet strategic, it's a timeless test of wit and tactics.
+		"""
+
 		game2 = Game.objects.create(
 			name='Tictactoe',
-			description='description2',
-			genres='genre2',
+			description=description_tictactoe,
+			genres='Puzzle, Board Game, Strategy',
 			stat=stat_game2
 		)
 		game2.save()
