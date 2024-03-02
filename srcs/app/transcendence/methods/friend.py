@@ -9,8 +9,7 @@ from transcendence.models  import CustomUser
 def getAllFriendsofUser(request, id_user):
 	try:
 		user = CustomUser.objects.get(id=id_user)
-		data = [user.friend_data() for user in user.friends.all()]
+		data = user.getFriends()
 		return JsonResponse({'status': 'ok', 'friends': data})
 	except CustomUser.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
-	
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)

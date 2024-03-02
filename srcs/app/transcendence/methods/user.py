@@ -17,6 +17,13 @@ def getUserName(request):
 
 @login_required
 @require_http_methods(['GET'])
+def getMe(request):
+	user = request.user
+	data = user.user_data()
+	return JsonResponse({'status': 'ok', 'user': data})
+
+@login_required
+@require_http_methods(['GET'])
 def getUserByName(request, username):
 	try:
 		user = CustomUser.objects.get(username=username)

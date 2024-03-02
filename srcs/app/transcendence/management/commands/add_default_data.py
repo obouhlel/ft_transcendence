@@ -50,14 +50,14 @@ class Command(BaseCommand):
 
 		game2 = Game.objects.create(name='shooter',description='description2',genre='genre2',stat=stat_game2)
 
-		Stat_User_by_Game.objects.create(id_user=user1, id_game=game1)
-		Stat_User_by_Game.objects.create(id_user=user2, id_game=game1)
-		Stat_User_by_Game.objects.create(id_user=user1, id_game=game2)
-		Stat_User_by_Game.objects.create(id_user=user2, id_game=game2)
+		Stat_User_by_Game.objects.create(user=user1, game=game1)
+		Stat_User_by_Game.objects.create(user=user2, game=game1)
+		Stat_User_by_Game.objects.create(user=user1, game=game2)
+		Stat_User_by_Game.objects.create(user=user2, game=game2)
 
 		# Créer des parties
 		party1 = Party.objects.create(
-			id_game=game1,
+			game=game1,
 			name='Party 1',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=10),
@@ -71,7 +71,7 @@ class Command(BaseCommand):
 		)
 
 		party2 = Party.objects.create(
-			id_game=game2,
+			game=game2,
 			name='Party 2',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=15),
@@ -85,7 +85,7 @@ class Command(BaseCommand):
 		)
 
 		party3 = Party.objects.create(
-			id_game=game1,
+			game=game1,
 			name='Party 3',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=20),
@@ -98,12 +98,12 @@ class Command(BaseCommand):
 			loser_party=user1
 		)
 		# Ajouter les parties aux statistiques des utilisateurs
-		user1_stat_game1 = Stat_User_by_Game.objects.get(id_user=user1, id_game=game1)
+		user1_stat_game1 = Stat_User_by_Game.objects.get(user=user1, game=game1)
 		user1_stat_game1.nb_played += 1
 		user1_stat_game1.nb_win += 1
 		user1_stat_game1.save()
 
-		user2_stat_game1 = Stat_User_by_Game.objects.get(id_user=user2, id_game=game1)
+		user2_stat_game1 = Stat_User_by_Game.objects.get(user=user2, game=game1)
 		user2_stat_game1.nb_played += 1
 		user2_stat_game1.nb_lose += 1
 		user2_stat_game1.save()
@@ -116,12 +116,12 @@ class Command(BaseCommand):
 		user2_stat_game1.nb_win += 1
 		user2_stat_game1.save()
 
-		user1_stat_game2 = Stat_User_by_Game.objects.get(id_user=user1, id_game=game2)
+		user1_stat_game2 = Stat_User_by_Game.objects.get(user=user1, game=game2)
 		user1_stat_game2.nb_played += 1
 		user1_stat_game2.nb_lose += 1
 		user1_stat_game2.save()
 
-		user2_stat_game2 = Stat_User_by_Game.objects.get(id_user=user2, id_game=game2)
+		user2_stat_game2 = Stat_User_by_Game.objects.get(user=user2, game=game2)
 		user2_stat_game2.nb_played += 1
 		user2_stat_game2.nb_win += 1
 		user2_stat_game2.save()
