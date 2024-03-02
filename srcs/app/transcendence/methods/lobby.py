@@ -225,8 +225,7 @@ def find_compatibles_users(users, current_user):
 #and delete the UserInLobby for the user
 #if return nothing, it will continue to wait
 
-@login_required
-@require_http_methods(['POST'])
+
 def findCompatiblesUsers(request):
 	data = json.loads(request.body)
 	id_lobby = data['id_lobby']

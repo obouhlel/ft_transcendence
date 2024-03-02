@@ -21,8 +21,9 @@ urlpatterns = [
 	path('get_stats_users_by_game/<int:id_game>', getStatsUsersByGame, name='getStatsUsersByGame'),
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 
-
-
+	#Leaderboard
+	path('get_leaderboard/<int:id_game>', getLeaderboard, name='getLeaderboard'),
+	path('get_leaderboard/<int:id_game>/<int:length>', getLeaderboard_length, name='getLeader'),
 
 	# GAMES
 	path('get_game_by_id/<int:id>', getGameById, name='getGameById'),
