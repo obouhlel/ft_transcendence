@@ -64,9 +64,10 @@ class CustomUser(AbstractUser):
 class Game(models.Model):
 	id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=30, unique=True)
-	description = models.TextField()
+	description = models.TextField(default='No description')
 	image = models.CharField(max_length=128, default='img/default_game.jpg')
-	genre = models.CharField(max_length=30)
+	# genres = models.CharField(max_length=512)
+	genres = models.CharField(max_length=512, default='No genre')
 	created_at = models.DateTimeField(auto_now_add=True)
 	point_to_win = models.IntegerField(default=10)
 	stat = models.ForeignKey('Stat_Game', on_delete=models.CASCADE)

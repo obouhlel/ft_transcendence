@@ -26,16 +26,22 @@ class Command(BaseCommand):
 			first_name='User',
 			last_name='Two',
 			sexe='F',
-			birthdate=timezone.now() - timezone.timedelta(days=30*365),
+			birthdate=timezone.now() - timezone.timedelta(days=30*365), 	
 		)
 
 		stat_game1 = Stat_Game()
 		stat_game1.save()
+
+		description_pong = """
+		Pong is a classic arcade game where players control paddles to hit a ball back and forth.\n
+		Test your reflexes in this timeless battle of speed and skill.
+		"""
+
 		game1 = Game.objects.create(
 			name='Pong',
 			image='img/pong.jpg',
-			description='description1',
-			genre='genre1',
+			description=description_pong,
+			genre='Arcade, Sports, Action, Classic, Paddle, Simulation (Simple), Retro',
 			stat=stat_game1
 		)
 		game1.save()
@@ -46,7 +52,7 @@ class Command(BaseCommand):
 		game2 = Game.objects.create(
 			name='Tictactoe',
 			description='description2',
-			genre='genre2',
+			genres='genre2',
 			stat=stat_game2
 		)
 		game2.save()
