@@ -21,7 +21,7 @@ def page(request, page):
 		'create-tournament',
 		'lobby-tournament',
 		'pong',
-		'shooter'
+		'TicTacToe',
 	]
 	error_pages = ['400', '401', '403', '404', '405']
 	games = Game.objects.all()

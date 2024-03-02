@@ -23,7 +23,6 @@ urlpatterns = [
 	path('get_all_lobbies/', getAllLobbies, name='getAllLobbies'),
 	path('get_lobby_by_id/<int:id>', getLobbyById, name='getLobbyById'),
 
-    
 	# TOURNAMENTS
 	path('get_all_tournaments/', getAllTournaments, name='getAllTournaments'),
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
