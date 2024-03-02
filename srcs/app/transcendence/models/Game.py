@@ -8,10 +8,9 @@ class Game(models.Model):
 	name = models.CharField(max_length=30, unique=True)
 	description = models.TextField()
 	image = models.CharField(max_length=128, default='/var/www/static/default_game.webp')
-	genre = models.CharField(max_length=30)
+	genre = models.CharField(max_length=80)
 	created_at = models.DateTimeField(auto_now_add=True)
 	point_to_win = models.IntegerField(default=10)
-	stat = models.OneToOneField('Stat_Game', on_delete=models.CASCADE, related_name='game')
 	def __str__(self):
 		return self.name
 	def game_data(self):
@@ -50,6 +49,7 @@ class Stat_Game(models.Model):
 	time_played = models.IntegerField(default=0)
 	nb_party = models.IntegerField(default=0)
 	avg_game_time = models.IntegerField(default=0)
+	game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='stat')
 	# def __str__(self):
 	# 	return self.id
 	def update(self, time: int):
