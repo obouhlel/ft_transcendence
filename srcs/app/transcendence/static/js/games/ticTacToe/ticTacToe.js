@@ -3,123 +3,32 @@ import * as THREE from 'three';
 import * as UTILS from '../threeJsUtils.js';
 import * as JS_UTILS from '../jsUtils.js';
 import * as TIK_TAK_TOE from './ticTacToeUtils.js';
-
-import { PawnCross, PawnCircle } from './class/Pawn.js';
-import { Case } from './class/Case.js';
+import * as SOCKET from './socketUtils.js';
 
 export const X_SIZE_MAP = 24;
 export const SIZE_CASE = X_SIZE_MAP / 3;
 
-function createArena(scene) {
-    const arena = [];
-    for (let i = 0; i < 3; i++) {
-        arena.push([]);
-        for (let j = 0; j < 3; j++) {
-            const x = i * SIZE_CASE + i;
-            const z = j * SIZE_CASE + j;
-            const name = { x: i, z: j}
-            arena[i].push(new Case(scene, x, z, name));
-        }
-    }
-    return arena;
-}
-
-function getPawn(game) {
-    let pawn = null;
-    if (game.pawnStr == 'O') {
-        pawn = new PawnCircle(game, 0, 0);
-    } else if (game.pawnStr == 'X') {
-        pawn = new PawnCross(game, 0, 0);
-    }
-    return pawn;
-}
-
-function parseMessage(data, game) {
-    if ('game' in data) {
-        if (data['game'] == 'starting') {
-            game.pawnStr = data['pawn'];
-            game.pawn = getPawn(game);
-        }
-        if (data['game'] == 'play') {
-            game.isMyTurn = true;
-            TIK_TAK_TOE.updateTurn(game.scene, 'Your turn', game);
-        }
-        if (data['game'] == 'position') {
-            let pawn = null;
-            if (game.pawnStr == 'O') {
-                pawn = new PawnCross(game, 0, 0);
-            } else if (game.pawnStr == 'X') {
-                pawn = new PawnCircle(game, 0, 0);
+function waitPawnSelection(game) {
+    return new Promise((resolve) => {
+        let checkInterval = setInterval(() => {
+            if (game.pawnStr != null) {
+                clearInterval(checkInterval);
+                resolve();
             }
-            pawn.cube.position.x = game.arena[data['x']][data['z']].floor.position.x;
-            pawn.cube.position.z = game.arena[data['x']][data['z']].floor.position.z;
-            game.arena[data['x']][data['z']].pawnOnThis = pawn;
-        }
-        if (data['game'] == 'end') {
-            if (data['winner'] == game.username) {
-                TIK_TAK_TOE.updateTurn(game.scene, 'You Win', game);
-            }
-            else if (data['winner'] == 'draw') {
-                TIK_TAK_TOE.updateTurn(game.scene, '  Draw  ', game);
-            }
-            else {
-                TIK_TAK_TOE.updateTurn(game.scene, 'You Lose', game);
-            }
-        }
-    }
+        }, 100);
+    });
 }
 
-function sendStartingGame(game) {
-    let message = {
-        game: 'starting',
-        id: game.secretId,
-        username: game.username,
-    };
-    JS_UTILS.sendMessageToSocket(game.socket, message);
-}
-
-function sendLeaveGame(game) {
-    let message = {
-        game: 'leaved',
-        id: game.secretId,
-        username: game.username,
-    };
-    JS_UTILS.sendMessageToSocket(game.socket, message);
-}
-
-function sendNewPawnPosition(game, x, z) {
-    let message = {
-        game: 'position',
-        id: game.secretId,
-        username: game.username,
-        x: x,
-        y: z,
-    };
-    JS_UTILS.sendMessageToSocket(game.socket, message);
-}
-
-function socketListener(game) {
-    game.socket.onopen = function () {
-        console.log('Connection established');
-        sendStartingGame(game);
-    };
-
-    game.socket.onmessage = function (e) {
-        let data = JSON.parse(e.data);
-        console.log('Received message: ' + e.data);
-        parseMessage(data, game);
-    };
-
-    game.socket.onclose = function () {
-        console.log('Connection closed');
-    };
-
-    game.socket.onerror = function (error) {
-        console.log(`socket error: ${error}`);
-        console.error(error);
-    };
-
+function windowListener(game) {
     window.addEventListener('hashchange', function () {
+        if (game.socket.readyState == 1)
+        {
+            sendLeaveGame(game);
+            game.socket.close();
+        }
+    });
+
+    window.addEventListener('beforeunload', function () {
         if (game.socket.readyState == 1)
         {
             sendLeaveGame(game);
@@ -131,51 +40,13 @@ function socketListener(game) {
         console.log('window size: ' + window.innerWidth + 'x' + window.innerHeight);
         UTILS.resizeRenderer(game.renderer, game.display.camera);
     });
-}
 
-function move(keys, game) {
-    if (keys['ArrowUp'] == 'down' && game.previewPosition.z > 0) {
-        game.previewPosition.z -= 1;
-        keys['ArrowUp'] = 'done';
-    }
-    if (keys['ArrowDown'] == 'down' && game.previewPosition.z < game.arena.length - 1) {
-        game.previewPosition.z += 1;
-        keys['ArrowDown'] = 'done';
-    }
-    if (keys['ArrowLeft'] == 'down' && game.previewPosition.x > 0) {
-        game.previewPosition.x -= 1;
-        keys['ArrowLeft'] = 'done';
-    }
-    if (keys['ArrowRight'] == 'down' && game.previewPosition.x < game.arena.length - 1) {
-        game.previewPosition.x += 1;
-        keys['ArrowRight'] = 'done';
-    }
-}
-
-function printPrev(keys, game) {
-    const arenaCase = game.arena[game.previewPosition.x][game.previewPosition.z];
-    game.pawn.cube.position.x = arenaCase.floor.position.x;
-    game.pawn.cube.position.z = arenaCase.floor.position.z;
-    if (arenaCase.pawnOnThis == null && game.isMyTurn) {
-        if (keys[' '] == 'down') {
-            keys[' '] = 'done';
-            game.isMyTurn = false;
-            TIK_TAK_TOE.updateTurn(game.scene, 'Opponent turn', game);
-            arenaCase.pawnOnThis = game.pawn;
-            game.pawn = getPawn(game);
-            sendNewPawnPosition(game, game.previewPosition.x, game.previewPosition.z); 
-        }
-    }
-}
-
-function waitPawnSelection(game) {
-    return new Promise((resolve) => {
-        let checkInterval = setInterval(() => {
-            if (game.pawnStr != null) {
-                clearInterval(checkInterval);
-                resolve();
-            }
-        }, 100);
+    document.addEventListener('keydown', function(e) {
+        if (game.keys[e.key] == 'up')
+            game.keys[e.key] = 'down';
+    });
+    document.addEventListener('keyup', function(e) { 
+        game.keys[e.key] = 'up';
     });
 }
 
@@ -198,34 +69,26 @@ export async function ticTacToe3D() {
         scene: UTILS.createScene(),
         renderer: UTILS.createRenderer(),
         display: null,
+        keys: {},
     };
     game.socket = new WebSocket(url);
     UTILS.createContainerForGame('TicTacToe', game.renderer);
     JS_UTILS.eraseCookie('username');
-    game.arena = createArena(game.scene);
+    game.arena = TIK_TAK_TOE.createArena(game.scene);
     game.display = TIK_TAK_TOE.createCamera(game.renderer, X_SIZE_MAP);
     TIK_TAK_TOE.updateTurn(game.scene, 'Opponent turn', game);
 
-    socketListener(game);
+    SOCKET.socketListener(game);
+    windowListener(game);
     await waitPawnSelection(game);
-
-    // ------------------------------------keys------------------------------------
-    const keys = {};
-    document.addEventListener('keydown', function(e) {
-        if (keys[e.key] == 'up')
-            keys[e.key] = 'down';
-    });
-    document.addEventListener('keyup', function(e) { 
-        keys[e.key] = 'up';
-    });
 
     let lastTime = 0;
     // ------------------------------------loop------------------------------------
     function animate(currentTime) {
         if (lastTime) {
             const delta = (currentTime - lastTime) / 10;
-            move(keys, game);
-            printPrev(keys,game);
+            TIK_TAK_TOE.move(game.keys, game);
+            TIK_TAK_TOE.printPrev(game.keys,game);
             for (let i = 0; i < game.arena.length; i++) {
                 for (let j = 0; j < game.arena[i].length; j++) {
                     game.arena[i][j].getPawnDown();

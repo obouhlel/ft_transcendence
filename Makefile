@@ -31,7 +31,7 @@ stop:
 clean:
 	rm -rf srcs/app/transcendence/migrations/0*.py
 
-fclane: clean
+fclean: clean
 	docker system prune -a -f
 
 # re: clean all logs
