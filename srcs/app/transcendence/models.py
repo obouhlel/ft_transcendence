@@ -45,7 +45,7 @@ class CustomUser(AbstractUser):
 			'is_admin': self.is_admin,
 			'sexe': self.sexe,
 			'birthdate': self.birthdate,
-			'avatar': self.avatar.path,
+			'avatar': self.avatar.path if self.avatar else None,
 			'created_at': self.created_at,
 			'last_connexion': self.last_connexion,
 			'status': self.status,
