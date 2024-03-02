@@ -18,6 +18,7 @@ class Command(BaseCommand):
 			is_superuser=True,
 			is_staff=True
 		)
+		user1.save()
 
 		user2 = CustomUser.objects.create(
 			username='user2',
@@ -26,8 +27,9 @@ class Command(BaseCommand):
 			first_name='User',
 			last_name='Two',
 			sexe='F',
-			birthdate=timezone.now() - timezone.timedelta(days=30*365), 	
+			birthdate=timezone.now() - timezone.timedelta(days=30*365),
 		)
+		user2.save()
 
 		stat_game1 = Stat_Game()
 		stat_game1.save()
