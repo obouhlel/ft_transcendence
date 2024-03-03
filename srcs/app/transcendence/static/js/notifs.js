@@ -1,5 +1,5 @@
  // setup chat scoket
- const notifyScoket = new WebSocket(
+const notifyScoket = new WebSocket(
 	'wss://'
 	+ window.location.host
 	+ '/ws/notify/'
@@ -28,7 +28,7 @@ function setMessage(message) {
 	// Create a new li element
 	const template = document.getElementById('notification');
 	const newNotif = template.content.cloneNode(true);
-newNotif.querySelector('.message').textContent = message;
+	newNotif.querySelector('.message').textContent = message;
 	document.getElementById('bellDropdown').appendChild(newNotif);
 	count = document.getElementById('bellDropdown').getAttribute('data-count');	
 	count = parseInt(count) + 1;

@@ -10,7 +10,7 @@ import './notifs.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
-import { test } from './test.js';
+// import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -74,7 +74,7 @@ function showPage(page) {
 		const page_content = document.getElementById('page');
 		if (!page_content) {
 			console.error('Element with ID "page" not found');
-			return;
+			return ;
 		}
 		page_content.innerHTML = data.page;
 		const isLogged = is_logged_in();
@@ -82,15 +82,15 @@ function showPage(page) {
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
 			executeHandlers(page);
-		else
-			console.error('Unknown page:', page);
+		// else
+		// 	console.error('Unknown page:', page);
 
 		if (isLogged)
 		{
 			handleLogout();
 			dropdown();
 		}
-		test();
+		// test();
 	})
 	.catch(error => {
 		console.error(error);
