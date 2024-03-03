@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from transcendence.models  import CustomUser, FriendRequest
+# from transcendence.consumers import send_notification
 import json
 from django.utils import timezone
 
@@ -83,7 +84,6 @@ def sendFriendRequest(request):
 	user = request.user
 	try:
 		friend = CustomUser.objects.get(id=friend_id)
-		# return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.', "sender": user.username, "receiver": friend.username})
 		if friend == user:
 			return JsonResponse({'status': 'error', 'message': 'You can\'t send a friend request to yourself.'}, status=400)
 		if friend in user.list_friends.all():
@@ -96,6 +96,7 @@ def sendFriendRequest(request):
 			# return JsonResponse({'status': 'ok', 'message': 'Friend Request accepted successfully.', 'sender': friend.username, 'receiver': user.username})
 		re = FriendRequest.objects.create(sender=user, receiver=friend, created_at=timezone.now())
 		#sent notification to the user friend
+		# send_notification(friend, "Friend Request", f"{user.username} sent you a friend request.")
 		return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.', "request_id": re.id})
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)

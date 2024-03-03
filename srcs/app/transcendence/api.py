@@ -39,13 +39,13 @@ urlpatterns = [
 	path('respond_friend_request/', RespondFriendRequest, name='acceptFriendRequest'),
 	path('remove_friend/', removeFriend, name='removeFriend'),
 	
-	# path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
 
-
-	# FRIENDS
 	# TOURNAMENTS
 	path('get_all_tournaments/', getAllTournaments, name='getAllTournaments'),
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
 
+	path('create_tournament/', createTournament, name='createTournament'),
+	path('join_tournament/', joinTournament, name='joinTournament'),
+	path('start_tournament/', startTournament, name='startTournament'),
 ]
