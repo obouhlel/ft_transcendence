@@ -56,9 +56,7 @@ class CustomUser(AbstractUser):
 		}
 	def friend_data(self):
 		list_friends = [user.user_data() for user in self.list_friends.all()]
-		for user in list_friends:
-			data += [user.user_data()]
-		return data
+		return list_friends
 
 
 class Game(models.Model):

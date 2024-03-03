@@ -3,7 +3,7 @@ from .methods import *
 
 urlpatterns = [
 	path('login/', login_user, name='login'),
-	path('login42/', login_42, name='login42'),
+	path('login_42/', login_42, name='login42'),
 	path('register/', register_user, name='register'),
 	path('logout/', logout_user, name='logout'),
 	path('edit_profile/', edit_profile, name='edit_profile'),
@@ -28,5 +28,12 @@ urlpatterns = [
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
 
+
+	path('search_user/<str:username>', searchUser, name='searchUser'),
+
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
+	path('add_friend/<int:id_user>', addFriend, name='addFriend'),
+	path('delete_friend/<int:id_user>', deleteFriend, name='deleteFriend'),
+	path('get_friend_request/', getFriendRequest, name='getFriendRequest'),
+	path('accept_friend_request/<int:id_user>', acceptFriendRequest, name='acceptFriendRequest'),
 ]

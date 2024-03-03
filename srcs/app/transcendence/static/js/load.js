@@ -1,11 +1,17 @@
-import { handleLoginFormSubmit, handleLogoutFormSubmit } from './form/login.js';
-import { handleRegisterFormSubmit, changeAvatar } from './form/register.js';
+import { handleLoginFormSubmit } from './form/login.js';
+import { handleRegisterFormSubmit } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
-import { switchGameTab, show_dynamic_history, show_dynamic_stats, show_dynamic_friends, friendsTab } from './profile.js';
+import { switchGameTab, openModal, searchFunction, addFriendHandler,
+		 show_dynamic_history, show_dynamic_stats, show_dynamic_friends,
+		friendsTab, deleteFriend } from './profile.js';
+import { handleLogout } from './utils/logout.js';
+import { changeAvatar } from './utils/avatar.js';
+import { message } from './utils/message.js';
 import { dropdown } from './header.js';
 
 window.addEventListener('hashchange', function() {
-	let page = window.location.hash.substring(1);
+	let hash = window.location.hash.substring(1);
+	let page = hash.split('?')[0];
 	if (!page) {
 		page = 'home';
 	}
@@ -13,10 +19,12 @@ window.addEventListener('hashchange', function() {
 });
 
 window.addEventListener('load', function() {
-	let page = window.location.hash.substring(1);
+	let hash = window.location.hash.substring(1);
+	let page = hash.split('?')[0];
 	if (!page) {
 		page = 'home';
 	}
+	window.searchFunction = searchFunction;
 	showPage(page);
 });
 
@@ -31,12 +39,13 @@ function is_logged_in()
 const pageHandlers = {
     'login': [handleLoginFormSubmit],
     'register': [handleRegisterFormSubmit],
-    'profile': [show_dynamic_friends, () => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab, switchGameTab],
+    'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
+				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
+				switchGameTab, deleteFriend],
     'edit_profile': [handleEditProfileFormSubmit],
     // 'game-1': [game, listenerGame],
     // 'game-2': [game, listenerGame]
 };
-
 async function executeHandlers(page) {
     for (const func of pageHandlers[page]) {
         await func();
@@ -63,7 +72,7 @@ function showPage(page) {
 
 		if (isLogged)
 		{
-			handleLogoutFormSubmit();
+			handleLogout();
 			dropdown();
 		}
 	})

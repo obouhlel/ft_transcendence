@@ -84,7 +84,7 @@
 						</ul>
 					</div>
 					<div class="friend-list-members">
-						<!-- <div class="friend-card online-friend">
+						<div class="friend-card online-friend">
 							<div class="member-details">
 								<img src="{% static 'img/user-image-s.png' %}" alt="" />
 								<div>
@@ -93,9 +93,47 @@
 							</div>
 							<button class="active-member-btn">Active</button>
 							<i class="fa-solid fa-user-xmark"></i>
-						</div> -->
-						<button class="add-friend">+ Add a Friend</button>
+						</div>
+						<div class="friend-card offline-friend">
+							<div class="member-details">
+								<img src="{% static 'img/user-image-s.png' %}" alt="" />
+								<div>
+									<h2>Robert Hudson</h2>
+								</div>
+							</div>
+							<button class="active-member-btn offline-member">
+								Offline
+							</button>
+							<i class="fa-solid fa-user-xmark"></i>
+						</div>
+					<div class="add-friend-btn">
+						<button class="add-friend show-modal">+ Add a Friend</button>
 					</div>
+					<div class="modal hidden">
+						<button class="close-modal">&times;</button>
+						<div class="find-friends-container">
+							<div class="find-friends-header">
+								<div class="heading">Find Friends</div>
+								<div class="search">
+									<form action="">
+										<input type="text" id="search" placeholder="Enter a friend's name" onkeyup="searchFunction()">
+									</form>
+								</div>
+							</div>
+							<div class="find-friends-result">
+								<div class="user-row">
+									<div class="user-info">
+										<img src="{% static 'img/user-image.png' %}" alt=""/>
+										<span>Robert Hudson</span>
+									</div>
+									<button class="modal-add-btn">
+										Add friend
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="overlay hidden"></div>
 				</div>
 			</div>
 		</div>
