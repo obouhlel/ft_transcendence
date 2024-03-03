@@ -82,8 +82,6 @@ function showPage(page) {
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
 			executeHandlers(page);
-		// else
-		// 	console.error('Unknown page:', page);
 
 		if (isLogged)
 		{
