@@ -18,7 +18,6 @@ export function handleLoginFormSubmit() {
 
 		doRequest.post(`${SERVER_URL}/api/login/`, data, callback.login);
 	});
-
 	// 42 login
 	const url_42 = 'https://api.intra.42.fr/oauth/authorize';
 	const client_id = 'u-s4t2ud-b221266d69284108d856829b7bf94bddec68b82af2a4d2eb994ac4df2978deb5';

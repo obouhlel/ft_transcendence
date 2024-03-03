@@ -27,8 +27,9 @@
 				</div>
 				<div class="navs-tabs">
 					<div class="navs">
-						<a class="tab-link active" data-tab="tab1">Pong</a>
-						<a class="tab-link" data-tab="tab2">Shooter</a>
+						{% for game in games %}
+							<a class="tab-link" data-tab="tab{{ forloop.counter }}">{{ game.name }}</a>
+						{% endfor %}
 					</div>
 					<div id="tab1" class="tab-content active-tab">
 						<div class="stats">
@@ -66,62 +67,6 @@
 										<div class="td data-one">LOGIN 1</div>
 										<div class="td data-two">6-5</div>
 										<div class="td data-three">12-12-12</div>
-										<div class="td data-four">Victory</div>
-
-									</div>
-									<div class="tr">
-										<div class="td data-one">BOB</div>
-										<div class="td data-two">10-1</div>
-										<div class="td data-three">10-12-12</div>
-										<div class="td data-four">Defeat</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<div id="tab2" class="tab-content">
-						<div class="stats">
-							<h1>Stats</h1>
-							<div class="cards-main">
-								<div class="card">
-									<h5>Wins</h5>
-									<h1>10</h1>
-								</div>
-								<div class="card">
-									<h5>Losses</h5>
-									<h1>00</h1>
-								</div>
-								<div class="card">
-									<h5>Ratio</h5>
-									<h1>100%</h1>
-								</div>
-								<div class="card">
-									<h5>Trophies</h5>
-									<h1>00</h1>
-								</div>
-							</div>
-						</div>
-						<div class="Matches">
-							<h1>Matches History</h1>
-							<div class="table">
-								<div class="thead">
-									<div class="tr data-one">Adversary</div>
-									<div class="tr data-two">Score</div>
-									<div class="tr data-three">Date</div>
-									<div class="tr data-four">Status</div>
-								</div>
-								<div class="tbody">
-									<div class="tr">
-										<div class="td data-one">LOGIN</div>
-										<div class="td data-two">6-5</div>
-										<div class="td data-three">12-12-12</div>
-										<div class="td data-four">Victory</div>
-									</div>
-									<div class="tr">
-										<div class="td data-one">BOB</div>
-										<div class="td data-two">10-1</div>
-										<div class="td data-three">10-12-12</div>
 										<div class="td data-four">Victory</div>
 									</div>
 								</div>
@@ -234,6 +179,7 @@
 							</button>
 							<i class="fa-solid fa-user-xmark"></i>
 						</div>
+						<button class="add-friend">+ Add a Friend</button>
 					</div>
 					<div class="add-friend-btn">
 						<button class="add-friend show-modal">+ Add a Friend</button>

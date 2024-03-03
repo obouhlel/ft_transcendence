@@ -5,6 +5,7 @@ from . import consumersForPong
 
 wss_urlpatterns = [
     re_path(r"^ws/matchmaking/$", consumers.MatchmakingConsumer.as_asgi()),
+    re_path(r"^ws/notify/", consumers.NotificationConsumer.as_asgi()),
 ]
 
 def add_urlpattern(pattern, consumer):
