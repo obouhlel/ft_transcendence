@@ -1,7 +1,8 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from transcendence.models  import CustomUser
+from transcendence.models  import CustomUser, FriendRequest
+# from transcendence.consumers import send_notification
 import json
 from django.utils import timezone
 
@@ -57,6 +58,18 @@ def getAllFriendRequestSentByUser(request, id_user):
 		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
 
 
+def user1_sent_request_to_user2(user1, user2):
+	for f in user1.sender.all():
+		if f.receiver == user2:
+			return True
+	return False
+
+def user1_received_request_from_user2(user1, user2):
+	for f in user1.receiver.all():
+		if f.sender == user2:
+			return True
+	return False
+
 
 
 # friend_requests
@@ -65,88 +78,88 @@ def getAllFriendRequestSentByUser(request, id_user):
 # FORMATS:
 @login_required
 @require_http_methods(['POST'])
-def send_friend_request(request):
+def sendFriendRequest(request):
 	data = json.loads(request.body)
-	friend_id = data['user_id']
+	friend_id = data['friend_id']
 	user = request.user
 	try:
 		friend = CustomUser.objects.get(id=friend_id)
 		if friend == user:
 			return JsonResponse({'status': 'error', 'message': 'You can\'t send a friend request to yourself.'}, status=400)
-		if friend in user.friends.all():
+		if friend in user.list_friends.all():
 			return JsonResponse({'status': 'error', 'message': 'You are already friend with this user.'}, status=400)
-		if friend in user.friend_requests.all():
+		if user1_sent_request_to_user2(user, friend):
 			return JsonResponse({'status': 'error', 'message': 'You already sent a friend request to this user.'}, status=400)
-		if user in friend.friend_requests.all():
-			return JsonResponse({'status': 'error', 'message': 'This user already sent you a friend request, please accept it.'}, status=400)
-		user.request_sent.create(sender=user, receiver=friend, date=timezone.now())
-		friend.request_received.create(sender=user, receiver=friend, date=timezone.now())
+		if user1_received_request_from_user2(user, friend):
+			return JsonResponse({'status': 'error', 'message': 'You already received a friend request from this user.'}, status=400)
+			# accept_friend_request(friend, user)
+			# return JsonResponse({'status': 'ok', 'message': 'Friend Request accepted successfully.', 'sender': friend.username, 'receiver': user.username})
+		re = FriendRequest.objects.create(sender=user, receiver=friend, created_at=timezone.now())
 		#sent notification to the user friend
-		return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.'})
+		# send_notification(friend, "Friend Request", f"{user.username} sent you a friend request.")
+		return JsonResponse({'status': 'ok', 'message': 'Friend Request sent successfully.', "request_id": re.id})
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
 	
 #---------------------------------#
-	
+
 def accept_friend_request(sender, receiver):
-	sender.friends.add(receiver)
-	receiver.friends.add(sender)
-	sender.request_sent.get(sender=sender, receiver=receiver).delete()
-	receiver.request_received.get(sender=sender, receiver=receiver).delete()
+	sender.list_friends.add(receiver)
 	sender.save()
-	receiver.save()
+	x = FriendRequest.objects.filter(sender=sender, receiver=receiver).delete()
+
 
 # friend_requests
 # POST: ACCEPT FRIEND REQUEST OR DECLINE FRIEND REQUEST
 # PARAMS: username, action
 # FORMATS:
 #
-def respond_to_friend_request(request):
+@login_required
+@require_http_methods(['POST'])
+def RespondFriendRequest(request):
 	data = json.loads(request.body)
-	username = data['username']
+	request_id = data['request_id']
 	action = data['action']
-	if request.user.is_authenticated:
+	try:
+		friend_request = FriendRequest.objects.get(id=request_id)
+		sender = friend_request.sender
+		# return JsonResponse({'status': 'ok', 'message': 'Friend Request accepted successfully.', 'sender': sender.username, 'receiver': request.user.username})
+		if (request.user != friend_request.receiver):
+			return JsonResponse({'status': 'error', 'message': 'You can\'t accept or decline a friend request that is not for you.'}, status=400)
+		# if(sender == request.user):
+		# 	return JsonResponse({'status': 'error', 'message': 'You can\'t accept or decline your own friend request.'}, status=400)
+		if sender in request.user.list_friends.all():
+			return JsonResponse({'status': 'error', 'message': 'You are already friend with this user.'}, status=400)
+		if action != 'accept' and action != 'decline':
+			return JsonResponse({'status': 'error', 'message': 'Invalid action.'}, status=400)
 		if action == 'accept':
-			try:
-				friend = CustomUser.objects.get(username=username)
-				request.user.friend_requests.remove(friend)
-				request.user.friends.add(friend)
-				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami acceptée avec succès.'})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
+			accept_friend_request(sender, request.user)
+			return JsonResponse({'status': 'ok', 'message': 'Friend Request accepted successfully.', 'sender': sender.username, 'receiver': request.user.username})
 		elif action == 'decline':
-			try:
-				friend = CustomUser.objects.get(username=username)
-				request.user.friend_requests.remove(friend)
-				return JsonResponse({'status': 'ok', 'message': 'Demande d\'ami refusée avec succès.'})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Action inconnue.'}, status=400)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-
+			FriendRequest.objects.filter(sender=sender, receiver=request.user).delete()
+			return JsonResponse({'status': 'ok', 'message': 'Friend Request declined successfully.'})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
+	except FriendRequest.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This friend request doesn\'t exist'}, status=404)
 
 #remove friend
 # POST: REMOVE FRIEND
 # PARAMS: username
-def remove_friend(request):
+@login_required
+@require_http_methods(['POST'])
+def removeFriend(request):
 	data = json.loads(request.body)
-	username = data['username']
-	if request.method == 'POST':
-		if request.user.is_authenticated:
-			try:
-				friend = CustomUser.objects.get(username=username)
-				request.user.friends.remove(friend)
-				return JsonResponse({'status': 'ok', 'message': 'Ami retiré avec succès.'})
-			except CustomUser.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+	friend_id = data['friend_id']
+	try:
+		friend = CustomUser.objects.get(id=friend_id)
+		if friend == request.user:
+			return JsonResponse({'status': 'error', 'message': 'You can\'t remove yourself from your friend list.'}, status=400)
+		if friend not in request.user.list_friends.all():
+			return JsonResponse({'status': 'error', 'message': 'You are not friend with this user.'}, status=400)
+		request.user.list_friends.remove(friend)
+		return JsonResponse({'status': 'ok', 'message': 'Friend removed successfully.'})
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
 
 
-
-def is_power_of_two(n):
-	return n > 0 and (n & (n - 1)) == 0

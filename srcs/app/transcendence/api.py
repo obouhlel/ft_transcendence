@@ -21,8 +21,9 @@ urlpatterns = [
 	path('get_stats_users_by_game/<int:id_game>', getStatsUsersByGame, name='getStatsUsersByGame'),
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 
-
-
+	#Leaderboard
+	path('get_leaderboard/<int:id_game>', getLeaderboard, name='getLeaderboard'),
+	path('get_leaderboard/<int:id_game>/<int:length>', getLeaderboard_length, name='getLeader'),
 
 	# GAMES
 	path('get_game_by_id/<int:id>', getGameById, name='getGameById'),
@@ -34,13 +35,17 @@ urlpatterns = [
 
 	path('join_lobby/', joinLobby, name='joinLobby'),
 	path('quit_lobby/', quitLobby, name='quitLobby'),
-	path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
+	path('send_friend_request/', sendFriendRequest, name='sendFriendRequest'),
+	path('respond_friend_request/', RespondFriendRequest, name='acceptFriendRequest'),
+	path('remove_friend/', removeFriend, name='removeFriend'),
+	
 
-
-	# FRIENDS
 	# TOURNAMENTS
 	path('get_all_tournaments/', getAllTournaments, name='getAllTournaments'),
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
 
+	path('create_tournament/', createTournament, name='createTournament'),
+	path('join_tournament/', joinTournament, name='joinTournament'),
+	path('start_tournament/', startTournament, name='startTournament'),
 ]

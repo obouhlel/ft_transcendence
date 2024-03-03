@@ -95,6 +95,26 @@ def getUserConnected(request):
 		return JsonResponse({'status': 'error', 'message': 'No user connected'}, status=404)
 
 
+#Leaderboard
+from transcendence.models import Game
+
+@login_required
+@require_http_methods(['GET'])
+def getLeaderboard(request, id_game):
+	game = Game.objects.get(id=id_game)
+	stat = game.stat_user_by_game_set.all().order_by('-ratio')
+	data = [{"game": game.name}] + [{"id_user": s.user.id, "user": s.user.username, "ratio": s.ratio} for s in stat]
+	return JsonResponse({'status': 'ok', 'users': data})
+
+@login_required
+@require_http_methods(['GET'])
+def getLeaderboard_length(request, id_game, length):
+	game = Game.objects.get(id=id_game)
+	stat = game.stat_user_by_game_set.all().order_by('-ratio')[0:length]
+	data = [{"game": game.name}] + [{"id_user": s.user.id, "user": s.user.username, "ratio": s.ratio} for s in stat]
+	return JsonResponse({'status': 'ok', 'users': data})
+
+
 # -------------------------------POST USER-----------------------------#
 #=> register_user.py
 

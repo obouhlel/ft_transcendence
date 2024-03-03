@@ -86,7 +86,7 @@ class FriendRequest(models.Model):
 	receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
 	created_at = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
-		return self.receiver.username + ' received a friend request from ' + self.sender.username
+		return self.sender.username + ' to ' + self.receiver.username
 	def friend_request_data(self):
 		return {
 			'id': self.id,
