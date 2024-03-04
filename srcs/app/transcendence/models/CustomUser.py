@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 	avatar = models.ImageField(upload_to='avatars/')
 	created_at = models.DateTimeField(default=timezone.now)
 	last_connexion = models.DateTimeField(default=timezone.now)
-	status = models.CharField(max_length=30, default='Online')
+	status = models.CharField(max_length=30, default='offline')
 	list_friends = models.ManyToManyField('self')
 	def __str__(self):
 		return self.username
