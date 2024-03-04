@@ -75,7 +75,6 @@ function showPage(page) {
 			handleLoginFormSubmit();
 		else if (pageHandlers[page])
 			executeHandlers(page);
-
 		if (isLogged)
 		{
 			handleLogout();
