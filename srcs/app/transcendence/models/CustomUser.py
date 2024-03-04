@@ -26,7 +26,7 @@ class CustomUser(AbstractUser):
 	avatar = models.ImageField(upload_to='avatars/')
 	created_at = models.DateTimeField(default=timezone.now)
 	last_connexion = models.DateTimeField(default=timezone.now)
-	status = models.CharField(max_length=30, default='Online')
+	status = models.CharField(max_length=30, default='offline')
 	list_friends = models.ManyToManyField('self')
 	def __str__(self):
 		return self.username
@@ -59,12 +59,12 @@ class CustomUser(AbstractUser):
 			'status': self.status,
 			'friends_received': self.getFriendRequestReceived(),
 			'request_sent': self.getFriendRequestSent(),
-			'list_friends': self.getFriends(),
+			# 'list_friends': self.getFriends(),
 			'stat': self.getStat()
 		}
 	def getFriends(self):
 		list_friends = self.list_friends.all()
-		return [friend.id for friend in list_friends]
+		return [friend.user_data() for friend in list_friends]
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
 		return [re.friend_request_data() for re in list_friend_request]
@@ -86,7 +86,7 @@ class FriendRequest(models.Model):
 	receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
 	created_at = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
-		return self.receiver.username + ' received a friend request from ' + self.sender.username
+		return self.sender.username + ' to ' + self.receiver.username
 	def friend_request_data(self):
 		return {
 			'id': self.id,

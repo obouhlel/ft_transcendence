@@ -225,8 +225,7 @@ def find_compatibles_users(users, current_user):
 #and delete the UserInLobby for the user
 #if return nothing, it will continue to wait
 
-@login_required
-@require_http_methods(['POST'])
+
 def findCompatiblesUsers(request):
 	data = json.loads(request.body)
 	id_lobby = data['id_lobby']
@@ -239,8 +238,8 @@ def findCompatiblesUsers(request):
 		user_found = find_compatibles_users(AllUserInLobby, current_user, lobby.id_game)
 		if user_found:
 			party = Party.objects.create(id_game=lobby.id_game, player1=current_user, player2=user_found, started_at=timezone.now())
-			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).delete()
-			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).delete()
+			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).remove()
+			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).remove()
 			return JsonResponse({'status': 'ok', 'id_party': party.id})
 			#send a notification to the user found ????????????????????
 		else:

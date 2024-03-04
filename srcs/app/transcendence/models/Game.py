@@ -37,7 +37,7 @@ class Game(models.Model):
 		return party
 	def getTournament(self):
 		list_tournament = self.tournament_set.all()
-		tournament = [tournament.Tournament_data() for tournament in list_tournament]
+		tournament = [tournament.tournament_data() for tournament in list_tournament]
 		return tournament
 	def getStat(self):
 		stat = self.stat.stat_game_data()

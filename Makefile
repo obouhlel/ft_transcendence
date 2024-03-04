@@ -1,6 +1,6 @@
 DOCKER=web
 
-all: up logs
+all: clean up logs
 
 reset: clean down build up logs
 

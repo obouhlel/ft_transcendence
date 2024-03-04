@@ -28,7 +28,7 @@
 				<div class="navs-tabs">
 					<div class="navs">
 						{% for game in games %}
-							<a class="tab-link" data-tab="tab{{ forloop.counter }}">{{ game.name }}</a>
+							<a class="tab-link {% if forloop.first %}active{% endif %}" data-tab="tab{{ forloop.counter }}">{{ game.name }}</a>
 						{% endfor %}
 					</div>
 					<div id="tab1" class="tab-content active-tab">
@@ -37,19 +37,21 @@
 							<div class="cards-main">
 								<div class="card">
 									<h5>Wins</h5>
-									<h1>00</h1>
+									<h1>{{stat_user.0.nb_win}}</h1>
 								</div>
 								<div class="card">
 									<h5>Losses</h5>
-									<h1>00</h1>
+									<h1>{{stat_user.0.nb_lose}}</h1>
 								</div>
 								<div class="card">
 									<h5>Ratio</h5>
-									<h1>00</h1>
+									<h1>
+										{{stat_user.0.nb_lose}}
+									</h1>
 								</div>
 								<div class="card">
-									<h5>Trophies</h5>
-									<h1>00</h1>
+									<h5>Played</h5>
+									<h1>{{stat_user.0.nb_played}}</h1>
 								</div>
 							</div>
 						</div>
@@ -63,12 +65,6 @@
 									<div class="tr data-four">Status</div>
 								</div>
 								<div class="tbody">
-									<div class="tr">
-										<div class="td data-one">LOGIN 1</div>
-										<div class="td data-two">6-5</div>
-										<div class="td data-three">12-12-12</div>
-										<div class="td data-four">Victory</div>
-									</div>
 								</div>
 							</div>
 						</div>
@@ -98,88 +94,6 @@
 							<button class="active-member-btn">Active</button>
 							<i class="fa-solid fa-user-xmark"></i>
 						</div>
-						<div class="friend-card online-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn">Active</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-						<div class="friend-card online-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn">Active</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-
-						<div class="friend-card offline-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn offline-member">
-								Offline
-							</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-						<div class="friend-card offline-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn offline-member">
-								Offline
-							</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-						<div class="friend-card offline-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn offline-member">
-								Offline
-							</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-						<div class="friend-card end-cards offline-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn offline-member">
-								Offline
-							</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-						<div class="friend-card end-cards offline-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
-								</div>
-							</div>
-							<button class="active-member-btn offline-member">
-								Offline
-							</button>
-							<i class="fa-solid fa-user-xmark"></i>
-						</div>
-					</div>
 					<div class="add-friend-btn">
 						<button class="add-friend show-modal">+ Add a Friend</button>
 					</div>
@@ -190,29 +104,11 @@
 								<div class="heading">Find Friends</div>
 								<div class="search">
 									<form action="">
-										<input type="text" placeholder="Enter a friend's name">
+										<input type="text" id="search" placeholder="Enter a friend's name" onkeyup="searchFunction()">
 									</form>
 								</div>
 							</div>
 							<div class="find-friends-result">
-								<div class="user-row">
-									<div class="user-info">
-										<img src="{% static 'img/user-image.png' %}" alt=""/>
-										<span>Robert Hudson</span>
-									</div>
-									<button class="modal-add-btn">
-										Add friend
-									</button>
-								</div>
-								<div class="user-row">
-									<div class="user-info">
-										<img src="{% static 'img/user-image.png' %}" alt=""/>
-										<span>Robert Hudson</span>
-									</div>
-									<button class="modal-add-btn">
-										Add friend
-									</button>
-								</div>
 								<div class="user-row">
 									<div class="user-info">
 										<img src="{% static 'img/user-image.png' %}" alt=""/>
