@@ -1,0 +1,124 @@
+/**********DASHBOARD*******/
+
+.leaderboard-wrapper{
+    margin: 20px 10px;
+    padding: 30px;
+  }
+  .lead-user-td{
+    display: flex;
+    align-content: center;
+    align-items: center;
+  }
+
+  .leaderboard-table tbody td{
+    padding: 10px;
+  }
+
+  .img-leaderboard{
+    height: 45px;
+    width: 45px;
+    margin-left: 15px;
+  }
+
+  .img-stat{
+    margin-bottom: 30px;
+    margin-right: 10px;
+  }
+
+  .name-leaderboard{
+    margin-left: 5px;
+  }
+
+  .dashboard-card{
+    height: 140px;
+    width: 252px;
+    border-radius: 28px;
+    background: #3a3efd;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 21px 0 28px 0;
+  }
+
+  .dashboard-card h5 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0em;
+    color: #aeb2fd;
+  }
+
+  .dashboard-card h1 {
+    font-size: 42px;
+    line-height: 35px;
+    font-weight: 500;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 19px;
+  }
+
+  .best-player{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 27px;
+  }
+
+
+  .best-player-name {
+    font-size: 35px;
+    line-height: 35px;
+    font-weight: 500;
+    letter-spacing: 0em;
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 30px;
+  }
+  .chart-graph-side{
+    margin-top: 35px;
+  }
+  .charts{
+    background-color: #37358C;
+    padding: 20px 20px 15px 20px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .graph{
+    background-color: #37358C;
+    padding: 20px 20px 20px 20px;
+    border-radius: 12px;
+    color: white;
+    text-align: center;
+  }
+
+
+  #user-inactive-dashboard{
+    position: relative;
+    left: -11px;
+    top: 9px;
+  }
+  #das-inactive-tournament{
+    position: relative;
+    left: 7px;
+  }
+  #das-inactive-edit{
+    position: relative;
+    left: 10px;
+  }
+  #user-active-edit{
+    position: relative;
+    top: -10px;
+  }
+  #game-inactive-edit{
+    position: relative;
+    top: 7px;
+  }

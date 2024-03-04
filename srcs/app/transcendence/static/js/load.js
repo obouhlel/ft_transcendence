@@ -5,12 +5,12 @@ import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
 import { gameTab, friendsTab, openModal } from './profile.js';
+import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges } from './dashboard.js';
 import { dropdown } from './header.js';
 import './notifs.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
-// import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -53,6 +53,10 @@ const pageHandlers = {
         gameTab();
         friendsTab();
 		openModal();
+    },
+	'dashboard': () => {
+        fetchUserDataAndRenderChart();
+		fetchUserDataAndProcessAges();
     },
     'game-1': () => {
 		matchmacking('pong');
