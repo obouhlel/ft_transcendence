@@ -1,3 +1,5 @@
+from typing import List
+
 import json
 from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
@@ -7,18 +9,19 @@ import random
 # -----------------------------Classes--------------------------------
 class Player():
     def __init__(self, username, side, websocket):
-        self.username = username
-        self.position = 0
-        self.score = 0
-        self.side = side
-        self.socket = websocket
-        
+        self.username: str = username
+        self.position: float = 0
+        self.score: int = 0
+        self.memScore: int = 0
+        self.side: str = side
+        self.socket: AsyncWebsocketConsumer = websocket
+
 class Ball():
     def __init__(self):
         self.position = {'x': 0, 'z': 0}
         self.direction = {'x': 0, 'z': 0}
 
-    def isPlayerHitted(self, playerPos):
+    def isPlayerHitted(self, playerPos: float):
         topLeft = {'x': playerPos['x'] - 0.5,
                    'z': playerPos['z'] - 1}
         botRight = {'x': playerPos['x'] + 0.5,
@@ -36,24 +39,22 @@ class Ball():
         if self.position['z'] >= 10 or self.position['z'] <= -10:
             self.direction['z'] *= -1
             
-    async def isScored(self):
+    def isScored(self, players: dict[str, Player]):
         if self.position['x'] >= 10 or self.position['x'] <= -10:
             if self.position['x'] >= 10:
-                pong.getPlayerLeft().score += 1
+                players['left'].score += 1
             else:
-                pong.getPlayerRight().score += 1
-            await pong.broadcast({ 'game': 'score',
-                                   'score': pong.getScoreString() })
+                players['right'].score += 1
             self.reset()
 
-    async def move(self, playersPos):
+    def move(self, players: dict[str, Player]):
         if self.direction['x'] == 0:
             self.reset()
         else:
-            self.isPlayerHitted({ 'z': playersPos['left'], 'x': -9 })
-            self.isPlayerHitted({ 'z': playersPos['right'], 'x': 9 })
+            self.isPlayerHitted({ 'z': players['left'].position, 'x': -9 })
+            self.isPlayerHitted({ 'z': players['right'].position, 'x': 9 })
             self.isTopBotHitted()
-            await self.isScored()
+            self.isScored(players)
             self.position['x'] += self.direction['x'] / 10
             self.position['z'] += self.direction['z'] / 10
         
@@ -61,136 +62,185 @@ class Ball():
         self.position = {'x': 0, 'z': 0}
         self.direction = {'x': random.choice([-1, 1]), 'z': 0}
 
-class Game():
-    def __init__(self):
-        self.__players = []
-        self.__ball = Ball()
+class Duo():
+    def __init__(self, id):
+        self.id: str = id
+        self.isLeftAdded: bool = False
+        self.players: List[Player] = []
+        self.ball: Ball = Ball()
+        self.activated: bool = False
         
-    def getPlayersUsername(self):
-        return [player.username for player in self.__players]
+    def append(self, player: Player):
+        self.players.append(player)
         
-    def getPlayer(self, username):
-        for player in self.__players:
+    def remove(self, player: Player):
+        self.players.remove(player)
+
+    def getPlayer(self, username: str):
+        for player in self.players:
             if player.username == username:
                 return player
         return None
     
     def getPlayerLeft(self):
-        for player in self.__players:
+        for player in self.players:
             if player.side == 'left':
                 return player
-            
+        return None
+    
     def getPlayerRight(self):
-        for player in self.__players:
+        for player in self.players:
             if player.side == 'right':
                 return player
-            
-    def getOtherPlayer(self, username):
-        for player in self.__players:
+        return None
+    
+    def getOtherPlayer(self, username: str):
+        for player in self.players:
             if player.username != username:
                 return player
         return None
     
+    def isScoreChanged(self):
+        playerLeft = self.getPlayerLeft()
+        playerRight = self.getPlayerRight()
+        if playerLeft == None or playerRight == None:
+            return True
+        if playerLeft.score != playerLeft.memScore or playerRight.score != playerRight.memScore:
+            playerLeft.memScore = playerLeft.score
+            playerRight.memScore = playerRight.score
+            return True
+        return False
+    
     def getScoreString(self):
-        scoreString = str(self.getPlayerLeft().score) + ' - ' + str(self.getPlayerRight().score)
-        return scoreString
- 
-    def getLen(self):
-        return len(self.__players)
+        playerLeft = self.getPlayerLeft()
+        playerRight = self.getPlayerRight()
+        return str(playerLeft.score if playerLeft is not None else 0) + ' - ' + str(playerRight.score if playerRight is not None else 0)
+        
+    def isEnd(self):
+        playerLeft = self.getPlayerLeft()
+        playerRight = self.getPlayerRight()
+        if playerLeft == None or playerRight == None:
+            return True
+        return playerLeft.score == 10 or playerRight.score == 10
 
-    def append(self, player):
-        self.__players.append(player)
-
-    def remove(self, username):
-        self.__players = [player for player in self.__players if player.username != username]
-
-    async def broadcast(self, message):
-        message = json.dumps(message)
-        for player in self.__players:
-            await player.socket.send(message)
-            
-    async def game(self):
-        playersPos = {'left': self.getPlayerLeft().position, 'right': self.getPlayerRight().position}
-        await self.__ball.move(playersPos)
-        await self.broadcast({ 'game': 'ball position',
-                         'positionX': self.__ball.position['x'], 
-                         'positionZ': self.__ball.position['z'] })
+    async def broadcast(self, message: dict):
+        for player in self.players:
+            await player.socket.send(json.dumps(message))
+        
+    async def gameLoop(self):
+        while True:
+            playerLeft = self.getPlayerLeft()
+            playerRight = self.getPlayerRight()
+            if playerLeft != None and playerRight != None:
+                self.ball.move({ 'left': playerLeft,
+                                 'right': playerRight })
+                await self.broadcast({ 'game': 'positions',
+                                       'positionBallX': self.ball.position['x'],
+                                       'positionBallZ': self.ball.position['z'],
+                                       'playerLeft': playerLeft.position,
+                                       'playerRight': playerRight.position })
+            if self.isScoreChanged():
+                await self.broadcast({ 'game': 'score',
+                                       'score': self.getScoreString() })
+            if self.isEnd():
+                await self.broadcast({ 'game': 'end',
+                                       'winner': playerLeft.score == 10 and 'left' or 'right' })
+                return
+            await asyncio.sleep(0.01)
+    
+class Game():
+    def __init__(self):
+        self.duos: List[Duo] = []
+    
+    def append(self, duo: Duo):
+        self.duos.append(duo)
+        self.activate()
+        
+    def remove(self, duo: Duo):
+        self.duos.remove(duo)
+    
+    def getDuo(self, id: str):
+        for duo in self.duos:
+            if duo.id == id:
+                return duo
+        return None
+    
+    def isDuoFull(self, id: str=None):
+        if id != None:
+            duo = self.getDuo(id)
+            if duo:
+                return len(duo.players) == 2
+        for duo in self.duos:
+            if len(duo.players) == 2:
+                return True
+    
+    def activate(self):
+        for duo in self.duos:
+            if len(duo.players) == 2 and duo.activated == False:
+                duo.activated = True
+                asyncio.create_task(duo.gameLoop())
 
 pong = Game()
-isLeftAdded = False
 
-# -----------------------------Json Message--------------------------------
-def getGameStartJson(side):
-    return json.dumps({ 'game': 'starting',
-                        'side': side })
-    
-def getOtherPlayerPositionJson(position):
-    return json.dumps({ 'game': 'player position',
-                        'position': position })
-
-# -----------------------------Loop--------------------------------
-async def gamePong():
-    while True:
-        if pong.getPlayerLeft().score == 10 or pong.getPlayerRight().score == 10:
-            return
-        await pong.game()
-        await asyncio.sleep(0.01)
-
-# -----------------------------Parser--------------------------------
-def assignSide():
-    global isLeftAdded
-    if isLeftAdded == False:
-        isLeftAdded = True
+def assignSide(duo: Duo):
+    if duo.isLeftAdded == False:
+        duo.isLeftAdded = True
         return 'left'
-    else:
-        isLeftAdded = False
-        asyncio.create_task(gamePong())
-        return 'right'
+    return 'right'
 
-def starting(self, message):
-    newPlayer = Player(message['username'], assignSide(), self)
-    pong.append(newPlayer)
-    return getGameStartJson(newPlayer.side)
+def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
+    duo = pong.getDuo(message['id'])
+    if duo == None:
+        duo = Duo(message['id'])
+    player = Player(message['username'], assignSide(duo), socket)
+    duo.append(player)
+    pong.append(duo)
+    return { 'game': 'starting',
+             'side': player.side } 
 
-def playerPosition(message):
-    player = pong.getPlayer(message['username'])
-    player.position = message['position']
-    otherPlayer = pong.getOtherPlayer(message['username'])
-    return getOtherPlayerPositionJson(otherPlayer.position)
-      
-def score(message):
-    global isScoreChange
-    otherPlayer = pong.getOtherPlayer(message['username'])
-    otherPlayer.score += 1
-    isScoreChange = True
+def leaveDuo(message: dict):
+    duo = pong.getDuo(message['id'])
+    if duo != None:
+        player = duo.getPlayer(message['username'])
+        if player != None:
+            winner = duo.getOtherPlayer(message['username'])
+            if winner != None:
+                winner.score = 10
+            player.socket.close()
+            duo.remove(player)
+            if len(duo.players) == 0:
+                pong.remove(duo)
+    return None
 
-def forfait(message):
-    otherPlayer = pong.getOtherPlayer(message['username'])
-    otherPlayer.score = 10
+def position(message: dict):
+    duo = pong.getDuo(message['id'])
+    if duo:
+        player = duo.getPlayer(message['username'])
+        if player != None:
+            player.position = message['position']
+    return None
 
-def parseMessage(self, message):
+def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
     if 'game' in message:
         if message['game'] == 'starting':
-            return starting(self, message)
-        elif message['game'] == 'player position':
-            return playerPosition(message)
-        elif message['game'] == 'score':
-            score(message)
-        elif message['game'] == 'leaved':
-            forfait(message)
-        return json.dumps({ 'game': 'ok' })
-    return json.dumps({ 'error': 'Invalid token' })
+            return assignDuo(message, socket)
+        if message['game'] == 'leaved':
+            return leaveDuo(message)
+        if message['game'] == 'player position':
+            return position(message)
+    return { 'error': 'Invalid message' }
 
 class PongConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         await self.accept()
-        data = { 'message': 'Pong connection etablished !' }
-        await self.send(text_data=json.dumps(data))
+        message = { 'message': 'Pong connection etablished !' }
+        await self.send(json.dumps(message))
 
     async def disconnect(self, close_code):
         await self.close(close_code)
 
     async def receive(self, text_data):
-        message = json.loads(text_data)
-        response = parseMessage(self, message)
-        await self.send(response)
+        message: dict = json.loads(text_data)
+        response = parseMessage(message, self)
+        if response:
+            await self.send(json.dumps(response))

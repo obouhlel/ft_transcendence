@@ -5,9 +5,13 @@ import { switchGameTab, openModal, searchFunction, addFriendHandler,
 		 show_dynamic_history, show_dynamic_stats, show_dynamic_friends,
 		friendsTab, deleteFriend } from './profile.js';
 import { handleLogout } from './utils/logout.js';
-import { changeAvatar } from './utils/avatar.js';
+import { changeAvatar } from './utils/avatar.js'; // a ajouter
 import { message } from './utils/message.js';
 import { dropdown } from './header.js';
+import './notifs.js';
+import { matchmacking } from './games/matchmaking.js';
+import { pong3D } from './games/pong.js';
+import { ticTacToe3D } from './games/ticTacToe.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -38,11 +42,11 @@ function is_logged_in()
 
 const pageHandlers = {
     'login': [handleLoginFormSubmit],
-    'register': [handleRegisterFormSubmit],
+    'register': [handleRegisterFormSubmit, changeAvatar],
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
-    'edit_profile': [handleEditProfileFormSubmit],
+    'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
     // 'game-1': [game, listenerGame],
     // 'game-2': [game, listenerGame]
 };

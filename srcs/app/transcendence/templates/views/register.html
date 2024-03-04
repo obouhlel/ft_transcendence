@@ -5,6 +5,7 @@
 		<h1>Register</h1>
 		<p id="message"></p>
 		<form method="post" id="register-form">
+			{% csrf_token %}
 			<div class="avatar-upload-container">
 				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
 					alt="user" />

@@ -1,10 +1,5 @@
 from pathlib import Path
 from decouple import config
-import logging
-
-# Configuration of the logger
-logging.basicConfig(level=logging.DEBUG)
-LOGGER = logging.getLogger('transcendence')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -13,9 +8,28 @@ SECRET_KEY = 'django-insecure-c_dug2-$h$y^4#6c1sj2qh9@%x7wq7vd#_@=5e-7blbl%7!3sz
 
 DEBUG = True
 
-# The host for the front end 
-# (Need to be changed in production, need to be the IP or the domain name of the front end)
-ALLOWED_HOSTS = ["*"]
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+}
+
+# DOMAINE AND HOST FOR THE API
+DOMAIN = config('DOMAIN')
+IP = config('IP')
+
+URL_DOMAIN = f"https://{DOMAIN}:8000"
+URL_IP = f"https://{IP}:8000"
+
+ALLOWED_HOSTS = ["localhost", IP, DOMAIN]
 
 # Application definition
 
@@ -135,13 +149,21 @@ CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
 
-# CORS AND CSRF
+# PROTECTION CSRF FOR THE AUTHENTICATION
+CSRF_TRUSTED_ORIGINS = [
+    "https://localhost:8000",
+	URL_DOMAIN,
+	URL_IP
+]
+
+# PROTECTION XSS WITH CORS
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = []
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://localhost:8000",
-# 	"https://api.intra.42.fr",
-# ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://localhost:8000",
+	URL_DOMAIN,
+	URL_IP
+]
 
 CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
 CORS_ALLOW_HEADERS = [
@@ -153,11 +175,6 @@ CORS_ALLOW_HEADERS = [
     'authorization',
     'x-csrftoken'
 ]
-CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "https://localhost:8000",
-# 	"https://api.intra.42.fr"
-# ]
 
 # Utiliser le header HTTP X-XSS-Protection
 SECURE_BROWSER_XSS_FILTER = True

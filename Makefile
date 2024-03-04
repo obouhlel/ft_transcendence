@@ -2,7 +2,7 @@ DOCKER=web
 
 all: up logs
 
-reset: down build up logs
+reset: clean down build up logs
 
 exec:
 	docker exec -it $(DOCKER) sh
@@ -28,7 +28,10 @@ logs:
 stop:
 	docker compose stop
 
-clean: stop
+clean:
+	rm -rf srcs/app/transcendence/migrations/0*.py
+
+fclean: clean stop
 	docker system prune -a -f
 
 # re: clean all logs

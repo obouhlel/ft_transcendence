@@ -221,7 +221,7 @@ export async function addFriendHandler()
 		if (!target.classList.contains('modal-add-btn'))
 			return;
 		const friendID = document.querySelector('.user-row').id;
-        doRequest.postJSON(`/api/add_friend/${friendID}`, {}, data => {
+        doRequest.post(`/api/add_friend/${friendID}`, {}, data => {
             if (data.status === 'ok') {
 				show_dynamic_friends();
             } else {

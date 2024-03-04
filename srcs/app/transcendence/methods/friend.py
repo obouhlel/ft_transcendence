@@ -5,16 +5,16 @@ from transcendence.models  import CustomUser
 from django.db.models import Q # permet de faire des requetes plus complexes (AND, OR, NOT)
 
 #---------------------------------GET FRIEND---------------------------------#
+
 @login_required
 @require_http_methods(['GET'])
 def getAllFriendsofUser(request, id_user):
 	try:
 		user = CustomUser.objects.get(id=id_user)
-		data = [friend.user_data() for friend in user.list_friends.all()]
+		data = user.getFriends()
 		return JsonResponse({'status': 'ok', 'friends': data})
 	except CustomUser.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
-
+		return JsonResponse({'status': 'error', 'message': 'This user doesn\'t exist'}, status=404)
 
 #---------------------------------ADD FRIEND---------------------------------#
 @login_required

@@ -91,8 +91,9 @@ def getLobbyofGamebyType(request, id_game, type):
 	
 # -------------------------------POST LOBBY-----------------------------#
 	
-def newLobby(id_game, type, name):
-	lobby = Lobby.objects.create(id_game=id_game, type=type, name=name)
+def newLobby(game, type):
+	lobby = Lobby.objects.create(game=game, type=type)
+	game.lobby_game.add(lobby)
 	return lobby
 
 #when User click on Create a lobby,
@@ -109,6 +110,8 @@ def newLobby(id_game, type, name):
 #return: id_lobby
 #create a UserInLobby for the user with entry_at = now
 #type = or 'Public' or 'Tournament'
+import logging
+logger = logging.getLogger(__name__)
 @login_required
 @require_http_methods(['POST', 'PUT'])
 def joinLobby(request):
@@ -117,20 +120,21 @@ def joinLobby(request):
 	type = data['type'] if 'type' in data else 'Public' #todo: check if type is valid
 	try:
 		game = Game.objects.get(id=id_game)
-		lobby = game.lobby_game.all()
+		lobby = game.lobby_set.all()
 		#if no lobby for this game, create a new lobby
 		if len(lobby) == 0:
-			lobby = newLobby(id_game, type, game.name)
+			lobby = newLobby(game, type)
 		#if there is a lobby of given type, join the lobby
 		else:
 			lobby = lobby.filter(type=type)
 			if len(lobby) == 0:
-				lobby = newLobby(id_game, type, game.name)
+				lobby = newLobby(game, type)
 			else:
 				lobby = lobby[0]
 		user = request.user
-		userInLobby = UserInLobby.objects.create(id_user=user, id_lobby=lobby)
-		Lobby.objects.get(id=lobby.id).user.add(userInLobby)
+		if (UserInLobby.objects.filter(id_user=user, id_lobby=lobby).count() > 0):
+			return JsonResponse({'status': 'ok', 'id_lobby': lobby.id})
+		UserInLobby.objects.create(id_user=user, id_lobby=lobby)
 		return JsonResponse({'status': 'ok', 'id_lobby': lobby.id})
 	except Game.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
@@ -147,14 +151,14 @@ def quitLobby(request):
 	id_lobby = data['id_lobby']
 	try:
 		lobby = Lobby.objects.get(id=id_lobby)
-		userInLobby = UserInLobby.objects.get(id_user=request.user, id_lobby=lobby)
-		Lobby.objects.get(id=lobby.id).user.remove(userInLobby)
-		userInLobby.delete()
-		return JsonResponse({'status': 'ok', 'message': 'You have left the lobby.'})
+		userInLobby = UserInLobby.objects.filter(id_user=request.user, id_lobby=lobby).first()
+		if userInLobby:
+			userInLobby.delete()
+			return JsonResponse({'status': 'ok', 'message': 'You have left the lobby.'})
+		else:
+			return JsonResponse({'status': 'error', 'message': 'You are not in this lobby.'}, status=400)
 	except Lobby.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
-	except UserInLobby.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'You are not in this lobby.'}, status=400)
 
 
 
@@ -221,8 +225,7 @@ def find_compatibles_users(users, current_user):
 #and delete the UserInLobby for the user
 #if return nothing, it will continue to wait
 
-@login_required
-@require_http_methods(['POST'])
+
 def findCompatiblesUsers(request):
 	data = json.loads(request.body)
 	id_lobby = data['id_lobby']
@@ -235,8 +238,8 @@ def findCompatiblesUsers(request):
 		user_found = find_compatibles_users(AllUserInLobby, current_user, lobby.id_game)
 		if user_found:
 			party = Party.objects.create(id_game=lobby.id_game, player1=current_user, player2=user_found, started_at=timezone.now())
-			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).delete()
-			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).delete()
+			UserInLobby.objects.get(id_user=current_user, id_lobby=lobby).remove()
+			UserInLobby.objects.get(id_user=user_found, id_lobby=lobby).remove()
 			return JsonResponse({'status': 'ok', 'id_party': party.id})
 			#send a notification to the user found ????????????????????
 		else:
