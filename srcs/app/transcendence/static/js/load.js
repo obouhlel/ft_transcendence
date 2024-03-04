@@ -1,16 +1,17 @@
 import { handleLoginFormSubmit } from './form/login.js';
 import { handleRegisterFormSubmit } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
+import { switchGameTab, openModal, searchFunction, addFriendHandler,
+		 show_dynamic_history, show_dynamic_stats, show_dynamic_friends,
+		friendsTab, deleteFriend } from './profile.js';
 import { handleLogout } from './utils/logout.js';
-import { changeAvatar } from './utils/avatar.js';
+import { changeAvatar } from './utils/avatar.js'; // a ajouter
 import { message } from './utils/message.js';
-import { gameTab, friendsTab } from './profile.js';
 import { dropdown } from './header.js';
 import './notifs.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
-// import { test } from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -27,6 +28,7 @@ window.addEventListener('load', function() {
 	if (!page) {
 		page = 'home';
 	}
+	window.searchFunction = searchFunction;
 	showPage(page);
 });
 
@@ -39,32 +41,19 @@ function is_logged_in()
 }
 
 const pageHandlers = {
-	'400': message,
-    'login': handleLoginFormSubmit,
-    'register': () => {
-		handleRegisterFormSubmit();
-		changeAvatar();
-	},
-    'edit_profile': () => {
-		handleEditProfileFormSubmit();
-		changeAvatar();
-	},
-	'profile': () => {
-        gameTab();
-        friendsTab();
-    },
-    'game-1': () => {
-		matchmacking('pong');
-	},
-	'game-2': () => {
-		matchmacking('TicTacToe');
-	},
-	'pong': pong3D,
-	'TicTacToe':  ticTacToe3D,
+    'login': [handleLoginFormSubmit],
+    'register': [handleRegisterFormSubmit, changeAvatar],
+    'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
+				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
+				switchGameTab, deleteFriend],
+    'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
+    // 'game-1': [game, listenerGame],
+    // 'game-2': [game, listenerGame]
 };
-
-function executeHandlers(page) {
-	pageHandlers[page]?.();
+async function executeHandlers(page) {
+    for (const func of pageHandlers[page]) {
+        await func();
+    }
 }
 
 function showPage(page) {
@@ -88,7 +77,6 @@ function showPage(page) {
 			handleLogout();
 			dropdown();
 		}
-		// test();
 	})
 	.catch(error => {
 		console.error(error);

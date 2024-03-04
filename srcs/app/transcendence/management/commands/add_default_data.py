@@ -8,7 +8,7 @@ class Command(BaseCommand):
 
 	def handle(self, *args, **options):
 		# Créer des utilisateurs
-		
+
 		user1 , _created = CustomUser.objects.get_or_create(
 			username='admin',
 			email='admin@admin.fr',
@@ -20,16 +20,20 @@ class Command(BaseCommand):
 			is_superuser=True,
 			is_staff=True
 		)
+		user1.save()
 
 		user2 , _created = CustomUser.objects.get_or_create(
 			username='user2',
 			email='user2@email.com',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',#make_password('password2'),
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', # adminadmin
 			first_name='User',
 			last_name='Two',
 			sexe='F',
 			birthdate="1990-01-01",
+			is_superuser=False,
+			is_staff=False
 		)
+		user2.save()
 
 
 		description_pong = """
@@ -48,8 +52,8 @@ class Command(BaseCommand):
 
 
 		description_tictactoe = """
-		Tic Tac Toe, also known as Naughts and Crosses, is a classic two-player game. 
-		Players take turns marking spaces in a 3x3 grid, aiming to form a row, column, or diagonal of their symbol (X or O). 
+		Tic Tac Toe, also known as Naughts and Crosses, is a classic two-player game.
+		Players take turns marking spaces in a 3x3 grid, aiming to form a row, column, or diagonal of their symbol (X or O).
 		Simple yet strategic, it's a timeless test of wit and tactics.
 		"""
 
@@ -65,10 +69,10 @@ class Command(BaseCommand):
 
 
 
-		# Stat_User_by_Game.objects.get_or_create(user=user1, game=game1)
-		# Stat_User_by_Game.objects.get_or_create(user=user2, game=game1)
-		# Stat_User_by_Game.objects.get_or_create(user=user1, game=game2)
-		# Stat_User_by_Game.objects.get_or_create(user=user2, game=game2)
+		Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game1)
+		Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game1)
+		Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game2)
+		Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game2)
 
 		# Créer des parties
 		party1, _created = Party.objects.get_or_create(
@@ -113,12 +117,12 @@ class Command(BaseCommand):
 			loser_party=user1
 		)
 		# Ajouter les parties aux statistiques des utilisateurs
-		user1_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(user=user1, game=game1)
+		user1_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game1)
 		user1_stat_game1.nb_played += 1
 		user1_stat_game1.nb_win += 1
 		user1_stat_game1.save()
 
-		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game1)
+		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game1)
 		user2_stat_game1.nb_played += 1
 		user2_stat_game1.nb_lose += 1
 		user2_stat_game1.save()
@@ -131,12 +135,12 @@ class Command(BaseCommand):
 		user2_stat_game1.nb_win += 1
 		user2_stat_game1.save()
 
-		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user1, game=game2)
+		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game2)
 		user1_stat_game2.nb_played += 1
 		user1_stat_game2.nb_lose += 1
 		user1_stat_game2.save()
 
-		user2_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game2)
+		user2_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game2)
 		user2_stat_game2.nb_played += 1
 		user2_stat_game2.nb_win += 1
 		user2_stat_game2.save()

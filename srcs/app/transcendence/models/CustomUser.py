@@ -59,12 +59,12 @@ class CustomUser(AbstractUser):
 			'status': self.status,
 			'friends_received': self.getFriendRequestReceived(),
 			'request_sent': self.getFriendRequestSent(),
-			'list_friends': self.getFriends(),
+			# 'list_friends': self.getFriends(),
 			'stat': self.getStat()
 		}
 	def getFriends(self):
 		list_friends = self.list_friends.all()
-		return [friend.id for friend in list_friends]
+		return [friend.user_data() for friend in list_friends]
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
 		return [re.friend_request_data() for re in list_friend_request]

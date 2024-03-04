@@ -6,7 +6,8 @@ from transcendence.models import *
 
 @ensure_csrf_cookie
 def index(request):
-	return render(request, 'index.html')
+	games = Game.objects.all()
+	return render(request, 'index.html', {'games': games})
 
 def page(request, page):
 	allowed_pages = [

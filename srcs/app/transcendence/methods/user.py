@@ -94,6 +94,15 @@ def getUserConnected(request):
 	else:
 		return JsonResponse({'status': 'error', 'message': 'No user connected'}, status=404)
 
+@login_required
+@require_http_methods(['GET'])
+def searchUser(request, username):
+	users = CustomUser.objects.filter(username__icontains=username)
+	data = []
+	for user in users:
+		data += [user.user_data()]
+	return JsonResponse({'status': 'ok', 'users': data})
+
 
 #Leaderboard
 from transcendence.models import Game

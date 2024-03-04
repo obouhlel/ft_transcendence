@@ -58,7 +58,17 @@ def getUserInParty(request, id_party):
 	except Party.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
 
-
+@login_required
+@require_http_methods(['GET'])
+def getUserHistoryByGame(request, id_game):
+    try:
+        game = Game.objects.get(id=id_game)
+        user = request.user
+        parties = Party.objects.filter(game=game, player1=user) | Party.objects.filter(game=game, player2=user)
+        data = [party.party_data() for party in parties]
+        return JsonResponse({'status': 'ok', 'parties': data})
+    except Game.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
 
 
 # -------------------------------POST PARTY-----------------------------#

@@ -27,8 +27,8 @@ def getStatByUser(request, id_user):
 def getStatByGame(request, id_game):
 	try:
 		game = Game.objects.get(id=id_game)
-		statofgame = game.stat_game
-		data = statofgame.Stat_game_data()
+		statofgame = game.stat
+		data = statofgame.stat_game_data()
 		return JsonResponse({'status': 'ok', 'stat': data})
 	except Game.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
@@ -36,27 +36,21 @@ def getStatByGame(request, id_game):
 @login_required
 @require_http_methods(['GET'])
 def getStatsUsersByGame(request, id_game):
-	if request.method == 'GET':
-		if request.user.is_authenticated:
-			try:
-				game = Game.objects.get(id=id_game)
-				try:
-					stat_user = request.user.stat_user_by_game_set.get(id_game=game)
-					data = {
-						'nb_played': stat_user.nb_played,
-						'time_played': stat_user.time_played,
-						'nb_win': stat_user.nb_win,
-						'nb_lose': stat_user.nb_lose,
-					}
-					return JsonResponse({'status': 'ok', 'stat': data})
-				except Stat_User_by_Game.DoesNotExist:
-					return JsonResponse({'status': 'error', 'message': 'No game stats for this user.'}, status=404)
-			except Game.DoesNotExist:
-				return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
-		else:
-			return JsonResponse({'status': 'error', 'message': 'Not authentificated.'}, status=401)
-	else:
-		return JsonResponse({'status': 'error', 'message': 'invalide methode.'}, status=405)
+	try:
+		game = Game.objects.get(id=id_game)
+		try:
+			stat_user = request.user.stat_user_by_game_set.get(id_game=game)
+			data = {
+				'nb_played': stat_user.nb_played,
+				'time_played': stat_user.time_played,
+				'nb_win': stat_user.nb_win,
+				'nb_lose': stat_user.nb_lose,
+			}
+			return JsonResponse({'status': 'ok', 'stat': data})
+		except Stat_User_by_Game.DoesNotExist:
+			return JsonResponse({'status': 'error', 'message': 'No game stats for this user.'}, status=404)
+	except Game.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This game doesn\'t exist.'}, status=404)
 
 
 # -------------------------------POST STAT-----------------------------#
