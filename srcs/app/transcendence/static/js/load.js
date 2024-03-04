@@ -47,7 +47,7 @@ const pageHandlers = {
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
-	'dashboard': [fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
+	// 'dashboard': [fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
     'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
 	'pong': [pong3D],
 	'TicTacToe': [ticTacToe3D],
