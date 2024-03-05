@@ -8,12 +8,12 @@ export function handlerNotification() {
 
 	// on socket open
 	notifyScoket.onopen = function (e) {
-		console.log('Socket successfully connected.');
+		console.log('Socket notify connected.');
 	};
 
 	// on socket close
 	notifyScoket.onclose = function (e) {
-		console.log('Socket closed unexpectedly');
+		console.log('Socket notify closed unexpectedly');
 	};
 
 	// on receiving message on group

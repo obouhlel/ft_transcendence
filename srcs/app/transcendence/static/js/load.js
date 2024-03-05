@@ -5,6 +5,8 @@ import { dropdown, responsiveNav } from './header.js';
 import { searchFunction } from './profile.js';
 import { handlerNotification } from './notifs.js';
 
+let isNotificationHandled = false;
+
 window.addEventListener('hashchange', function() {
 	let page = hashChangeHandler();
 	window.searchFunction = searchFunction;
@@ -58,10 +60,16 @@ function showPage(page) {
 		if (isLogged)
 		{
 			handleLogout();
-			handlerNotification();
 			responsiveNav();
 			dropdown();
+			if (!isNotificationHandled)
+			{
+				handlerNotification();
+				isNotificationHandled = true;
+			}
 		}
+		if (!isLogged)
+			isNotificationHandled = false;
 	})
 	.catch(error => {
 		console.error(error);
