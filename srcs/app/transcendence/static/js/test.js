@@ -10,4 +10,6 @@ export async function test() {
     console.log(get_user_by_username);
     const get_user_by_id = await doRequest.get(`/api/get_user_by_id/1`);
     console.log(get_user_by_id);
+    const get_leaderboard = await doRequest.get(`/api/get_leaderboard/1`);
+    console.log(get_leaderboard);  
 }

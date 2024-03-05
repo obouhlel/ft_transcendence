@@ -7,11 +7,13 @@ import { switchGameTab, openModal, searchFunction, addFriendHandler,
 import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
-import { dropdown } from './header.js';
+import { dropdown, responsiveNav } from './header.js';
 import './notifs.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
+import {fetchUserDataAndRenderChart, fetchUserDataAndProcessAges} from './dashboard.js';
+import {test} from './test.js';
 
 window.addEventListener('hashchange', function() {
 	let hash = window.location.hash.substring(1);
@@ -44,10 +46,10 @@ const pageHandlers = {
 	'400': [message],
     'login': [handleLoginFormSubmit],
     'register': [handleRegisterFormSubmit, changeAvatar],
+	'dashboard': [test,fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
-	// 'dashboard': [fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
     'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
 	'pong': [pong3D],
 	'TicTacToe': [ticTacToe3D],
@@ -79,6 +81,7 @@ function showPage(page) {
 		{
 			handleLogout();
 			dropdown();
+			responsiveNav();
 		}
 	})
 	.catch(error => {
