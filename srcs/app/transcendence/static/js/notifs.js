@@ -39,7 +39,7 @@ export function handlerNotification() {
 
 	// Listen for hash changes
 	window.addEventListener('hashchange', function() {
-		const pageNoNotification = ['login', 'register', '400', '401', '403', '404', '405'];
+		const pageNoNotification = ['login', 'register'];
 		const currentHash = window.location.hash.substring(1);
 		if (pageNoNotification.includes(currentHash)) {
 			notifyScoket.close();
