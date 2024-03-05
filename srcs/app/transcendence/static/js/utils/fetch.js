@@ -1,4 +1,4 @@
-export const SERVER_URL = window.location.origin;
+const SERVER_URL = window.location.origin;
 
 function getCookie(name)
 {
@@ -35,7 +35,7 @@ export const doRequest = {
 			options.headers['Content-Type'] = 'application/json';
 			options.body = JSON.stringify(data);
 		}
-        fetch(url, options)
+        fetch(`${SERVER_URL}${url}`, options)
             .then(response => response.json())
             .then(data => { callback(data); })
             .catch(error => { console.error(error); });

@@ -1,4 +1,4 @@
-import { doRequest, SERVER_URL } from '../utils/fetch.js';
+import { doRequest } from '../utils/fetch.js';
 import { callback } from '../utils/callback.js';
 
 export function handleLoginFormSubmit() {
@@ -16,7 +16,7 @@ export function handleLoginFormSubmit() {
 			'password': password
 		};
 
-		doRequest.post(`${SERVER_URL}/api/login/`, data, callback.login);
+		doRequest.post(`/api/login/`, data, callback.login);
 	});
 	// 42 login
 	const url_42 = 'https://api.intra.42.fr/oauth/authorize';
