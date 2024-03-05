@@ -26,14 +26,14 @@ export async function handlerNotification() {
 	};
 
 	async function setMessage(message) {
+		const games = ['pong', 'TicTacToe'];
 		let pageURL = window.location.hash.substring(1);
 		if (pageURL == '')
 			pageURL = 'home';
+		if (games.includes(pageURL))
+			return (setMessage(message));
 		const page = document.getElementById('page');
-		console.log(pageURL);
-		console.log(page);
 		const data = await doRequest.get(`/pages/${pageURL}`);
-		console.log(data.page);
 		page.innerHTML = data.page;
 	}
 
