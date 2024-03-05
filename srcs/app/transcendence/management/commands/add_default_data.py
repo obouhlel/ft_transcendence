@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
 		game2, _created = Game.objects.get_or_create(
 			name='Tictactoe',
-			image='img/tictactoe.png',
+			image='img/tictactoe1.webp',
 			description=description_tictactoe,
 			genre='Puzzle, Board Game, Strategy',
 		)

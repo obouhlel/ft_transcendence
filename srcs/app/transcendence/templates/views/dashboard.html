@@ -1,0 +1,110 @@
+{% include 'header.html' %}
+{% load static %}
+<div class="User-section">
+    <div class="custom-container">
+        <div class="user-main-cont">
+            <div class="user-cont">
+                <div class="navs-tabs">
+                    <div class="navs">
+                        <a class="tab-link active" data-tab="tab1">Pong</a>
+                        <a class="tab-link" data-tab="tab2">Tictactoe</a>
+                    </div>
+
+                    <main class="game-tour-wrapper leaderboard-wrapper">
+                        <h1 class="game-1-header">Leaderboard</h1>
+
+                        <table class="table leaderboard-table">
+                            <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Player</th>
+                                <th>Matches</th>
+                                <th>Win %</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>01</td>
+                                <td class="lead-user-td">
+                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
+                                    <span class="name-leaderboard">Robert</span>
+                                </td>
+                                <td>16</td>
+                                <td>50%</td>
+                            </tr>
+                            <tr>
+                                <td>02</td>
+                                <td class="lead-user-td">
+                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
+                                    <span class="name-leaderboard">Robert</span>
+                                </td>
+                                <td>5</td>
+                                <td>50%</td>
+                            </tr>
+                            <tr>
+                                <td>03</td>
+                                <td class="lead-user-td">
+                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
+                                    <span class="name-leaderboard">Robert</span>
+                                </td>
+                                <td>12</td>
+                                <td>40%</td>
+                            </tr>
+                            <tr>
+                                <td>04</td>
+                                <td class="lead-user-td">
+                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
+                                    <span class="name-leaderboard">Robert</span>
+                                </td>
+                                <td>10</td>
+                                <td>40%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </main>
+
+                    <div id="tab1" class="tab-content active-tab">
+                        <div class="stats">
+                            <div class="cards-main">
+                                <div class="dashboard-card">
+                                    <h5>Rank</h5>
+                                    <h1>#2</h1>
+                                </div>
+                                <div class="dashboard-card">
+                                    <h5>Best Player</h5>
+                                    <div class="best-player">
+                                        <img src="{% static 'img/user-image.png' %}" class="img-leaderboard img-stat" alt="user">
+                                        <p class="best-player-name">Robert</p>
+                                    </div>
+                                </div>
+                                <div class="dashboard-card">
+                                    <h5>Total Players</h5>
+                                    <h1>52</h1>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Right Side (Charts & Graphs) -->
+            <div class="main-friend-list chart-graph-side">
+                <div class="friend-list">
+                    <div class="sex-charts charts">
+                        <h4>User Sex Demographics</h4>
+                        <canvas id="genderDemographicsChart" width="230" height="230"></canvas>
+                    </div>
+                    <br>
+                    <div class="age-charts charts">
+                        <h4>User Age Demographics</h4>
+                        <canvas id="ageDemographicsChart" width="230" height="230"></canvas>
+                    </div>
+                    <br>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

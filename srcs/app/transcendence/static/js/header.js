@@ -49,9 +49,11 @@ export function dropdown() {
 	}
 }
 
-// let bar = document.getElementById("bar");
-// let list = document.getElementById("list");
+export function responsiveNav(){
+	let bar = document.getElementById("bar");
+	let list = document.getElementById("list");
 
-// bar.addEventListener("click", () => {
-//   list.classList.toggle("show-list");
-// });
+	bar.addEventListener("click", () => {
+  	list.classList.toggle("show-list");
+	});
+}

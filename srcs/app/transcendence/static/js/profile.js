@@ -320,11 +320,6 @@ export function searchFunction()
 	}
 }
 
-export function show_notification()
-{
-
-}
-
 /*OPEN MODAL TO SEARCH AND ADD FRIENDS*/
 export function openModal()
 {

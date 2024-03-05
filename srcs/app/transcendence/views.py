@@ -23,6 +23,7 @@ def page(request, page):
 		'lobby-tournament',
 		'pong',
 		'TicTacToe',
+		'dashboard'
 	]
 	error_pages = ['400', '401', '403', '404', '405']
 	games = Game.objects.all()

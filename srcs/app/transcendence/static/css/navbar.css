@@ -10,6 +10,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-direction: row;
   }
   
   .navbar .logo {
@@ -33,7 +34,7 @@
     align-items: center;
     border-radius: 17px;
     position: relative;
-    left: 120px;
+    right: 25px;
   }
   .nav-btns button {
     background-color: transparent;
@@ -107,4 +108,8 @@
     position: relative;
     display: inline-block;
     margin-right: 20px;
+  }
+  
+  .list-bar {
+    display: none;
   }

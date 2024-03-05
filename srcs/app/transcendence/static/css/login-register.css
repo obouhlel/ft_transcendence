@@ -39,6 +39,7 @@
     font-size: 16px;
     color: #ffffffeb;
     padding: 20px 45px 20px 20px;
+    margin-bottom: 15px;
 }
 
 .input-box input::placeholder{
