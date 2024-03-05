@@ -128,7 +128,7 @@ export async function show_dynamic_friends() {
             document.querySelectorAll('.friend-card').forEach(card => card.remove());
             data.friends.forEach(friend => {
                 const friendCard = document.createElement('div');
-                friendCard.className = `friend-card ${friend.status === 'Online' ? 'online-friend' : 'offline-friend'}`;
+                friendCard.className = `friend-card ${friend.status === 'online' ? 'online-friend' : 'offline-friend'}`;
 				friendCard.id = friend.id;
                 friendCard.innerHTML = `
                     <div class="member-details">
