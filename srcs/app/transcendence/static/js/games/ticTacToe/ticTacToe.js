@@ -88,7 +88,9 @@ export async function ticTacToe3D() {
         if (lastTime) {
             const delta = (currentTime - lastTime) / 10;
             TIK_TAK_TOE.move(game.keys, game);
-            TIK_TAK_TOE.printPrev(game.keys,game);
+            if (game.isMyTurn) {
+                TIK_TAK_TOE.printPrev(game.keys,game);
+            }
             for (let i = 0; i < game.arena.length; i++) {
                 for (let j = 0; j < game.arena[i].length; j++) {
                     game.arena[i][j].getPawnDown();

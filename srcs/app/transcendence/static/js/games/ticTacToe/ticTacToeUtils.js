@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import { SIZE_CASE } from './ticTacToe.js';
 import * as UTILS from '../threeJsUtils.js';
+import * as SOCKET from './socketUtils.js';
 
 import { PawnCross, PawnCircle } from './class/Pawn.js';
 import { Case } from './class/Case.js';
@@ -78,9 +79,9 @@ export function createArena(scene) {
 export function getPawn(game) {
     let pawn = null;
     if (game.pawnStr == 'O') {
-        pawn = new PawnCircle(game, 0, 0);
+        pawn = new PawnCircle(game, -30, -20);
     } else if (game.pawnStr == 'X') {
-        pawn = new PawnCross(game, 0, 0);
+        pawn = new PawnCross(game, -30, -20);
     }
     return pawn;
 }
@@ -112,10 +113,10 @@ export function printPrev(keys, game) {
         if (keys[' '] == 'down') {
             keys[' '] = 'done';
             game.isMyTurn = false;
-            TIK_TAK_TOE.updateTurn(game.scene, 'Opponent turn', game);
+            updateTurn(game.scene, 'Opponent turn', game);
             arenaCase.pawnOnThis = game.pawn;
-            game.pawn = TIK_TAK_TOE.getPawn(game);
-            sendNewPawnPosition(game, game.previewPosition.x, game.previewPosition.z); 
+            game.pawn = getPawn(game);
+            SOCKET.sendNewPawnPosition(game, game.previewPosition.x, game.previewPosition.z); 
         }
     }
 }

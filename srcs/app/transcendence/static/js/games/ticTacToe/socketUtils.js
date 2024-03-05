@@ -3,6 +3,8 @@ import * as TIK_TAK_TOE from './ticTacToeUtils.js';
 
 import { getPawn } from './ticTacToeUtils.js';
 
+import { PawnCross, PawnCircle } from './class/Pawn.js';
+
 function sendStartingGame(game) {
     let message = {
         game: 'starting',
