@@ -7,88 +7,15 @@
 				<div class="logo">
 					<h1>Ft-transcendence</h1>
 				</div>
-				<div class="nav-btns">
-					<a href="#profile" class="btn-user">
-						<img src="{% static 'img/Group 3.svg' %}" alt="" data-src="{% static 'img/Group 2.svg' %}"/>
-					</a>
-					<a href="#games" class="btn-gamepad">
-						<img src="{% static 'img/game-high.png' %}" alt="" data-src="{% static 'img/Group 1.svg' %}" />
-					</a>
-				</div>
+				{% include 'header/nav.html' %}
 				<div class="end-nav-btns">
-					<div class="bell-btn">
-						<a class="dropdown-toggle" data-dropdown="bellDropdown" data-count="0" >
-							<img src="{% static 'img/Group 4.svg' %}" alt="" />
-						</a>
-						<div class="dropdown-content" id="bellDropdown">
-							<!-- <i class="fa-solid[data-count]  PLEASE ADD  THE NUMBER DATA COUNT HERE xxx-->
-							<template id="notification">
-							<div class="content">
-								<div class="user-btn">
-									<img src="{% static 'img/Group 3.svg' %}" alt="" />
-								</div>
-
-								<p class="message">Notification</p>
-								<i class="fa-solid fa-check check accept-request"></i>
-								<i class="fa-solid fa-xmark cross deny-request"></i>
-							</div>
-						</template>
-						{% if not notifications %}
-							<div class="content">
-								<p class="message">No notifications</p>
-							</div>
-						{% else %}
-							{% for notification in notifications %}
-								<div class="content">
-									<div class="user-btn">
-										<img src="{% static 'img/Group 3.svg' %}" alt="" />
-									</div>
-									<p class="message">{{ notification.message }}</p>
-									<i class="fa-solid fa-check check accept-request" id="accept-{{ notification.id }}"></i>
-									<i class="fa-solid fa-xmark cross deny-request" id="deny-{{ notification.id }}"></i>
-								</div>
-							{% endfor %}
-						{% endif %}
-						</div>
-					</div>
-	
-	
-					<div class="user-btn">
-						<a class="dropdown-toggle" data-dropdown="userDropdown">
-							<img src="{% static 'img/Group 3.svg' %}" alt="" />
-						</a>
-						<div class="dropdown-content-one" id="userDropdown">
-							<i class="fa-solid fa-xmark usercross" id="cross"></i>
-							<div class="content">
-								<div class="user-avatar-dropdown">
-									{% if user.avatar %}
-										<img src="{{ user.avatar.url }}" alt="" />
-									{% else %}
-										<img src="{% static 'img/user-image.png' %}" alt="" />
-									{% endif %}
-								</div>
-								<a href="#edit_profile" class="edit-profile-btn">Edit your profile</a>
-								<a class="logout-btn" id="logout-button">Logout</a>
-							</div>
-						</div>
-					</div>
+					{% include 'header/notify.html' %}
+					{% include 'header/user.html' %}
 					<i class="fa-solid fa-bars bar" id="bar"></i>
 				</div>
 			</div>
 		</div>
-		<div class="list-bar" id="list">
-			<div class="mobile-nav-btns">
-				<a href="#dashboard">
-					Dashboard
-				</a>
-				<a href="#profile">
-					Profile
-				</a>
-				<a href="#games">
-					Games
-				</a>
-			</div>
-		</div>
+		{% include 'header/nav-mobile.html' %}
 	</nav>
 	{% else %}
 	<nav class="nav">

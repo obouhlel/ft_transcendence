@@ -22,7 +22,6 @@ export function handlerNotification() {
 		const message = data.message;
 		// Call the setMessage function to add the new li element
 		setMessage(message);
-
 	};
 
 	function setMessage(message) {
