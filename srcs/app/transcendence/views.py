@@ -27,8 +27,16 @@ def page(request, page):
 	]
 	error_pages = ['400', '401', '403', '404', '405']
 	games = Game.objects.all()
+	if request.user.is_authenticated:
+		notifications = Notification.objects.filter(user=request.user)
+	else:
+		notifications = []
+	context = {
+		'games': games,
+		'notifications': notifications
+	}
 	if page == 'home':
-		html_content = render_to_string('home.html', request=request, context={'games': games,'notifications': [] if request.user.is_anonymous else request.user.get_notifications()})
+		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'page': html_content})
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
@@ -37,7 +45,7 @@ def page(request, page):
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'page': html_content})
 	elif page in allowed_pages:
-		html_content = render_to_string('views/' + page + '.html', request=request, context={'games': games})
+		html_content = render_to_string('views/' + page + '.html', request=request, context=context)
 		return JsonResponse({'page': html_content})
 	elif page in error_pages:
 		html_content = render_to_string('error/' + page + '.html', request=request)

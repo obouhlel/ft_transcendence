@@ -1,4 +1,6 @@
-export function handlerNotification() {
+import { doRequest } from './utils/fetch.js';
+
+export async function handlerNotification() {
 	// setup chat scoket
 	const notifyScoket = new WebSocket(
 		'wss://'
@@ -20,20 +22,19 @@ export function handlerNotification() {
 	notifyScoket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		const message = data.message;
-		// Call the setMessage function to add the new li element
 		setMessage(message);
 	};
 
-	function setMessage(message) {
-		// Create a new li element
-		const template = document.getElementById('notification');
-		const newNotif = template.content.cloneNode(true);
-		newNotif.querySelector('.message').textContent = message;
-		document.getElementById('bellDropdown').appendChild(newNotif);
-		let count = document.getElementById('bellDropdown').getAttribute('data-count');	
-		count = parseInt(count) + 1;
-		document.getElementById('bellDropdown').setAttribute('data-count', count);
-		//document.getElementById('bellDropdown').classList.add('show');
+	async function setMessage(message) {
+		let pageURL = window.location.hash.substring(1);
+		if (pageURL == '')
+			pageURL = 'home';
+		const page = document.getElementById('page');
+		console.log(pageURL);
+		console.log(page);
+		const data = await doRequest.get(`/pages/${pageURL}`);
+		console.log(data.page);
+		page.innerHTML = data.page;
 	}
 
 	// Listen for hash changes
