@@ -1,4 +1,6 @@
 import { doRequest } from './utils/fetch.js';
+import { handleLogout } from './utils/logout.js';
+import { dropdown, responsiveNav } from './header.js';
 
 export async function handlerNotification() {
 	// setup chat scoket
@@ -26,15 +28,12 @@ export async function handlerNotification() {
 	};
 
 	async function setMessage(message) {
-		const games = ['pong', 'TicTacToe'];
-		let pageURL = window.location.hash.substring(1);
-		if (pageURL == '')
-			pageURL = 'home';
-		if (games.includes(pageURL))
-			return (setMessage(message));
-		const page = document.getElementById('page');
-		const data = await doRequest.get(`/pages/${pageURL}`);
-		page.innerHTML = data.page;
+		const header = document.getElementById('header');
+		const data = await doRequest.get(`/update_header/`);
+		header.innerHTML = data.html;
+		handleLogout();
+		responsiveNav();
+		dropdown();
 	}
 
 	// Listen for hash changes

@@ -54,6 +54,6 @@ export function responsiveNav(){
 	let list = document.getElementById("list");
 
 	bar.addEventListener("click", () => {
-  	list.classList.toggle("show-list");
+  		list.classList.toggle("show-list");
 	});
 }

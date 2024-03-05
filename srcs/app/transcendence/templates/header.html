@@ -1,29 +1,27 @@
 {% load static %}
-<header>
-	{% if user.is_authenticated %}
-	<nav class="nav">
-		<div class="custom-container">
-			<div class="navbar">
-				<div class="logo">
-					<h1>Ft-transcendence</h1>
-				</div>
-				{% include 'header/nav.html' %}
-				<div class="end-nav-btns">
-					{% include 'header/notify.html' %}
-					{% include 'header/user.html' %}
-					<i class="fa-solid fa-bars bar" id="bar"></i>
-				</div>
+{% if user.is_authenticated %}
+<nav class="nav">
+	<div class="custom-container">
+		<div class="navbar">
+			<div class="logo">
+				<h1>Ft-transcendence</h1>
+			</div>
+			{% include 'header/nav.html' %}
+			<div class="end-nav-btns">
+				{% include 'header/notify.html' %}
+				{% include 'header/user.html' %}
+				<i class="fa-solid fa-bars bar" id="bar"></i>
 			</div>
 		</div>
-		{% include 'header/nav-mobile.html' %}
-	</nav>
-	{% else %}
-	<nav class="nav">
-		<header class="nav-header">
-			<div class="nav-title">
-				Ft-transcendence
-			</div>
-		</header>
-	</nav>
-	{% endif %}
-</header>
+	</div>
+	{% include 'header/nav-mobile.html' %}
+</nav>
+{% else %}
+<nav class="nav">
+	<header class="nav-header">
+		<div class="nav-title">
+			Ft-transcendence
+		</div>
+	</header>
+</nav>
+{% endif %}

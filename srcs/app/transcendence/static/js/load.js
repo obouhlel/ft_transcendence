@@ -43,6 +43,19 @@ async function executeHandlers(page) {
 }
 
 function showPage(page) {
+	fetch(`/update_header/`)
+	.then(response => response.json())
+	.then(data => {
+		const header_content = document.getElementById('header');
+		if (!header_content) {
+			console.error('Element with ID "header" not found');
+			return ;
+		}
+		header_content.innerHTML = data.html;
+	})
+	.catch(error => {
+		console.error(error);
+	});
 	fetch(`/pages/${page}`)
 	.then(response => response.json())
 	.then(data => {
@@ -74,4 +87,4 @@ function showPage(page) {
 	.catch(error => {
 		console.error(error);
 	});
-}
+	}
