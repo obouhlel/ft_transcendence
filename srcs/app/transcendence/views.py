@@ -33,21 +33,20 @@ def page(request, page):
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
-	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
-		html_content = render_to_string('error/403.html', request=request)
-		return JsonResponse({'html': html_content})
-	elif (page != 'login' and page != 'register') and not request.user.is_authenticated and page in allowed_pages:
-		html_content = render_to_string('error/401.html', request=request)
-		return JsonResponse({'html': html_content})
-	elif page in games_page:
-		html_content = ''
-		return JsonResponse({'html': html_content})
 	elif page in allowed_pages:
-		html_content = render_to_string('views/' + page + '.html', request=request, context=context)
-		return JsonResponse({'html': html_content})
-	elif page in error_pages:
-		html_content = render_to_string('error/' + page + '.html', request=request)
-		return JsonResponse({'html': html_content})
+		if (page == 'login' or page == 'register') and request.user.is_authenticated:
+			html_content = render_to_string('error/403.html', request=request)
+			return JsonResponse({'html': html_content}, request=request)
+		elif not request.user.is_authenticated:
+			if page in games_page:
+				html_content = ''
+				return JsonResponse({'html': html_content}, request=request)
+			elif page in allowed_pages:
+				html_content = render_to_string('views/' + page + '.html', request=request, context=context)
+				return JsonResponse({'html': html_content})
+		else:
+			html_content = render_to_string('error/401.html', request=request)
+			return JsonResponse({'html': html_content})
 	else:
 		html_content = render_to_string('error/404.html', request=request)
 		return JsonResponse({'html': html_content})
