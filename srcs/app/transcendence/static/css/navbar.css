@@ -95,8 +95,13 @@
     height: 15px;
     border-radius: 50%;
     border: 5px solid #3b3078;
+    visibility: hidden;
     z-index: 7;
   }
+  .bell-btn.show-notification::before {
+    visibility: visible;
+  }
+
   .navbar .bar {
     font-size: 35px;
     color: #fff;

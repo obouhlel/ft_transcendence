@@ -4,24 +4,13 @@
         <img src="{% static 'img/Group 4.svg' %}" alt="" />
     </a>
     <div class="dropdown-content" id="bellDropdown">
-        <template id="notification">
-        <div class="content">
-            <div class="user-btn">
-                <img src="{% static 'img/Group 3.svg' %}" alt="" />
-            </div>
-
-            <p class="message">Notification</p>
-            <i class="fa-solid fa-check check accept-request"></i>
-            <i class="fa-solid fa-xmark cross deny-request"></i>
-        </div>
-    </template>
     {% if not notifications %}
         <div class="content">
             <p class="message">No notifications</p>
         </div>
     {% else %}
         {% for notification in notifications %}
-            <div class="content">
+            <div class="content notif">
                 <div class="user-btn">
                     <img src="{% static 'img/Group 3.svg' %}" alt="" />
                 </div>
@@ -33,3 +22,4 @@
     {% endif %}
     </div>
 </div>
+<!-- visibility: hidden; -->

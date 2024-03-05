@@ -35,11 +35,14 @@ def page(request, page):
 	elif page in allowed_pages:
 		html_content = render_to_string('views/' + page + '.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
+	elif page in error_pages:
+		html_content = render_to_string('error/' + page + '.html', request=request)
+		return JsonResponse({'html': html_content})
 	else:
 		html_content = render_to_string('error/404.html', request=request)
 		return JsonResponse({'html': html_content})
 	
-def update_header(request, page):
+def update_header(request):
 	if request.user.is_authenticated:
 		notifications = Notification.objects.filter(user=request.user)
 	else:

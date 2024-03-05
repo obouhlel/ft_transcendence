@@ -31,6 +31,7 @@ export async function handlerNotification() {
 		const header = document.getElementById('header');
 		const data = await doRequest.get(`/update_header/`);
 		header.innerHTML = data.html;
+		handleNotificationVisual();
 		handleLogout();
 		responsiveNav();
 		dropdown();
@@ -44,4 +45,18 @@ export async function handlerNotification() {
 			notifyScoket.close();
 		}
 	});
+}
+
+export function handleNotificationVisual() {
+	let count = document.querySelectorAll('.notif').length;
+	if (count > 0)
+	{
+		const bellBtn = document.querySelector('.bell-btn');
+		bellBtn.classList.add('show-notification');
+	}
+	else
+	{
+		const bellBtn = document.querySelector('.bell-btn');
+		bellBtn.classList.remove('show-notification');
+	}
 }

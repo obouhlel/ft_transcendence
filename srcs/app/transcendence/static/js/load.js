@@ -3,7 +3,7 @@ import { handleLoginFormSubmit } from './form/login.js';
 import { handleLogout } from './utils/logout.js';
 import { dropdown, responsiveNav } from './header.js';
 import { searchFunction } from './profile.js';
-import { handlerNotification } from './notifs.js';
+import { handlerNotification, handleNotificationVisual } from './notifs.js';
 import { doRequest } from './utils/fetch.js';
 
 let isNotificationHandled = false;
@@ -44,7 +44,7 @@ async function executeHandlers(page) {
 }
 
 async function showPage(page) {
-	const data_header = await doRequest.get(`/update_header/${page}`);
+	const data_header = await doRequest.get(`/update_header/`);
 	const header_content = document.getElementById('header');
 	header_content.innerHTML = data_header.html;
 
@@ -61,6 +61,7 @@ async function showPage(page) {
 		handleLogout();
 		responsiveNav();
 		dropdown();
+		handleNotificationVisual();
 		if (!isNotificationHandled)
 		{
 			handlerNotification();
