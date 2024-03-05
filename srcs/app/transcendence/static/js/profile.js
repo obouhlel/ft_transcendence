@@ -130,6 +130,7 @@ export async function show_dynamic_friends() {
                 const friendCard = document.createElement('div');
                 friendCard.className = `friend-card ${friend.status === 'online' ? 'online-friend' : 'offline-friend'}`;
 				friendCard.id = friend.id;
+				const buttonClass = friend.status === 'offline' ? 'active-member-btn offline-member' : 'active-member-btn';
                 friendCard.innerHTML = `
                     <div class="member-details">
 						<img src="${friend.avatar || defaultAvatarUrl}" alt="">
@@ -137,7 +138,7 @@ export async function show_dynamic_friends() {
                             <h2>${friend.username}</h2>
                         </div>
                     </div>
-                    <button class="active-member-btn">${friend.status}</button>
+                    <button class="${buttonClass}">${friend.status}</button>
                     <i class="fa-solid fa-user-xmark delete-friend"></i>
                 `;
                 friendList.prepend(friendCard);
