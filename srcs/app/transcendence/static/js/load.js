@@ -4,6 +4,7 @@ import { handleLogout } from './utils/logout.js';
 import { dropdown, responsiveNav } from './header.js';
 import { searchFunction } from './profile.js';
 import { handlerNotification } from './notifs.js';
+import { doRequest } from './utils/fetch.js';
 
 let isNotificationHandled = false;
 
@@ -42,49 +43,30 @@ async function executeHandlers(page) {
     }
 }
 
-function showPage(page) {
-	fetch(`/update_header/`)
-	.then(response => response.json())
-	.then(data => {
-		const header_content = document.getElementById('header');
-		if (!header_content) {
-			console.error('Element with ID "header" not found');
-			return ;
-		}
-		header_content.innerHTML = data.html;
-	})
-	.catch(error => {
-		console.error(error);
-	});
-	fetch(`/pages/${page}`)
-	.then(response => response.json())
-	.then(data => {
-		const page_content = document.getElementById('page');
-		if (!page_content) {
-			console.error('Element with ID "page" not found');
-			return ;
-		}
-		page_content.innerHTML = data.page;
-		const isLogged = is_logged_in();
-		if (!isLogged && page === 'home')
-			handleLoginFormSubmit();
-		else if (pageHandlers[page])
-			executeHandlers(page);
-		if (isLogged)
+async function showPage(page) {
+	const data_header = await doRequest.get(`/update_header/`);
+	const header_content = document.getElementById('header');
+	header_content.innerHTML = data_header.html;
+
+	const data_page = await doRequest.get(`/pages/${page}`);
+	const page_content = document.getElementById('page');
+	page_content.innerHTML = data_page.html;
+	const isLogged = is_logged_in();
+	if (!isLogged && page === 'home')
+		handleLoginFormSubmit();
+	else if (pageHandlers[page])
+		executeHandlers(page);
+	if (isLogged)
+	{
+		handleLogout();
+		responsiveNav();
+		dropdown();
+		if (!isNotificationHandled)
 		{
-			handleLogout();
-			responsiveNav();
-			dropdown();
-			if (!isNotificationHandled)
-			{
-				handlerNotification();
-				isNotificationHandled = true;
-			}
+			handlerNotification();
+			isNotificationHandled = true;
 		}
-		if (!isLogged)
-			isNotificationHandled = false;
-	})
-	.catch(error => {
-		console.error(error);
-	});
 	}
+	if (!isLogged)
+		isNotificationHandled = false;
+}
