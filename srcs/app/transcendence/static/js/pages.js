@@ -1,9 +1,9 @@
 import { handleLoginFormSubmit } from './form/login.js';
 import { handleRegisterFormSubmit } from './form/register.js';
 import { handleEditProfileFormSubmit } from './form/edit_profile.js';
-import { switchGameTab, openModal, searchFunction, addFriendHandler,
-		 show_dynamic_history, show_dynamic_stats, show_dynamic_friends,
-		friendsTab, deleteFriend } from './profile.js';
+import { show_dynamic_friends, deleteFriend, searchFunction, addFriendHandler } from './profile/friends.js';
+import { show_dynamic_stats, show_dynamic_history } from './profile/stats.js';
+import { switchGameTab, openModal, friendsTab } from './profile/tabs.js';
 import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
 import { message } from './utils/message.js';
