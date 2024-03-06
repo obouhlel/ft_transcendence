@@ -19,8 +19,7 @@ async	function getUserConnected()
 }
 
 export async function show_dynamic_friends() {
-    const data = await doRequest.get('/api/get_user_connected');
-	const userConnected = data.user;
+    const userConnected = await getUserConnected();
     const userID = userConnected.id;
     fetch(`/api/get_all_friends/${userID}`)
     .then(response => response.json())
@@ -29,13 +28,14 @@ export async function show_dynamic_friends() {
             const friendList = document.querySelector('.friend-list-members');
             if (!friendList) {
                 console.error('Element with class "friend-list-members" not found');
-                return ;
+                return;
             }
             document.querySelectorAll('.friend-card').forEach(card => card.remove());
             data.friends.forEach(friend => {
                 const friendCard = document.createElement('div');
                 friendCard.className = `friend-card ${friend.status === 'online' ? 'online-friend' : 'offline-friend'}`;
 				friendCard.id = friend.id;
+				const buttonClass = friend.status === 'offline' ? 'active-member-btn offline-member' : 'active-member-btn';
                 friendCard.innerHTML = `
                     <div class="member-details">
 						<img src="${friend.avatar || defaultAvatarUrl}" alt="">
@@ -43,7 +43,7 @@ export async function show_dynamic_friends() {
                             <h2>${friend.username}</h2>
                         </div>
                     </div>
-                    <button class="active-member-btn">${friend.status}</button>
+                    <button class="${buttonClass}">${friend.status}</button>
                     <i class="fa-solid fa-user-xmark delete-friend"></i>
                 `;
                 friendList.prepend(friendCard);
