@@ -1,4 +1,5 @@
 import * as JS_UTILS from '../jsUtils.js';
+import * as UTILS from './pongUtils.js';
 import * as PONG from './pongUtils.js';
 
 function sendStartingGame(game) {
@@ -46,10 +47,11 @@ function parseMessage(message, game) {
         }
         if (message['game'] == 'end') {
             game.needStop = true;
-            // const message = {
-            //     score: game.textScore,
-            // };
-            // doRequest.post('/api/pong', { score: message['score'] }, callback.home);
+            // here we can update the database
+            UTILS.updateScore(game.scene, message['score'], game);
+            setTimeout(() => {
+                window.location.hash = 'home';
+            }, 5000);
         }
     }
 }
@@ -62,7 +64,7 @@ export function socketListener(game) {
 
     game.socket.onmessage = function (e) {
         let data = JSON.parse(e.data);
-        // console.log('Received message: ' + e.data);
+        console.log('Received message: ' + e.data);
         parseMessage(data, game);
     };
 

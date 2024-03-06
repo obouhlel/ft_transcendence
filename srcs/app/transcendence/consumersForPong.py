@@ -15,6 +15,7 @@ class Player():
         self.memScore: int = 0
         self.side: str = side
         self.socket: AsyncWebsocketConsumer = websocket
+        self.disconnected: bool = False
 
 class Ball():
     def __init__(self):
@@ -123,12 +124,34 @@ class Duo():
             return True
         return playerLeft.score == 10 or playerRight.score == 10
 
+    def isSomeoneDisconected(self):
+        for player in self.players:
+            if player.disconnected == True:
+                return True
+        return False
+    
+    def getDisconectedPlayer(self):
+        for player in self.players:
+            if player.disconnected == True:
+                return player
+        return None
+
     async def broadcast(self, message: dict):
         for player in self.players:
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
         while True:
+            if self.isSomeoneDisconected() == True:
+                disconnectedPlayer = self.getDisconectedPlayer()
+                winner = self.getOtherPlayer(disconnectedPlayer.username)
+                scoreString = "10 - 0" if winner.side == 'left' else "0 - 10"
+                await self.broadcast({ 'game': 'end',
+                                       'score': scoreString,
+                                       'winner': winner.side })
+                self.remove(disconnectedPlayer)
+                self.remove(winner)
+                return
             playerLeft = self.getPlayerLeft()
             playerRight = self.getPlayerRight()
             if playerLeft != None and playerRight != None:
@@ -179,6 +202,8 @@ class Game():
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
                 asyncio.create_task(duo.gameLoop())
+            elif len(duo.players) == 0:
+                self.remove(duo)
 
 pong = Game()
 
@@ -203,13 +228,7 @@ def leaveDuo(message: dict):
     if duo != None:
         player = duo.getPlayer(message['username'])
         if player != None:
-            winner = duo.getOtherPlayer(message['username'])
-            if winner != None:
-                winner.score = 10
-            player.socket.close()
-            duo.remove(player)
-            if len(duo.players) == 0:
-                pong.remove(duo)
+            player.disconnected = True
     return None
 
 def position(message: dict):

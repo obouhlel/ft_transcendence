@@ -23,7 +23,7 @@ function windowListener(game) {
     window.addEventListener('hashchange', function () {
         if (game.socket.readyState == 1)
         {
-            sendLeaveGame(game);
+            SOCKET.sendLeaveGame(game);
             game.socket.close();
         }
     });
@@ -31,7 +31,7 @@ function windowListener(game) {
     window.addEventListener('beforeunload', function () {
         if (game.socket.readyState == 1)
         {
-            sendLeaveGame(game);
+            SOCKET.sendLeaveGame(game);
             game.socket.close();
         }
     });

@@ -65,6 +65,12 @@ function parseMessage(data, game) {
             else {
                 TIK_TAK_TOE.updateTurn(game.scene, 'You Lose', game);
             }
+            game.socket.close();
+            game.isMyTurn = false;
+            // here we can update the database
+            setTimeout(() => {
+                window.location.hash = 'home';
+            }, 5000);
         }
     }
 }

@@ -62,11 +62,11 @@ function doMoveAndCom(game, keys, delta) {
         game.ball.cube.position.z = game.ballPosition.z;
         SOCKET.sendPlayerPosition(game.playerLocal, game);
     } else {
-        game.going = false;
         game.playerLocal.reset();
         game.playerSocket.reset();
         game.ball.cube.position.x = 0;
         game.ball.cube.position.z = 0;
+        game.going = false;
     }
 }
 
