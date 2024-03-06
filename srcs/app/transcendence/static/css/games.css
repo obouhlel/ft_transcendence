@@ -190,3 +190,51 @@
 .player p{
   font-size: 23px;
 }
+
+@media screen and (max-width: 780px)
+{
+
+  .lobby-container .lobby-btn{
+    width: 120px;
+  }
+
+}
+
+
+@media screen and (max-width: 430px)
+{ 
+  .lobby-container .game-tour-wrapper{
+    margin: 10px 5px 80px 5px;
+  }
+
+  .lobby-wrapper h1 {
+    font-size: 35px;
+    margin-bottom: 12px;
+  }
+
+  .lobby-wrapper h2 {
+    font-size: 25px;
+  }
+
+  .lobby-wrapper input {
+    width: 285px;
+  }
+
+  .lobby-btn {
+    margin-top: 15px;
+  }
+
+  .lobby-container .lobby-btn{
+    width: 285px;
+    margin-left: 0px;
+  }
+
+  #aliasForm {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+}

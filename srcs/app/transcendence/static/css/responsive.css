@@ -74,7 +74,7 @@
       left: 0px;
     }
 
-    .game-tour-wrapper .blue-btn{
+    .game-tour-wrapper .join-btn{
       width: 100px;
     }
   }
@@ -163,7 +163,7 @@
       padding: 10px 15px;
     }
 
-    .game-tour-wrapper .blue-btn{
+    .game-tour-wrapper .join-btn{
       font-size: 15px;
       font-weight: 400;
       padding: 10px 15px;
@@ -616,6 +616,15 @@
     }
   }
 
+
+  /****Dashboard*****/
+
+  @media screen and (max-width: 992px)
+  {
+    .charts {
+      max-height: 420px;
+    }  
+  }
 
   @media screen and (max-width: 430px)
   {
