@@ -14,7 +14,7 @@ class Notification(models.Model):
 	is_read = models.BooleanField(default=False)
 	user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	def __str__(self):
-		return str(self.id)
+		return f"{self.user} notification {self.id} : {self.message}"
 	def send_notification(self):
 		self.is_read = False
 		self.save()

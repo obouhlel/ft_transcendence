@@ -29,7 +29,7 @@ class CustomUser(AbstractUser):
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
 	def __str__(self):
-		return self.username
+		return f"{self.username}"
 	def update_status(self, status: str):
 		self.status = status
 		self.save()
@@ -86,7 +86,7 @@ class FriendRequest(models.Model):
 	receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
 	created_at = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
-		return self.sender.username + ' to ' + self.receiver.username
+		return f"{self.sender} send friend request to {self.receiver}"
 	def friend_request_data(self):
 		return {
 			'id': self.id,

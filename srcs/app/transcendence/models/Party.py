@@ -23,10 +23,10 @@ class Party(models.Model):
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
 	round_nb = models.IntegerField(default=0)
 	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
-	def __str__(self):
-		return self.name + " party " + str(self.id) + " for " + self.game.name + "game" + self.player1.name + " vs " + self.player2.name
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
+	def __str__(self):
+		return f"{self.name} party {self.id} for {self.game} game between {self.player1} and {self.player2}"
 	def update_end(self):
 		self.ended_at = timezone.now()
 		self.status = 'finished'
@@ -74,7 +74,7 @@ class PartyInTournament(models.Model):
 	round_nb = models.IntegerField(default=0)
 	index = models.IntegerField(default=0)
 	def __str__(self):
-		return self.party.name + " party in tournament " + str(self.tournament.id)
+		return f"Party {self.party} in tournament {self.tournament} for round {self.round_nb}"
 	def update_end(self):
 		if self.index == self.tournament.nb_player_to_start/ (2**self.round_nb): #si c'est le dernier match de la ronde, c'est pas vraiment necessaire
 				self.tournament.next_round(self.round_nb)
