@@ -23,19 +23,9 @@ export async function handlerNotification() {
 	// on receiving message on group
 	notifyScoket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
-		const message = data.message;
-		setMessage(message);
+		console.log(data);
+		updateHeader();
 	};
-
-	async function setMessage(message) {
-		const header = document.getElementById('header');
-		const data = await doRequest.get(`/update_header/`);
-		header.innerHTML = data.html;
-		handleNotificationVisual();
-		handleLogout();
-		responsiveNav();
-		dropdown();
-	}
 
 	// Listen for hash changes
 	window.addEventListener('hashchange', function() {
@@ -45,6 +35,16 @@ export async function handlerNotification() {
 			notifyScoket.close();
 		}
 	});
+}
+
+async function updateHeader() {
+	const header = document.getElementById('header');
+	const data = await doRequest.get(`/update_header/`);
+	header.innerHTML = data.html;
+	handleNotificationVisual();
+	handleLogout();
+	responsiveNav();
+	dropdown();
 }
 
 export function handleNotificationVisual() {
@@ -59,4 +59,28 @@ export function handleNotificationVisual() {
 		const bellBtn = document.querySelector('.bell-btn');
 		bellBtn.classList.remove('show-notification');
 	}
+}
+
+export function handlerNotificationAction() {
+	const acceptButtons = document.querySelectorAll('.accept-request');
+	const denyButtons = document.querySelectorAll('.deny-request');
+	const notificationIds = [];
+	acceptButtons.forEach(button => {
+		const notificationId = button.id.split('-')[1];
+		notificationIds.push(notificationId);
+	});
+	denyButtons.forEach(button => {
+		const notificationId = button.id.split('-')[1];
+		notificationIds.push(notificationId);
+	});
+	acceptButtons.forEach(button => {
+		button.addEventListener('click', async function() {
+			handleNotificationVisual();
+		});
+	});
+	denyButtons.forEach(button => {
+		button.addEventListener('click', async function() {
+			handleNotificationVisual();
+		});
+	});
 }
