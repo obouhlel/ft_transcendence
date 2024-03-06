@@ -24,7 +24,7 @@ class Party(models.Model):
 	round_nb = models.IntegerField(default=0)
 	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __str__(self):
-		return str(self.id)
+		return self.name + " party " + str(self.id) + " for " + self.game.name + "game" + self.player1.name + " vs " + self.player2.name
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
 	def update_end(self):
@@ -73,6 +73,8 @@ class PartyInTournament(models.Model):
 	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE)
 	round_nb = models.IntegerField(default=0)
 	index = models.IntegerField(default=0)
+	def __str__(self):
+		return self.party.name + " party in tournament " + str(self.tournament.id)
 	def update_end(self):
 		if self.index == self.tournament.nb_player_to_start/ (2**self.round_nb): #si c'est le dernier match de la ronde, c'est pas vraiment necessaire
 				self.tournament.next_round(self.round_nb)

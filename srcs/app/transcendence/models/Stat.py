@@ -13,7 +13,7 @@ class Stat_User_by_Game(models.Model):
 	nb_lose = models.IntegerField(default=0)
 	ratio = models.IntegerField(default=0)
 	def __str__(self):
-		return str(self.id)
+		return self.id_user.name + " stat " + str(self.id) + " for " + self.id_game.name + "game"
 	def update(self,time:int, win: bool):
 		self.nb_played += 1
 		self.time_played += time

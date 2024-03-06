@@ -51,7 +51,7 @@ class Stat_Game(models.Model):
 	avg_game_time = models.IntegerField(default=0)
 	game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='stat')
 	def __str__(self):
-		return str(self.id)
+		return self.game.name + " stat " + str(self.id)
 	def update(self, time: int):
 		self.nb_played += 1
 		self.time_played += time
