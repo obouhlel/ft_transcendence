@@ -71,7 +71,7 @@ def getFriends(request):
 @require_http_methods(['GET'])
 def getOnlineFriends(request):
 	user = request.user
-	friends = user.friends.filter(status='online')
+	friends = user.friends.filter(status='Online')
 	data = [friend.user_data() for friend in friends]
 	return JsonResponse({'status': 'ok', 'friends': data})
 
@@ -79,7 +79,7 @@ def getOnlineFriends(request):
 @require_http_methods(['GET'])
 def getOfflineFriends(request):
 	user = request.user
-	friends = user.friends.filter(status='offline')
+	friends = user.friends.filter(status='Offline')
 	data = [friend.user_data() for friend in friends]
 	return JsonResponse({'status': 'ok', 'friends': data})
 

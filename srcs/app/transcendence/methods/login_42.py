@@ -64,7 +64,7 @@ def create_user(user_data, access_token):
 
 def authenticate_user(request, user):
     django_login(request, user)
-    user.status = 'online'
+    user.status = 'Online'
     user.save()
     return redirect('/')
 

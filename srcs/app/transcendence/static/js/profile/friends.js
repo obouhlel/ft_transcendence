@@ -1,25 +1,8 @@
 import { doRequest } from '../utils/fetch.js';
 
-async	function getUserConnected()
-{
-	return fetch(`/api/get_user_connected`)
-	.then(response => response.json())
-	.then(data => {
-		if (data.status === 'ok') {
-			return data.user;
-		} else {
-			console.error(data.message);
-			return null;
-		}
-	})
-	.catch(error => {
-		console.error(error);
-		return null;
-	});
-}
-
 export async function show_dynamic_friends() {
-    const userConnected = await getUserConnected();
+    const dataUserConnected = await doRequest.get('/api/get_user_connected');
+	const userConnected = dataUserConnected.user;
     const userID = userConnected.id;
     fetch(`/api/get_all_friends/${userID}`)
     .then(response => response.json())
@@ -33,9 +16,9 @@ export async function show_dynamic_friends() {
             document.querySelectorAll('.friend-card').forEach(card => card.remove());
             data.friends.forEach(friend => {
                 const friendCard = document.createElement('div');
-                friendCard.className = `friend-card ${friend.status === 'online' ? 'online-friend' : 'offline-friend'}`;
+                friendCard.className = `friend-card ${friend.status === 'Online' ? 'online-friend' : 'offline-friend'}`;
 				friendCard.id = friend.id;
-				const buttonClass = friend.status === 'offline' ? 'active-member-btn offline-member' : 'active-member-btn';
+				const buttonClass = friend.status === 'Offline' ? 'active-member-btn offline-member' : 'active-member-btn';
                 friendCard.innerHTML = `
                     <div class="member-details">
 						<img src="${friend.avatar || defaultAvatarUrl}" alt="">
