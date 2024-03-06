@@ -74,7 +74,7 @@
       left: 0px;
     }
 
-    .blue-btn{
+    .game-tour-wrapper .blue-btn{
       width: 100px;
     }
   }
@@ -157,13 +157,13 @@
       font-weight: 400;
     }
 
-    .white-btn{
+    .game-tour-wrapper .white-btn{
       font-size: 15px;
       font-weight: 400;
       padding: 10px 15px;
     }
 
-    .blue-btn{
+    .game-tour-wrapper .blue-btn{
       font-size: 15px;
       font-weight: 400;
       padding: 10px 15px;
@@ -211,7 +211,7 @@
       right: 3rem;
       top: 100px;
       width: 300px;
-      background: #d5d6fd;
+      background: #e1e1fd;
       color: #21194a;
       backdrop-filter: blur(15px);
       border-radius: 10px;
