@@ -27,7 +27,7 @@ export async function fetchUserDataAndRenderChart() {
       labels: ['Female', 'Male', 'Other'],
       datasets: [{
         label: 'Sex Demographics',
-        data: [demographics['F'], demographics['M'], demographics['O']],
+        data: [demographics['F'], demographics['M'], demographics['N']],
         backgroundColor: [
           'rgba(255, 99, 132)',
           'rgba(54, 162, 235)', 

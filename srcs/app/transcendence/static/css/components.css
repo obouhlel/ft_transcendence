@@ -1,12 +1,13 @@
 .white-btn {
     cursor: pointer;
     background-color: white;
-    color: #000000;
+    color: #3335b4;
     padding: 10px 40px;
     border-radius: 50px;
     border: 0;
     outline: 0;
     text-decoration: none;
+    font-weight: 500;
   } 
   .blue-btn{
     background-color: #4e51ff;

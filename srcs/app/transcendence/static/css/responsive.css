@@ -24,6 +24,7 @@
     .main-content {
       max-width: 90%;
       margin: 20px auto;
+      margin-bottom: 80px;
     }
     .index-container {
       max-width: 90%;
@@ -59,7 +60,6 @@
       min-width: 100%;
     }
     .table{
-      display: block;
       overflow-x: auto;
       table-layout: fixed;
     }
@@ -72,6 +72,10 @@
   
     .button-container a {
       left: 0px;
+    }
+
+    .game-tour-wrapper .blue-btn{
+      width: 100px;
     }
   }
   
@@ -130,7 +134,61 @@
     .game-image {
       height: 250px;
     }
+
+    .game-tour-wrapper .table {
+      margin: 20px 10px 20px 30px;
+      width: 100%;
+    }
+
+    .table{
+    display: block;
+    }
+
+    .tournament-table{
+      margin-left: 10px;
+    }
+
+    .tournament-table tbody td{
+      padding: 4px;
+    }
+
+    .tournament-table thead th{
+      padding: 8px;
+      font-weight: 400;
+    }
+
+    .game-tour-wrapper .white-btn{
+      font-size: 15px;
+      font-weight: 400;
+      padding: 10px 15px;
+    }
+
+    .game-tour-wrapper .blue-btn{
+      font-size: 15px;
+      font-weight: 400;
+      padding: 10px 15px;
+      width: 80px;
+    }
+
+    .responsive-table{
+      padding: 20px 0px 20px 5px;
+      margin: 5px 20px 80px 20px;
+    }
   }
+
+
+  @media screen and (max-width: 390px){
+    .game-tour-wrapper .table {
+      margin: 20px 5px 20px 5px;
+      width: 100%;
+    }
+
+    .tournament-table tbody td{
+      padding: 3px;
+    }
+  }
+
+
 
 /*Responsive Navbar and Dropdown*/
 
@@ -153,7 +211,7 @@
       right: 3rem;
       top: 100px;
       width: 300px;
-      background: #d5d6fd;
+      background: #e1e1fd;
       color: #21194a;
       backdrop-filter: blur(15px);
       border-radius: 10px;

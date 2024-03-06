@@ -38,6 +38,18 @@
 			<div class="input-box input-box-reg">
 				<input type="email" placeholder="Email" id="email" value="{{ user.email }}" required />
 			</div>
+			<label class="birthdate-label">Date of birth:</label>
+			<div class="input-box input-box-reg date-input-box">
+				<input type="date" placeholder="Date of Birth" id="birthdate" required />
+			</div>
+			<label class="sex-label">Sex:</label>
+			<div class="select-wrapper">
+				<select id="sexe" name="sexe" class="input-box input-box-reg input-select">
+					<option value="F" title="Female">Female</option>
+					<option value="M" title="Male">Male</option>
+					<option value="N" title="Other">Other</option>
+				</select>
+			</div>
 			<button type="submit" class="btn">Save changes</button>
 		</form>
 	</div>
