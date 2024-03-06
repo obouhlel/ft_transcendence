@@ -13,8 +13,8 @@ class Notification(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	is_read = models.BooleanField(default=False)
 	user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
-	# def __str__(self):
-	# 	return self.id
+	def __str__(self):
+		return str(self.id)
 	def send_notification(self):
 		self.is_read = False
 		self.save()

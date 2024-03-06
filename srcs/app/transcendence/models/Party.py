@@ -24,7 +24,7 @@ class Party(models.Model):
 	round_nb = models.IntegerField(default=0)
 	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __str__(self):
-		return self.id
+		return str(self.id)
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
 	def update_end(self):

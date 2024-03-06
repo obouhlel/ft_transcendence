@@ -22,8 +22,8 @@ class Tournament(models.Model):
 	user_tournament = models.ManyToManyField('CustomUser', related_name='user')
 	invited_user = models.ManyToManyField('CustomUser', related_name='invited')
 	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
-	# def __str__(self):
-	# 	return self.id
+	def __str__(self):
+		return str(self.id)
 	def getAllParties(self):
 		list_party = self.parties.all()
 		party = [party.Party_data() for party in list_party]

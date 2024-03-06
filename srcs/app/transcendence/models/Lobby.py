@@ -9,8 +9,8 @@ class Lobby(models.Model):
 	game = models.ForeignKey('Game', on_delete=models.CASCADE)
 	user = models.ManyToManyField('CustomUser', through='UserInLobby', through_fields=('id_lobby', 'id_user'))
 	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
-	# def __str__(self):
-	# 	return self.id
+	def __str__(self):
+		return str(self.id)
 	def getAllUser(self):
 		list_user = self.user.all()
 		user = [user.id for user in list_user]
@@ -29,8 +29,8 @@ class UserInLobby(models.Model):
 	id_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	id_lobby = models.ForeignKey('Lobby', on_delete=models.CASCADE)
 	entry_at = models.DateTimeField(auto_now_add=True)
-	# def __str__(self):
-	# 	return self.id
+	def __str__(self):
+		return str(self.id)
 	def UserInLobby_data(self):
 		return {
 			'id': self.id,
