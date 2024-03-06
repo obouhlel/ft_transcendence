@@ -11,12 +11,13 @@ import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges } from './dashboard.js';
+import { test } from './test.js';
 
 export const pageHandlers = {
 	'400': [message],
     'login': [handleLoginFormSubmit],
     'register': [handleRegisterFormSubmit, changeAvatar],
-	'dashboard': [fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
+	'dashboard': [test, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
