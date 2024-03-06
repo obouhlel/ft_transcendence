@@ -79,9 +79,9 @@ export function createArena(scene) {
 export function getPawn(game) {
     let pawn = null;
     if (game.pawnStr == 'O') {
-        pawn = new PawnCircle(game, -30, -20);
+        pawn = new PawnCircle(game, 0, -50);
     } else if (game.pawnStr == 'X') {
-        pawn = new PawnCross(game, -30, -20);
+        pawn = new PawnCross(game, 0, -50);
     }
     return pawn;
 }
