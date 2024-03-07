@@ -89,8 +89,9 @@
     margin-top: 12px;
   }
   .friend-list .friend-list-members .friend-card .member-details img {
-    width: 40.86px;
-    height: 40.86px;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
     object-fit: cover;
   }
   .friend-list .friend-list-members .friend-card .member-details {
