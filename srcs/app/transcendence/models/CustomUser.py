@@ -96,7 +96,7 @@ class FriendRequest(models.Model):
 				'username': self.sender.username,
 				'avatar': self.sender.avatar.url if self.sender.avatar else None,
 			},
-			'receiver': self.receiver,
+			'receiver': self.receiver.id,
 			'message': f"You have a friend request from {self.sender.username}",
 			'created_at': self.created_at,
 		}
