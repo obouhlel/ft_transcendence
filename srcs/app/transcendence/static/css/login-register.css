@@ -290,3 +290,20 @@
     padding: 10px;
     margin-top: 10px;
   }
+
+
+/***Responsive***/
+
+@media (max-width: 490px) {
+  .wrapper .input-box-group {
+    flex-direction: column;
+  }
+  .wrapper .input-box-group .input-box {
+    width: 100%;
+    margin-bottom: 0px;
+  }
+
+  .wrapper .input-box-group .input-box:last-child {
+    margin-bottom: 19px;
+  }
+}

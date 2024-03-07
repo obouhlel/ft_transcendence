@@ -166,3 +166,67 @@
     cursor: pointer;
     transition: all ease 0.5s;
   }
+
+  /***Responsive***/
+
+@media screen and (max-width: 1280px) {
+  .main-friend-list {
+    max-width: 30%;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 1190px) {
+  .active-member-btn {
+    left: 0px;
+  }
+}
+
+@media screen and (max-width: 1070px) {
+  .active-member-btn {
+    left: 0px;
+  }
+}
+
+@media screen and (max-width: 992px) {
+  .main-friend-list {
+    max-width: 100%;
+    width: 100%;
+    display: flex;
+    gap: 18px;
+    justify-content: center;
+  }
+
+  .active-member-btn {
+    left: 0px;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .main-friend-list {
+    flex-wrap: wrap;
+  }
+  .friend-list,
+  .friend-list .friend-list-heading,
+  .friend-list .friend-list-members,
+  .User-section .tab-content .Matches .table {
+    width: 100% !important;
+  }
+  .friend-list .friend-list-members .add-friend {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px auto;
+  }
+}
+
+.friend-list .friend-list-members .end-cards {
+  margin-top: 3px;
+}
+
+@media screen and (max-width: 360px) {
+  .active-member-btn {
+    position: relative;
+    left: 0px;
+  }
+}
