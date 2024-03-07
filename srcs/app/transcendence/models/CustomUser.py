@@ -8,15 +8,12 @@ from django.utils import timezone
 # email, password, groups, user_permissions, is_staff, is_active,
 # is_superuser, last_login, date_joined
 class CustomUser(AbstractUser):
-	is_admin = models.BooleanField(default=False)
-	sexe = models.CharField(max_length=64, default='Unknow')
-	birthdate = models.DateField(default=timezone.now)
-	token = models.CharField(max_length=128)
 	avatar = models.ImageField(upload_to='avatars/')
-	created_at = models.DateTimeField(default=timezone.now)
-	last_connexion = models.DateTimeField(default=timezone.now)
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
+	birthdate = models.DateField(default=timezone.now)
+	sexe = models.CharField(max_length=1, default='U')
+	token = models.CharField(max_length=128)
 
 	def __str__(self):
 		return f"{self.username}"
@@ -39,27 +36,33 @@ class CustomUser(AbstractUser):
 			'email': self.email,
 			'first_name': self.first_name,
 			'last_name': self.last_name,
+			'username': self.username,
+			'avatar': self.avatar.url if self.avatar else None,
 			'is_active': self.is_active,
 			'is_superuser': self.is_superuser,
 			'last_login': self.last_login,
 			'date_joined': self.date_joined,
-			'username': self.username,
-			'is_admin': self.is_admin,
 			'sexe': self.sexe,
 			'birthdate': self.birthdate,
-			'avatar': self.avatar.url if self.avatar else None,
-			'created_at': self.created_at,
-			'last_connexion': self.last_connexion,
 			'status': self.status,
+			'list_friends': self.getFriends(),
 			'friends_received': self.getFriendRequestReceived(),
 			'request_sent': self.getFriendRequestSent(),
-			# 'list_friends': self.getFriends(),
 			'stat': self.getStat()
 		}
 
 	def getFriends(self):
 		list_friends = self.list_friends.all()
-		return [friend.user_data() for friend in list_friends]
+		friends_data = []
+		for friend in list_friends:
+			friend_data = {
+				'id': friend.id,
+				'username': friend.username,
+				'status': friend.status,
+				'avatar': friend.avatar.url if friend.avatar else None,
+			}
+			friends_data.append(friend_data)
+		return friends_data
 
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
@@ -73,10 +76,10 @@ class CustomUser(AbstractUser):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
 
-	def get_notifications(self):
-		list_notification = self.notification_set.all()
-		notification = [notification.notification_data() for notification in list_notification]
-		return notification
+	# def get_notifications(self):
+	# 	list_notification = self.notification_set.all()
+	# 	notification = [notification.notification_data() for notification in list_notification]
+	# 	return notification
 
 
 class FriendRequest(models.Model):
