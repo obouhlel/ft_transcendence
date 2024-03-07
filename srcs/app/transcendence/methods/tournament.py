@@ -1,9 +1,11 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from transcendence.models  import Game, Tournament, Lobby, PartyInTournament, CustomUser, UserInLobby
+from transcendence.models  import Game, Tournament, Lobby, CustomUser, Party, PartyInTournament
 import json
 from django.utils import timezone
+import math
+import random
 
 
 #CRUD : Create, Read, Update, Delete
@@ -74,88 +76,105 @@ def getUsersInTournament(request, id_tournament):
 #when user clic on create tournament, he must provide the game id
 #the server will create a tournament with the game id and the user id,
 #defaut name is  "game_name tournament by user_name"
-
+import logging
 def is_power_of_two(n):
 	if n < 2:
 		return False
 	return (n & (n - 1)) == 0
+
 
 @login_required
 @require_http_methods(['POST'])
 def createTournament(request):
 	data = json.loads(request.body)
 	nb_player = data['nb_players'] if 'nb_players' in data else 4
+	user = request.user
 	if not is_power_of_two(nb_player):
 		return JsonResponse({'status': 'error', 'message': 'The number of players must be a power of 2(2,4,8,16...).'}, status=400)
 	if 'id_game' not in data:
 		return JsonResponse({'status': 'error', 'message': 'You must provide a game id.'}, status=400)
+	if user.tournaments.count() > 0:
+		return JsonResponse({'status': 'error', 'message': 'You are already in another tournament.'}, status=400)
 	try:
 		game = Game.objects.get(id=data['id_game'])
-		tournament = Tournament.objects.create(game=game, user=request.user, nb_player_to_start=nb_player)
-		tournament.nb_player_to_start = nb_player
+		tournament = Tournament.objects.create(game=game, nb_player_to_start=nb_player, creator = user)
+		tournament.nb_round = math.log2(nb_player)
 		tournament.status = 'waiting'
 		tournament.start_date = timezone.now()
-		tournament.creator = request.user
-		tournament.name = game.name + ' tournament by ' + request.user.username
-		lobby = Lobby.objects.create(type='tournament', id_game=game.id)
-		lobby.user.add(request.user)
-		lobby.save()
-		tournament.lobby_tournament = lobby
+		tournament.name = game.name + ' tournament by ' + user.username
+		tournament.users.add(user)
+		tournament.save()
+		# lobby = Lobby.objects.create((all_party_in_tournament := self.tournament.partyintournament.all()):
+				# if self.index == len(all_party_in_tournament):
+				# 	self.tournament.start_new_round()
+				# else:
+				# 	self.tournament.start_new_party()type='tournament', game=game)
+		# lobby.user.add(user)
+		# lobby.tournament = tournament
+		# lobby.save()
 		tournament.save()
 		return JsonResponse({'status': 'ok', 'id_tournament': tournament.id})
 	except Game.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
-	
-#---------------------------------PUT TOURNAMENT---------------------------------#
-
-def startTournament(tournament):
-	#create parties in the tournament
-	lobby = tournament.lobby_tournament
-	users = lobby.user.all()
-	nb_player = len(tournament.user_tournament.all())
-	for i in range(0, nb_player, 2):
-		party = PartyInTournament.objects.create(tournament=tournament, lobby=lobby)
-		party.save()
-		party.user.add(users[i])
-		party.user.add(users[i+1])
-		party.save()
-		tournament.party_tournament.add(party)
-		#send notification to the users to join the party: send the party id
-	#change the status of the tournament to "playing"
-	tournament.status = 'playing'
-	tournament.save()
-
 
 
 
 #another user can join the tournament
 @login_required
 @require_http_methods(['PUT'])
-def joinTournament(request, id_tournament):
+def joinTournament(request):
+	id_tournament = json.loads(request.body)['id_tournament']
 	try:
-		#if user is in another tournament, he can't join
-		if (request.user.tournament_user.all()):
-			return JsonResponse({'status': 'error', 'message': 'You are already in another tournament.'}, status=400)
-		if (request.user in tournament.user_tournament.all()):
-			return JsonResponse({'status': 'error', 'message': 'You are already in the tournament.'}, status=400)
-		#check if the tournament is "playing" or "finished"
-		#tInvited only or not???????
 		tournament = Tournament.objects.get(id=id_tournament)
+		user = request.user
+		if user.tournaments.count() > 1:
+			return JsonResponse({'status': 'error', 'message': 'ERROR: CAN NOT BE IN MULTIPLE TOURNAMENT AT THE SAME TIME'}, status=400)
+		if (user.tournaments.filter(id=id_tournament)):
+			return JsonResponse({'status': 'error', 'message': 'You are already in this tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
 			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
-		tournament.user_tournament.add(request.user)
+		tournament.users.add(user)
 		tournament.save()
-		if (request.user in tournament.invited_user.all()):
-			tournament.invited_user.remove(request.user)
+		if (tournament.invited_users.filter(id=user.id)):
+			tournament.invited_users.remove(user)
 			tournament.save()
-		#check if there are enough players to start the tournament
-		if (len(tournament.user_tournament.all()) >= tournament.nb_player_to_start):
-			startTournament(tournament)
+		if (tournament.users.count() >= tournament.nb_player_to_start):
+			# envoie un signal poiur surligner le bouton start
 			pass
 		return JsonResponse({'status': 'ok', 'message': 'You joined the tournament.'})
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
 	
+#---------------------------------PUT TOURNAMENT---------------------------------#
+
+@login_required
+@require_http_methods(['PUT'])
+def startTournament(request):
+	#create parties in the tournament
+	data = json.loads(request.body)
+	id_tournament = data['id_tournament']
+	try:
+		tournament = Tournament.objects.get(id=id_tournament)
+		users = tournament.users.all()
+		nb_player = users.count()
+		if not is_power_of_two(nb_player):
+			return JsonResponse({'status': 'error', 'message': 'The number of players must be a power of 2(2,4,8,16...).'}, status=400)
+		if (tournament.status != 'waiting'):
+			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
+		# random.shuffle(users)
+		tournament.make_party_of_round(1, users) #create the first round, round_nb = 1
+			# send notification to the users to join the party: send the party id
+		#change the status of the tournament to "playing"
+		tournament.status = 'playing'
+		tournament.save()
+		#send notification to the users to join the tournament: send the tournament id
+		return JsonResponse({'status': 'ok', 'message': 'Tournament started.'})
+	except Tournament.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
+
+
+
+
 #invite a user to join the tournament
 @login_required
 @require_http_methods(['PUT'])

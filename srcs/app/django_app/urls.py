@@ -13,6 +13,7 @@ urlpatterns = [
 
 	# API VIEWS (SHOW PAGES)
 	path('pages/<str:page>/', views.page),
+    path('update_header/', views.update_header),
 
 	# METHODS POST ET GET (API)
 	path('api/', include("transcendence.api")),

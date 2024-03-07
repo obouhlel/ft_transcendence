@@ -1,87 +1,27 @@
 {% load static %}
-<header>
-	{% if user.is_authenticated %}
-	<nav class="nav">
-		<div class="custom-container">
-			<div class="navbar">
-				<div class="logo">
-					<h1>Ft-transcendence</h1>
-					<div class="nav-btns">
-						<a href="#profile" class="btn-user">
-							<img src="{% static 'img/Group 3.svg' %}" alt="" />
-						</a>
-						<a href="#games" class="btn-gamepad">
-							<img src="{% static 'img/game-high.png' %}" alt="" />
-						</a>
-					</div>
-				</div>
-				<div class="end-nav-btns">
-					<div class="bell-btn">
-						<a class="dropdown-toggle" data-dropdown="bellDropdown" >
-							<img src="{% static 'img/Group 4.svg' %}" alt="" />
-						</a>
-						<div class="dropdown-content" id="bellDropdown">
-							<div class="content">
-								<div class="user-btn">
-									<img src="{% static 'img/Group 3.svg' %}" alt="" />
-								</div>
-								<p>Notification</p>
-								<i class="fa-solid fa-check check"></i>
-								<i class="fa-solid fa-xmark cross"></i>
-							</div>
-							<div class="content">
-								<div class="user-btn">
-									<img src="{% static 'img/Group 3.svg' %}" alt="" />
-								</div>
-								<p>Notification</p>
-								<i class="fa-solid fa-check check"></i>
-								<i class="fa-solid fa-xmark cross"></i>
-							</div>
-						</div>
-					</div>
-	
-	
-					<div class="user-btn">
-						<a class="dropdown-toggle" data-dropdown="userDropdown">
-							<img src="{% static 'img/Group 3.svg' %}" alt="" />
-						</a>
-						<div class="dropdown-content-one" id="userDropdown">
-							<i class="fa-solid fa-xmark usercross" id="cross"></i>
-							<div class="content">
-								<div class="user-avatar-dropdown">
-									{% if user.avatar %}
-										<img src="{{ user.avatar.url }}" alt="" />
-									{% else %}
-										<img src="{% static 'img/user-image.png' %}" alt="" />
-									{% endif %}
-								</div>
-								<a href="#edit_profile" class="edit-profile-btn">Edit your profile</a>
-								<a class="logout-btn" id="logout-button">Logout</a>
-							</div>
-						</div>
-					</div>
-					<i class="fa-solid fa-bars bar" id="bar"></i>
-				</div>
+{% if user.is_authenticated %}
+<nav class="nav">
+	<div class="custom-container">
+		<div class="navbar">
+			<div class="logo">
+				<h1>Ft-transcendence</h1>
+			</div>
+			{% include 'header/nav.html' %}
+			<div class="end-nav-btns">
+				{% include 'header/notify.html' %}
+				{% include 'header/user.html' %}
+				<i class="fa-solid fa-bars bar" id="bar"></i>
 			</div>
 		</div>
-		<div class="list-bar" id="list">
-			<div class="nav-btns">
-				<button class="btn-user">
-					<img src="{% static 'img/Group 3.svg' %}" alt="" />
-				</button>
-				<button class="btn-gamepad">
-					<img src="{% static 'img/game-high.png' %}" alt="" />
-				</button>
-			</div>
+	</div>
+	{% include 'header/nav-mobile.html' %}
+</nav>
+{% else %}
+<nav class="nav">
+	<header class="nav-header">
+		<div class="nav-title">
+			Ft-transcendence
 		</div>
-	</nav>
-	{% else %}
-	<nav class="nav">
-		<header class="nav-header">
-			<div class="nav-title">
-				Ft-transcendence
-			</div>
-		</header>
-	</nav>
-	{% endif %}
-</header>
+	</header>
+</nav>
+{% endif %}

@@ -101,9 +101,6 @@
     justify-content: center;
     align-items: center;
   }
-  .list-bar {
-    display: none;
-  }
   .differ .btn-user , .differ .btn-gamepad{
     position: relative;
     top: 0;

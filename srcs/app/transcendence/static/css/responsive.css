@@ -16,7 +16,7 @@
 
 /***Games***/
 
-@media(max-width: 767px) {
+@media(max-width: 780px) {
     html {
       max-width: 100%;
       overflow-x: hidden;
@@ -24,6 +24,7 @@
     .main-content {
       max-width: 90%;
       margin: 20px auto;
+      margin-bottom: 80px;
     }
     .index-container {
       max-width: 90%;
@@ -59,7 +60,6 @@
       min-width: 100%;
     }
     .table{
-      display: block;
       overflow-x: auto;
       table-layout: fixed;
     }
@@ -73,9 +73,14 @@
     .button-container a {
       left: 0px;
     }
+
+    .game-tour-wrapper .blue-btn{
+      width: 100px;
+    }
   }
   
-  @media (min-width: 767px) and (max-width: 991px) {
+  
+  @media (min-width: 779px) and (max-width: 991px) {
     html {
       max-width: 100%;
       overflow-x: hidden;
@@ -89,6 +94,12 @@
     }
     .footer-container p {
       font-size: 18px;
+    }
+    .game-image {
+      height: 400px;
+    }
+    .games-grid {
+      grid-template-columns: 100%;
     }
   }
   @media (min-width: 991px) and (max-width: 1199px) {
@@ -106,36 +117,140 @@
     .footer-container p {
       font-size: 18px;
     }
+    .game-image {
+      height: 450px;
+    }
   }
+
+  @media screen and (max-width: 760px)
+  {
+    .game-image {
+      height: 350px;
+    }  
+  }
+
+  @media screen and (max-width: 430px)
+  {
+    .game-image {
+      height: 250px;
+    }
+
+    .game-tour-wrapper .table {
+      margin: 20px 10px 20px 30px;
+      width: 100%;
+    }
+
+    .table{
+    display: block;
+    }
+
+    .tournament-table{
+      margin-left: 10px;
+    }
+
+    .tournament-table tbody td{
+      padding: 4px;
+    }
+
+    .tournament-table thead th{
+      padding: 8px;
+      font-weight: 400;
+    }
+
+    .game-tour-wrapper .white-btn{
+      font-size: 15px;
+      font-weight: 400;
+      padding: 10px 15px;
+    }
+
+    .game-tour-wrapper .blue-btn{
+      font-size: 15px;
+      font-weight: 400;
+      padding: 10px 15px;
+      width: 80px;
+    }
+
+    .responsive-table{
+      padding: 20px 0px 20px 5px;
+      margin: 5px 20px 80px 20px;
+    }
+  }
+
+
+  @media screen and (max-width: 390px){
+    .game-tour-wrapper .table {
+      margin: 20px 5px 20px 5px;
+      width: 100%;
+    }
+
+    .tournament-table tbody td{
+      padding: 3px;
+    }
+  }
+
+
 
 /*Responsive Navbar and Dropdown*/
 
 @media screen and (max-width: 992px) {
     .navbar .bar {
       display: block;
+      cursor: pointer;
     }
     .dropdown-content-one .content a {
       width: 100% !important;
       height: 50px !important ;
     }
+
+    .navbar .nav-btns {
+      display: none;
+    }
+    
     .list-bar {
-      background-color: #382c6e;
       position: absolute;
+      right: 3rem;
       top: 100px;
-      width: 100%;
-      height: 125px;
+      width: 300px;
+      background: #e1e1fd;
+      color: #21194a;
+      backdrop-filter: blur(15px);
+      border-radius: 10px;
+      height: 210px;
       z-index: 11;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 16px;
       opacity: 0;
       transition: all ease-in 0.3s;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-weight: 500;
+      box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
     }
     .show-list {
       opacity: 111;
       transition: all ease-in 0.3s;
     }
+
+    .mobile-nav-btns a{
+      text-decoration: inherit;
+      color: inherit;
+      font-size: 20px;
+      padding: 10px;
+    }
+
+    .mobile-nav-btns a:hover{
+      color: #4a3b96;
+    }
+
+    .mobile-nav-btns {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+
+    }
+
     .navbar .logo {
       display: block;
     }
@@ -144,25 +259,7 @@
       right: 20px;
       top: -3px;
     }
-    .navbar .nav-btns {
-      width: 142px;
-      height: 57px;
-      display: none;
-    }
-    .list-bar .nav-btns .btn-user {
-      width: 24px;
-      height: 24px;
-      position: relative;
-      top: 0;
-    }
-    .list-bar .nav-btns .btn-gamepad {
-      width: 48px;
-      height: 48px;
-      position: relative;
-      top: 2px;
-      left: 0;
-    }
-  
+    
     .navbar .end-nav-btns a {
       width: 57px;
       height: 57px;
@@ -185,10 +282,7 @@
       left: -270px;
       min-width: 320px;
     }
-    .list-bar .nav-btns{
-      position: relative;
-      left: 0;
-    }
+
   }
   @media screen and (max-width: 768px) {
     .navbar .logo {
@@ -197,18 +291,7 @@
     .navbar .logo h1 {
       font-size: 28px;
     }
-    .navbar .nav-btns {
-      width: 100px;
-      height: 47px;
-    }
-    .navbar .nav-btns .btn-user {
-      width: 28px;
-      height: 328px;
-    }
-    .navbar .nav-btns .btn-gamepad {
-      width: 18px;
-      height: 18px;
-    }
+   
     .navbar .end-nav-btns a {
       width: 47px;
       height: 47px;
@@ -521,7 +604,7 @@
     }
   }
   
-  .friend-list .friend-list-members .end-btns {
+  .friend-list .friend-list-members .end-cards {
     margin-top: 3px;
   }
   
@@ -532,3 +615,20 @@
       left: 0px;
     }
   }
+
+
+  @media screen and (max-width: 430px)
+  {
+  
+  .leaderboard-table thead th{
+    font-size: 15px;  
+  }
+
+  table.leaderboard-table thead th:last-child {
+    margin-left: 3px;
+  }
+
+  table.leaderboard-table thead th:nth-child(3) {
+    padding-right: 20px;
+}
+}

@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login as django_login
 from django.utils import timezone
 from transcendence.models  import CustomUser
 import pytz
@@ -60,8 +61,9 @@ def edit_profile(request):
 			return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
 		if len(password) < 8:
 			return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
-		user.set_password(password)
+		user.password = make_password(password)  # Fix: Use user.password instead of reassigning user
 
-	user.status = 'offline'
 	user.save()
+	authenticate(request, username=user.username, password=password)
+	django_login(request, user)
 	return JsonResponse({'status': 'ok', 'message': 'Your profile has been successfully updated!'})

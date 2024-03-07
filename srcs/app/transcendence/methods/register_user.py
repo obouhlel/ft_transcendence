@@ -78,4 +78,5 @@ def register_user(request):
 		user.avatar = avatar
 
 	user.save()
+	
 	return JsonResponse({'status': 'ok', 'message': 'Your account has been successfully created.'})

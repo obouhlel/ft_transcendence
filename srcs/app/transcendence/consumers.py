@@ -1,11 +1,14 @@
 import json
-from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 
 import asyncio
 import uuid
 from . import routing
 from . import consumersForPong
 from . import consumersForTicTacToe
+
+import logging
+logger = logging.getLogger(__name__)
 
 # -----------------------------Classes--------------------------------
 class Player():
@@ -72,7 +75,7 @@ def getMatchmackingJoinJson(username, game):
 	return json.dumps({ 'matchmaking': 'waitlist joined',
 						'username': username,
 						'game': game,
-      					'players': players })
+	  					'players': players })
  
 def getMatchmackingLeaveJson(username, game):
 	players = playersConnected.getPlayersUsername()

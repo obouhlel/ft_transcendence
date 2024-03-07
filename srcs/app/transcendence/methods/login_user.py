@@ -14,7 +14,8 @@ def login_user(request):
 	user = authenticate(request, username=username, password=password)
 	if user is not None:
 		django_login(request, user)
-		user.status = 'online'
+		user.status = 'Online'
+		user.save()
 		return JsonResponse(
 			{'status': 'ok', 'message': 'You are now logged in as ' + username}
 		)

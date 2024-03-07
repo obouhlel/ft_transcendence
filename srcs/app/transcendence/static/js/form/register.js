@@ -1,4 +1,4 @@
-import { doRequest, SERVER_URL } from '../utils/fetch.js';
+import { doRequest } from '../utils/fetch.js';
 import { callback } from '../utils/callback.js';
 import { dataForm } from '../utils/data.js';
 
@@ -34,6 +34,6 @@ export function handleRegisterFormSubmit() {
 		];
 
 		const data = dataForm(fields);
-        doRequest.post(`${SERVER_URL}/api/register/`, data, callback.registered);
+        doRequest.post(`/api/register/`, data, callback.registered);
     });
 };

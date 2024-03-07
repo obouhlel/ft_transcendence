@@ -1,10 +1,11 @@
 from django.urls import re_path
 
 from . import consumers
-from . import consumersForPong
+from . import consumersNotify
 
 wss_urlpatterns = [
     re_path(r"^ws/matchmaking/$", consumers.MatchmakingConsumer.as_asgi()),
+    re_path(r"^ws/notify/", consumersNotify.NotificationConsumer.as_asgi()),
 ]
 
 def add_urlpattern(pattern, consumer):

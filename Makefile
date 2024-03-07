@@ -1,6 +1,6 @@
 DOCKER=web
 
-all: up logs
+all: clean up logs
 
 reset: clean down build up logs
 
@@ -31,9 +31,9 @@ stop:
 clean:
 	rm -rf srcs/app/transcendence/migrations/0*.py
 
-fclean: clean
+fclean: clean stop
 	docker system prune -a -f
 
-# re: clean all logs
+re: fclean all
 
 .PHONY: all build up down logs re build

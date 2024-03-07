@@ -23,10 +23,15 @@
 		</script>
 	</head>
 	<body>
+		<header id="header"></header>
 		<div id="page"></div>
 		{% include 'footer.html' %}
+		<script>
+			var defaultAvatarUrl = "{% static 'img/user-image-s.png' %}";
+		</script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 		<script type="module" src="{% static 'js/load.js' %}"></script>
 		<script src="https://kit.fontawesome.com/e62912d1a1.js" crossorigin="anonymous"></script>
 	</body>
-	
+
 </html>

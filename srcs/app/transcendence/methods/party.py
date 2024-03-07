@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from transcendence.models  import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game 
+from transcendence.models  import Party, Game, CustomUser, Stat_Game, Stat_User_by_Game
 import json
 from django.utils import timezone
 
@@ -58,7 +58,17 @@ def getUserInParty(request, id_party):
 	except Party.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
 
-
+@login_required
+@require_http_methods(['GET'])
+def getUserHistoryByGame(request, id_game):
+    try:
+        game = Game.objects.get(id=id_game)
+        user = request.user
+        parties = Party.objects.filter(game=game, player1=user) | Party.objects.filter(game=game, player2=user)
+        data = [party.party_data() for party in parties]
+        return JsonResponse({'status': 'ok', 'parties': data})
+    except Game.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
 
 
 # -------------------------------POST PARTY-----------------------------#
@@ -97,31 +107,17 @@ def addUserToParty(request, id_party):
 		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
-	
+
 
 def isUserInParty(party, user):
 	if party.player1 == user or party.player2 == user:
 		return True
 	else:
 		return False
-		
-
-def EndParty(party):
+def EndPartyinTournament(tournament, party):
+	#End party first
 	party.update_end()
-	try:
-		stat_game = Stat_Game.objects.get(id_game=party.id_game)
-		stat_game.update(party.time_played, party.id)
-		stat_user = Stat_User_by_Game.objects.get(id_user=party.player1, id_game=party.id_game)
-		stat_user.update(party.time_played, party.id)
-		stat_user = Stat_User_by_Game.objects.get(id_user=party.player2, id_game=party.id_game)
-		stat_user.update(party.time_played, party.id)
-		#if this party is for tournament, we need to update the tournament
-		# if (party.type = "tournament"):
-		# 	tournament = party.tournament_party
-		# 	checktoNextRound(tournament)
-	except Stat_Game.DoesNotExist:
-		stat_game = Stat_Game.objects.create(id_game=party.id_game, nb_played=1, time_played=party.time_played, nb_party=1)
-		stat_game.save()
+
 
 @login_required
 @require_http_methods(['POST'])
@@ -139,7 +135,7 @@ def addPointToParty(request, id_party):
 				party.score2 += 1
 			party.save()
 			if party.score1 == party.id_game.point_to_win or party.score2 == party.id_game.point_to_win:
-				EndParty(party)
+				party.update_end()
 				return JsonResponse({'status': 'ok', 'message': 'Party ended successfully.'})
 			return JsonResponse({'status': 'ok', 'message': 'Point added successfully.'})
 		else:
