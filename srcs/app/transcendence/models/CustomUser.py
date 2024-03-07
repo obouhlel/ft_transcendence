@@ -4,20 +4,9 @@ from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
 
-
-# AbstractUser has the following fields:
-# - username
-# - first_name
-# - last_name
-# - email
-# - password
-# - groups
-# - user_permissions
-# - is_staff
-# - is_active
-# - is_superuser
-# - last_login
-# - date_joined
+# AbstractUser has the following fields: username, first_name, last_name,
+# email, password, groups, user_permissions, is_staff, is_active,
+# is_superuser, last_login, date_joined
 class CustomUser(AbstractUser):
 	is_admin = models.BooleanField(default=False)
 	sexe = models.CharField(max_length=64, default='Unknow')
@@ -28,17 +17,22 @@ class CustomUser(AbstractUser):
 	last_connexion = models.DateTimeField(default=timezone.now)
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
+
 	def __str__(self):
 		return f"{self.username}"
+
 	def update_status(self, status: str):
 		self.status = status
 		self.save()
+
 	def update_last_connexion(self):
 		self.last_connexion = timezone.now()
 		self.save()
+
 	def update_avatar(self, avatar: str):
 		self.avatar = avatar
 		self.save()
+
 	def user_data(self):
 		return {
 			'id': self.id,
@@ -62,18 +56,23 @@ class CustomUser(AbstractUser):
 			# 'list_friends': self.getFriends(),
 			'stat': self.getStat()
 		}
+
 	def getFriends(self):
 		list_friends = self.list_friends.all()
 		return [friend.user_data() for friend in list_friends]
+
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
 		return [re.friend_request_data() for re in list_friend_request]
+
 	def getFriendRequestSent(self):
 		list_friend_request = self.sender.all()
 		return [re.friend_request_data() for re in list_friend_request]
+
 	def getStat(self):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
+
 	def get_notifications(self):
 		list_notification = self.notification_set.all()
 		notification = [notification.notification_data() for notification in list_notification]
