@@ -3,4 +3,3 @@
 *.pyc
 srcs/app/transcendence/migrations/0*.py
 *pycache*
-.eslintrc.json
