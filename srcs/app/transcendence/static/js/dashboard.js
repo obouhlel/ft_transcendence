@@ -223,11 +223,31 @@ function displayLeaderboard(leaderboard) {
   });
 }
 
-export async function updateLeaderboardDisplay() {
+async function fetchCurrentUserName() {
+  const response = await fetch('/api/get_user_name/');
+  const data = await response.json();
+  return data.username;
+}
+
+async function updateDashboardStats(leaderboard, usersData) {
+  const currentUser = await fetchCurrentUserName();
+  const currentUserRank = leaderboard.findIndex(player => player.username === currentUser) + 1;
+  const bestPlayer = leaderboard[0];
+  const totalPlayers = usersData.users.length;
+
+  // Update the dashboard cards
+  document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
+  document.querySelector('.best-player-name').innerText = bestPlayer.username;
+  document.querySelector('.best-player img').src = bestPlayer.avatar || defaultAvatarUrl;
+  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
+}
+
+export async function updateDashboardDisplay() {
   const { leaderboardData, usersData } = await fetchLeaderboardData();
   if (leaderboardData.status === "ok" && usersData.status === "ok") {
     const leaderboard = processAndAssociateData(leaderboardData, usersData);
     displayLeaderboard(leaderboard);
+    updateDashboardStats(leaderboard, usersData);
   } else {
     console.error("Failed to fetch data");
   }
