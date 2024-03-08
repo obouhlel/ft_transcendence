@@ -7,7 +7,7 @@
         {% else %}
             {% for game in games %}
                 <div>
-                    <a href="#game-{{ game.id }}">
+                    <a href="#game?id={{ game.id }}">
                         <img src="{% static game.image %}" class="game-image" alt="{{ game.name }}">
                         <h2>{{ game.name }}</h2>
                     </a>
