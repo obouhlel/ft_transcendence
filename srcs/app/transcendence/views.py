@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
+from django.conf import settings
 
 @ensure_csrf_cookie
 def index(request):
@@ -43,3 +44,6 @@ def page(request, page):
 	else:
 		html_content = render_to_string('error/404.html', request=request)
 		return JsonResponse({'page': html_content})
+	
+def config(request):
+	return render(request, 'config.js', content_type='application/javascript', context={'CLIENT_ID': settings.API_42_UID})
