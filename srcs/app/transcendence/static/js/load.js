@@ -22,7 +22,9 @@ window.addEventListener('load', function() {
 
 function hashChangeHandler() {
     let hash = window.location.hash.substring(1);
-    let [page = 'home', params] = hash.split('?');
+    let [page, params] = hash.split('?');
+
+	page = page || 'home';
 
 	return [page, params];
 }
@@ -43,7 +45,7 @@ async function executeHandlers(page) {
 }
 
 
-async function showPage(page) {
+async function showPage(page, params) {
 	const data_header = await doRequest.get(`/update_header/`);
 	const header_content = document.getElementById('header');
 	header_content.innerHTML = data_header.html;
