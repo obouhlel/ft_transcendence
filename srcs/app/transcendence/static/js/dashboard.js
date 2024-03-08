@@ -203,7 +203,6 @@ function processAndAssociateData(leaderboardData, usersData) {
 }
 
 
-
 function displayLeaderboard(leaderboard) {
   const tbody = document.getElementById('leaderboardBody');
   tbody.innerHTML = '';
@@ -231,16 +230,25 @@ async function fetchCurrentUserName() {
 
 async function updateDashboardStats(leaderboard, usersData) {
   const currentUser = await fetchCurrentUserName();
-  const currentUserRank = leaderboard.findIndex(player => player.username === currentUser) + 1;
-  const bestPlayer = leaderboard[0];
+  const currentUserIndex = leaderboard.findIndex(player => player.username === currentUser);
+  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N-A';
+  
+  // Safely access the best player if the leaderboard has entries
+  const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
   const totalPlayers = usersData.users.length;
 
-  // Update the dashboard cards
+  // Safely update the dashboard, checking if bestPlayer exists
   document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
-  document.querySelector('.best-player-name').innerText = bestPlayer.username;
-  document.querySelector('.best-player img').src = bestPlayer.avatar || defaultAvatarUrl;
+  if(bestPlayer) {
+    document.querySelector('.best-player-name').innerText = bestPlayer.username;
+    document.querySelector('.best-player img').src = bestPlayer.avatar || defaultAvatarUrl;
+  } else {
+    document.querySelector('.best-player-name').innerText = 'N-A';
+    document.querySelector('.best-player img').src = defaultAvatarUrl; // Fallback to default avatar
+  }
   document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
 }
+
 
 export async function updateDashboardDisplay() {
   const { leaderboardData, usersData } = await fetchLeaderboardData();
