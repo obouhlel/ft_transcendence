@@ -1,0 +1,30 @@
+<main class="game-tour-wrapper">
+	<h1 class="game-1-header">{{game.name}}</h1>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Ranked</th>
+				<th>Players</th>
+				<th>Points</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			{% for tournament in tournaments %}
+				<tr>
+					<td>{{ tournament.name }}</td>
+					<td>{{ tournament.players }}/4</td>
+					<td>{{ tournament.points }}</td>
+					<td><button class="blue-btn">Join</button></td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="button-container">
+		<a href="#create-tournament" type="button" class="white-btn">
+            Create Tournament
+        </a>
+	</div>
+</main>
