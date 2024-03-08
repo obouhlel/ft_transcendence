@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
+from django.conf import settings
 
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'profile', 'edit_profile',
@@ -52,3 +53,6 @@ def update_header(request):
 	}
 	html_content = render_to_string('header.html', request=request, context=context)
 	return JsonResponse({'html': html_content})
+	
+def config(request):
+	return render(request, 'config.js', content_type='application/javascript', context={'CLIENT_ID': settings.API_42_UID})

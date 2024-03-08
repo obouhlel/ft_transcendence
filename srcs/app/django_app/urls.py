@@ -15,6 +15,8 @@ urlpatterns = [
 	path('pages/<str:page>/', views.page),
     path('update_header/', views.update_header),
 
+	path('config.js', views.config),
+
 	# METHODS POST ET GET (API)
 	path('api/', include("transcendence.api")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
