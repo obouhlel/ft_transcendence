@@ -1,6 +1,6 @@
 from django.utils import timezone
 from django.contrib.auth import login as django_login
-from transcendence.models import CustomUser
+from transcendence.models import CustomUser, Game, Stat_User_by_Game
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods
@@ -58,6 +58,9 @@ def create_user(user_data, access_token):
             token=access_token,
             date_joined=timezone.now()
         )
+        # delete this if many games or many users
+        for game in Game.objects.all():
+            Stat_User_by_Game.objects.create(user=user, game=game)
         return user
     else:
         return None
@@ -75,27 +78,23 @@ def redirect_with_message(url, message):
 @require_http_methods(['GET'])
 def login_42(request):
     code = request.GET.get('code')
-    if code:
-        access_token, token_type = get_access_token(code, request)
-        if access_token and token_type:
-            user_data = get_user_data(access_token, token_type)
-            if user_data:
-                if CustomUser.objects.filter(token=access_token).exists():
-                    user = CustomUser.objects.get(username=user_data['login'])
-                    return authenticate_user(request, user)
-                else:
-                    if CustomUser.objects.filter(username=user_data['login']).exists():
-                        return redirect_with_message('/#400', 'This username is already in use.')
-                    if CustomUser.objects.filter(email=user_data['email']).exists():
-                        return redirect_with_message('/#400', 'This email is already in use.')
-                    user = create_user(user_data, access_token)
-                    if user:
-                        return authenticate_user(request, user)
-                    else:
-                        return redirect_with_message('/#400', 'Unable to create user.')
-            else:
-                return redirect_with_message('/#400', 'Unable to retrieve user data.')
-        else:
-            return redirect_with_message('/#400', 'Unable to retrieve access token.')
-    else:
-        return redirect_with_message('/#400', 'Invalid code.')
+    if not code:
+        return redirect_with_message('/#400', 'No code provided.')
+    
+    access_token, token_type = get_access_token(code, request)
+    if  not access_token or not token_type:
+        return redirect_with_message('/#400', 'Unable to retrieve access token.')
+    user_data = get_user_data(access_token, token_type)
+    if not user_data:
+        return redirect_with_message('/#400', 'Unable to retrieve user data.')
+    if CustomUser.objects.filter(token=access_token).exists():
+        user = CustomUser.objects.get(username=user_data['login'])
+        return authenticate_user(request, user)
+    if CustomUser.objects.filter(username=user_data['login']).exists():
+        return redirect_with_message('/#400', 'This username is already in use.')
+    if CustomUser.objects.filter(email=user_data['email']).exists():
+        return redirect_with_message('/#400', 'This email is already in use.')
+    user = create_user(user_data, access_token)
+    if not user:
+        return redirect_with_message('/#400', 'Unable to create user.')
+    return authenticate_user(request, user)

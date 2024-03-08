@@ -68,11 +68,10 @@ class Command(BaseCommand):
 		Stat_Game.objects.get_or_create(game=game2)
 
 
-
-		Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game1)
-		Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game1)
-		Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game2)
-		Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game2)
+		user1_stat_game1, _created =Stat_User_by_Game.objects.get_or_create(user=user1, game=game1)
+		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game1)
+		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user1, game=game2)
+		user2_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game2)
 
 		# Créer des parties
 		party1, _created = Party.objects.get_or_create(
@@ -117,12 +116,12 @@ class Command(BaseCommand):
 			loser_party=user1
 		)
 		# Ajouter les parties aux statistiques des utilisateurs
-		user1_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game1)
+
 		user1_stat_game1.nb_played += 1
 		user1_stat_game1.nb_win += 1
 		user1_stat_game1.save()
 
-		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game1)
+		
 		user2_stat_game1.nb_played += 1
 		user2_stat_game1.nb_lose += 1
 		user2_stat_game1.save()
@@ -135,12 +134,12 @@ class Command(BaseCommand):
 		user2_stat_game1.nb_win += 1
 		user2_stat_game1.save()
 
-		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(id_user=user1, id_game=game2)
+		
 		user1_stat_game2.nb_played += 1
 		user1_stat_game2.nb_lose += 1
 		user1_stat_game2.save()
 
-		user2_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(id_user=user2, id_game=game2)
+		
 		user2_stat_game2.nb_played += 1
 		user2_stat_game2.nb_win += 1
 		user2_stat_game2.save()
