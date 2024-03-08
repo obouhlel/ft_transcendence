@@ -16,7 +16,8 @@ def index(request):
 	games = Game.objects.all()
 	return render(request, 'index.html', {'games': games})
 
-
+import logging
+logger = logging.getLogger(__name__)
 def page(request, page):
 	games = Game.objects.all()
 	context = {
@@ -25,18 +26,18 @@ def page(request, page):
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
-	if page == 'game':
+	if page == 'game' and request.user.is_authenticated:
 		try:
 			id = request.GET.get('id')
 			if not id:
 				raise Exception
 			game = Game.objects.get(id = id)
 			html_content = render_to_string('views/game.html', request=request, context={'game': game})
-			return JsonResponse({'page': html_content})
+			return JsonResponse({'html': html_content})
 		except:
 			html_content = render_to_string('error/404.html', request=request)
-			return JsonResponse({'page': html_content})
-	if page == 'tournament':
+			return JsonResponse({'html': html_content})
+	if page == 'tournament' and request.user.is_authenticated:
 		try:
 			id = request.GET.get('id')
 			if not id:
@@ -44,10 +45,11 @@ def page(request, page):
 			game = Game.objects.get(id = id)
 			tournaments = Tournament.objects.filter(game=game)
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game})
-			return JsonResponse({'page': html_content})
+			return JsonResponse({'html': html_content})
 		except Exception as e:
+			logger.error(e)
 			html_content = render_to_string('error/404.html', request=request)
-			return JsonResponse({'page': html_content})
+			return JsonResponse({'html': html_content})
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
 		return JsonResponse({'html': html_content})
