@@ -156,3 +156,79 @@ function renderAgeDemographicsChart(ageRanges) {
   });
 }
 
+async function fetchLeaderboardData() {
+  const leaderboardUrl = '/api/get_leaderboard/1';
+  const usersUrl = '/api/get_all_users/';
+
+  try {
+    const [leaderboardResponse, usersResponse] = await Promise.all([
+      fetch(leaderboardUrl).then(res => res.json()),
+      fetch(usersUrl).then(res => res.json()),
+    ]);
+
+    return {
+      leaderboardData: leaderboardResponse,
+      usersData: usersResponse,
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return { leaderboardData: null, usersData: null };
+  }
+}
+
+function processAndAssociateData(leaderboardData, usersData) {
+  
+  const usersMap = new Map(usersData.users.map(user => [user.username, user]));
+
+  const leaderboard = leaderboardData.users.filter(entry => entry.user).map(leaderboardEntry => {
+    const userDetails = usersMap.get(leaderboardEntry.user);
+
+    if (userDetails) {
+      const stats = userDetails.stat.length > 0 ? userDetails.stat.find(stat => stat.user === userDetails.id && stat.game === 1) : null;
+
+      return {
+        username: userDetails.username,
+        avatar: userDetails.avatar || defaultAvatarUrl,
+        nbPlayed: stats ? stats.nb_played : 0,
+        ratio: leaderboardEntry.ratio * 100, 
+      };
+    } else {
+      return null;
+    }
+  }).filter(entry => entry !== null); 
+
+  leaderboard.sort((a, b) => b.ratio - a.ratio); // Sort by ratio, descending
+
+  return leaderboard;
+}
+
+
+
+function displayLeaderboard(leaderboard) {
+  const tbody = document.getElementById('leaderboardBody');
+  tbody.innerHTML = '';
+
+  leaderboard.forEach((entry, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td class="lead-user-td">
+        <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
+        <span class="name-leaderboard">${entry.username}</span>
+      </td>
+      <td>${entry.nbPlayed}</td>
+      <td>${entry.ratio.toFixed(2)}%</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+export async function updateLeaderboardDisplay() {
+  const { leaderboardData, usersData } = await fetchLeaderboardData();
+  if (leaderboardData.status === "ok" && usersData.status === "ok") {
+    const leaderboard = processAndAssociateData(leaderboardData, usersData);
+    displayLeaderboard(leaderboard);
+  } else {
+    console.error("Failed to fetch data");
+  }
+}
