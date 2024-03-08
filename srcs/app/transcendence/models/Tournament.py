@@ -9,8 +9,7 @@ from .Party import Party, PartyInTournament
 
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
-	# game = models.ForeignKey('Game', on_delete=models.CASCADE)
-	id_game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
+	game = models.ForeignKey('Game', on_delete=models.CASCADE)
 	name = models.CharField(max_length=30, default='Tournament')
 	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	status = models.CharField(max_length=30, default='waiting')
@@ -42,16 +41,13 @@ class Tournament(models.Model):
 	def tournament_data(self):
 		return {
 			'id': self.id,
-			# 'game_id': self.game.id,
-			'id_game': self.id_game,
+			'id_game': self.game.id,
 			'name': self.name,
 			'creator_id': self.creator.id,
 			'nb_player_to_start': self.nb_player_to_start,
 			'status': self.status, # 'waiting', "playing", "finished"
 			'started_at': self.started_at,
 			'ended_at': self.ended_at,
-			# 'is_active': self.is_active,
-			# 'lobby_tournament': self.lobby_set.all().first().id if self.lobby_set.all().first() else None,
 			'parties': self.getParties(),
 			'nb_round': self.nb_round,
 			'user_tournament': self.getAllUser(),
