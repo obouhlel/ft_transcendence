@@ -5,20 +5,31 @@ from django.db import models
 from django.utils import timezone
 
 
-#AbstractUser has the following fields: username, first_name, last_name, email, password, groups, user_permissions, is_staff, is_active, is_superuser, last_login, date_joined
+# AbstractUser has the following fields:
+# - username
+# - first_name
+# - last_name
+# - email
+# - password
+# - groups
+# - user_permissions
+# - is_staff
+# - is_active
+# - is_superuser
+# - last_login
+# - date_joined
 class CustomUser(AbstractUser):
 	is_admin = models.BooleanField(default=False)
 	sexe = models.CharField(max_length=64, default='Unknow')
 	birthdate = models.DateField(default=timezone.now)
 	token = models.CharField(max_length=128)
-	# avatar = models.ImageField(upload_to='avatars/', default='default_avatar.webp')
 	avatar = models.ImageField(upload_to='avatars/')
 	created_at = models.DateTimeField(default=timezone.now)
 	last_connexion = models.DateTimeField(default=timezone.now)
-	status = models.CharField(max_length=30, default='Online')
+	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
 	def __str__(self):
-		return self.username
+		return f"{self.username}"
 	def update_status(self, status: str):
 		self.status = status
 		self.save()
@@ -49,18 +60,18 @@ class CustomUser(AbstractUser):
 			'is_admin': self.is_admin,
 			'sexe': self.sexe,
 			'birthdate': self.birthdate,
-			'avatar': self.avatar.path if self.avatar else None,
+			'avatar': self.avatar.url if self.avatar else None,
 			'created_at': self.created_at,
 			'last_connexion': self.last_connexion,
 			'status': self.status,
 			'friends_received': self.getFriendRequestReceived(),
 			'request_sent': self.getFriendRequestSent(),
-			'list_friends': self.getFriends(),
+			# 'list_friends': self.getFriends(),
 			'stat': self.getStat()
 		}
 	def getFriends(self):
 		list_friends = self.list_friends.all()
-		return [friend.id for friend in list_friends]
+		return [friend.user_data() for friend in list_friends]
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
 		return [re.friend_request_data() for re in list_friend_request]
@@ -82,7 +93,7 @@ class FriendRequest(models.Model):
 	receiver = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='receiver')
 	created_at = models.DateTimeField(auto_now_add=True)
 	def __str__(self):
-		return self.sender.username + ' to ' + self.receiver.username
+		return f"{self.sender} send friend request to {self.receiver}"
 	def friend_request_data(self):
 		return {
 			'id': self.id,

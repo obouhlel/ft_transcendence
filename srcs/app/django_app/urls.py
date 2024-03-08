@@ -13,6 +13,9 @@ urlpatterns = [
 
 	# API VIEWS (SHOW PAGES)
 	path('pages/<str:page>/', views.page),
+    path('update_header/', views.update_header),
+
+	path('config.js', views.config),
 
 	path('config.js', views.config),
 

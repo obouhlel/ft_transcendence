@@ -1,4 +1,3 @@
-{% include 'header.html' %}
 {% load templatetags %}
 {% load static %}
 <main class="main-content">
@@ -31,22 +30,26 @@
 				<input type="text" placeholder="Username" id="username" value="{{ user.username }}" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Password" id="password" required />
+				<input type="password" placeholder="New password" id="password" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
+				<input type="password" placeholder="Confirm new password" id="password_confirm" required />
 			</div>
 			<div class="input-box input-box-reg">
 				<input type="email" placeholder="Email" id="email" value="{{ user.email }}" required />
 			</div>
-			<div class="input-box input-box-reg">
-				<input type="date" placeholder="Date of Birth" id="birthdate" value="{{ user.birthdate|to_date_string }}" required />
+			<label class="birthdate-label">Date of birth:</label>
+			<div class="input-box input-box-reg date-input-box">
+				<input type="date" placeholder="Date of Birth" id="birthdate" required />
 			</div>
-			<select id="sexe" name="sexe" class="input-box input-box-reg">
-				<option value="F" title="Female" {% if user.sexe == 'F' %}selected{% endif %}>Female</option>
-				<option value="M" title="Male" {% if user.sexe == 'M' %}selected{% endif %}>Male</option>
-				<option value="N" title="Other" {% if user.sexe == 'N' %}selected{% endif %}>Other</option>
-			</select>
+			<label class="sex-label">Sex:</label>
+			<div class="select-wrapper">
+				<select id="sexe" name="sexe" class="input-box input-box-reg input-select">
+					<option value="F" title="Female">Female</option>
+					<option value="M" title="Male">Male</option>
+					<option value="N" title="Other">Other</option>
+				</select>
+			</div>
 			<button type="submit" class="btn">Save changes</button>
 		</form>
 	</div>

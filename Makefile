@@ -1,6 +1,6 @@
 DOCKER=web
 
-all: up logs
+all: clean up logs
 
 reset: clean down build up logs
 
@@ -34,6 +34,6 @@ clean:
 fclean: clean stop
 	docker system prune -a -f
 
-# re: clean all logs
+re: fclean all
 
 .PHONY: all build up down logs re build

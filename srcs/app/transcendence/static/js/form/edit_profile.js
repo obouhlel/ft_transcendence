@@ -1,4 +1,4 @@
-import { doRequest, SERVER_URL } from '../utils/fetch.js';
+import { doRequest } from '../utils/fetch.js';
 import { callback } from '../utils/callback.js';
 import { dataForm } from '../utils/data.js';
 
@@ -34,6 +34,6 @@ export function handleEditProfileFormSubmit() {
 
 		const data = dataForm(fields);
 
-		doRequest.post(`${SERVER_URL}/api/edit_profile/`, data, callback.editProfile);
+		doRequest.post(`/api/edit_profile/`, data, callback.editProfile);
 	});
 };

@@ -1,0 +1,20 @@
+{% load static %}
+<div class="user-btn">
+    <a class="dropdown-toggle" data-dropdown="userDropdown">
+        <img src="{% static 'img/Group 3.svg' %}" alt="" />
+    </a>
+    <div class="dropdown-content-one" id="userDropdown">
+        <i class="fa-solid fa-xmark usercross" id="cross"></i>
+        <div class="content">
+            <div class="user-avatar-dropdown">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" alt="" />
+                {% else %}
+                    <img src="{% static 'img/user-image.png' %}" alt="" />
+                {% endif %}
+            </div>
+            <a href="#edit_profile" class="edit-profile-btn">Edit your profile</a>
+            <a class="logout-btn" id="logout-button">Logout</a>
+        </div>
+    </div>
+</div>

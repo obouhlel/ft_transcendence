@@ -12,7 +12,7 @@ class Game(models.Model):
 	created_at = models.DateTimeField(auto_now_add=True)
 	point_to_win = models.IntegerField(default=10)
 	def __str__(self):
-		return self.name
+		return f"{self.name} game {self.id}"
 	def game_data(self):
 		return {
 			'id': self.id,
@@ -50,8 +50,8 @@ class Stat_Game(models.Model):
 	nb_party = models.IntegerField(default=0)
 	avg_game_time = models.IntegerField(default=0)
 	game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='stat')
-	# def __str__(self):
-	# 	return self.id
+	def __str__(self):
+		return f"stat for {self.game} game {self.id}"
 	def update(self, time: int):
 		self.nb_played += 1
 		self.time_played += time

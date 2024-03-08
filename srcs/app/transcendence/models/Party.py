@@ -21,10 +21,12 @@ class Party(models.Model):
 	winner_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='winner_party')
 	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='loser_party')
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
-	# def __str__(self):
-	# 	return self.id
+	round_nb = models.IntegerField(default=0)
+	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
+	def __str__(self):
+		return f"{self.name} party {self.id} for {self.game} game between {self.player1} and {self.player2}"
 	def update_end(self):
 		self.ended_at = timezone.now()
 		self.status = 'finished'
@@ -41,7 +43,7 @@ class Party(models.Model):
 	def party_data(self):
 		return {
 			'id': self.id,
-			'game_id': self.game.id,
+			'id_game': self.game.id,
 			'name': self.name,
 			'started_at': self.started_at,
 			'ended_at': self.ended_at,
@@ -55,7 +57,7 @@ class Party(models.Model):
 			'loser_party': self.loser_party.id if self.loser_party else None,
 			'type': self.type,
 			'round_nb': self.round_nb,
-			'id_tournament': self.tournament.id if self.tournament else None
+			'id_tournament': self.id_tournament.id if self.id_tournament else None
 	}
 	def startParty(player1, player2, game, type):
 		party = Party.objects.create(game=game, player1=player1, player2=player2)
@@ -71,6 +73,8 @@ class PartyInTournament(models.Model):
 	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE)
 	round_nb = models.IntegerField(default=0)
 	index = models.IntegerField(default=0)
+	def __str__(self):
+		return f"Party {self.party} in tournament {self.tournament} for round {self.round_nb}"
 	def update_end(self):
 		if self.index == self.tournament.nb_player_to_start/ (2**self.round_nb): #si c'est le dernier match de la ronde, c'est pas vraiment necessaire
 				self.tournament.next_round(self.round_nb)

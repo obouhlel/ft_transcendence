@@ -24,6 +24,7 @@ services:
     volumes:
       - app_django:/app/django
       - staticfiles:/var/www/static/
+      - mediafiles:/var/www/media/
     env_file:
       - .env
 
@@ -40,6 +41,7 @@ services:
       - ./srcs/tools/ssl/transcendance.key:/etc/nginx/ssl/transcendance.key
       - ./srcs/tools/nginx.conf:/etc/nginx/nginx.conf
       - staticfiles:/var/www/static/
+      - mediafiles:/var/www/media/
     env_file:
       - .env
 
@@ -51,4 +53,6 @@ volumes:
       device: ./srcs/app
       o: bind
   staticfiles:
+    driver: local
+  mediafiles:
     driver: local

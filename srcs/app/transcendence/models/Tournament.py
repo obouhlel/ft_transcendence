@@ -9,7 +9,8 @@ from .Party import Party, PartyInTournament
 
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
-	game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	# game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	id_game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
 	name = models.CharField(max_length=30, default='Tournament')
 	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	status = models.CharField(max_length=30, default='waiting')
@@ -18,12 +19,11 @@ class Tournament(models.Model):
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(null=True, blank=True)
 	# is_active = models.BooleanField(default=False)
-	users = models.ManyToManyField('CustomUser', related_name='tournaments')
-	invited_users = models.ManyToManyField('CustomUser', related_name='invited_tournaments')
-	winner_tournament = models.ForeignKey('CustomUser', related_name='tournaments_won', on_delete=models.CASCADE, null=True)
-	
-	# def __str__(self):
-	# 	return self.id
+	user_tournament = models.ManyToManyField('CustomUser', related_name='user')
+	invited_user = models.ManyToManyField('CustomUser', related_name='invited')
+	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
+	def __str__(self):
+		return f"{self.name} tournament {self.id} for {self.id_game} game by {self.creator}"
 	def getAllParties(self):
 		list_party = self.parties.all()
 		party = [party.Party_data() for party in list_party]
@@ -42,7 +42,8 @@ class Tournament(models.Model):
 	def tournament_data(self):
 		return {
 			'id': self.id,
-			'game_id': self.game.id,
+			# 'game_id': self.game.id,
+			'id_game': self.id_game,
 			'name': self.name,
 			'creator_id': self.creator.id,
 			'nb_player_to_start': self.nb_player_to_start,

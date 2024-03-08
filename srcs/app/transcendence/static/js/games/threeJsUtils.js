@@ -77,12 +77,12 @@ export function resizeRenderer(renderer, camera, fullScreen = false) {
 }
 
 export function createContainerForGame(gameName, gameRenderer) {
-	const main = document.querySelector("main");
-	main.style = null;
+	const page = document.getElementById("page");
+	page.style = null;
 
 	const container = document.createElement("div");
 	container.id = gameName;
-	main.appendChild(container);
+	page.appendChild(container);
 
 	container.appendChild(gameRenderer.domElement);
 }

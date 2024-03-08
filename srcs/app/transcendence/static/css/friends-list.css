@@ -82,14 +82,11 @@
     color: #ffffff;
     transition: all ease 0.5s;
   }
-  
-  .friend-list .friend-list-members .end-btns {
+  .friend-list .friend-list-members .end-cards {
     margin-top: 7px;
   }
   .friend-list .friend-list-members {
     margin-top: 12px;
-    max-height: 632px;
-    overflow: scroll;
   }
   .friend-list .friend-list-members .friend-card .member-details img {
     width: 40.86px;
@@ -153,7 +150,7 @@
     position: relative;
     left: 17px;
   }
-  .friend-list .friend-list-members .add-friend {
+  .friend-list .add-friend-btn .add-friend {
     width: 100%;
     height: 63px;
     border-radius: 13px;
@@ -163,7 +160,7 @@
     color: white;
     transition: all ease 0.5s;
   }
-  .friend-list .friend-list-members .add-friend:hover {
+  .friend-list .add-friend-btn .add-friend:hover {
     background-color: #fff;
     color: #3a3efd;
     cursor: pointer;

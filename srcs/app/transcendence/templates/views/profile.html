@@ -1,4 +1,3 @@
-{% include 'header.html' %}
 {% load static %}
 <div class="User-section">
 	<div class="custom-container">
@@ -8,9 +7,15 @@
 					<div class="user-details">
 						<div class="user-img">
 							{% if user.avatar %}
-							<img src="{{ user.avatar.url }}" alt="Avatar" width="100" height="100">
+							<img
+								src="{{ user.avatar.url }}"
+								alt="Avatar"
+								width="100"
+								height="100" />
 							{% else %}
-							<img src="{% static 'img/user-image.png' %}" alt="Avatar" />
+							<img
+								src="{% static 'img/user-image.png' %}"
+								alt="Avatar" />
 							{% endif %}
 						</div>
 						<div class="content">
@@ -22,13 +27,17 @@
 						</div>
 					</div>
 					<div class="active-btn">
-						<button>Active</button>
+						<button>{{ user.status }}</button>
 					</div>
 				</div>
 				<div class="navs-tabs">
 					<div class="navs">
 						{% for game in games %}
-							<a class="tab-link" data-tab="tab{{ forloop.counter }}">{{ game.name }}</a>
+						<a
+							class="tab-link {% if forloop.first %}active{% endif %}"
+							data-tab="tab{{ forloop.counter }}"
+							>{{ game.name }}</a
+						>
 						{% endfor %}
 					</div>
 					<div id="tab1" class="tab-content active-tab">
@@ -37,19 +46,19 @@
 							<div class="cards-main">
 								<div class="card">
 									<h5>Wins</h5>
-									<h1>00</h1>
+									<h1>{{stat_user.0.nb_win}}</h1>
 								</div>
 								<div class="card">
 									<h5>Losses</h5>
-									<h1>00</h1>
+									<h1>{{stat_user.0.nb_lose}}</h1>
 								</div>
 								<div class="card">
 									<h5>Ratio</h5>
-									<h1>00</h1>
+									<h1>{{stat_user.0.nb_lose}}</h1>
 								</div>
 								<div class="card">
-									<h5>Trophies</h5>
-									<h1>00</h1>
+									<h5>Played</h5>
+									<h1>{{stat_user.0.nb_played}}</h1>
 								</div>
 							</div>
 						</div>
@@ -62,14 +71,7 @@
 									<div class="tr data-three">Date</div>
 									<div class="tr data-four">Status</div>
 								</div>
-								<div class="tbody">
-									<div class="tr">
-										<div class="td data-one">LOGIN 1</div>
-										<div class="td data-two">6-5</div>
-										<div class="td data-three">12-12-12</div>
-										<div class="td data-four">Victory</div>
-									</div>
-								</div>
+								<div class="tbody"></div>
 							</div>
 						</div>
 					</div>
@@ -82,23 +84,50 @@
 					</div>
 					<div class="categories-btns">
 						<ul>
-							<li><button class="c-btn all-friends-btn c-btn-active">All</button></li>
-							<li><button class="c-btn online-friends-btn">Online</button></li>
-							<li><button class="c-btn offline-friends-btn">Offline</button></li>
+							<li>
+								<button
+									class="c-btn all-friends-btn c-btn-active">
+									All
+								</button>
+							</li>
+							<li>
+								<button class="c-btn online-friends-btn">
+									Online
+								</button>
+							</li>
+							<li>
+								<button class="c-btn offline-friends-btn">
+									Offline
+								</button>
+							</li>
 						</ul>
 					</div>
 					<div class="friend-list-members">
-						<div class="friend-card online-friend">
-							<div class="member-details">
-								<img src="{% static 'img/user-image-s.png' %}" alt="" />
-								<div>
-									<h2>Robert Hudson</h2>
+						<div class="add-friend-btn">
+							<button class="add-friend show-modal">
+								+ Add a Friend
+							</button>
+						</div>
+						<div class="modal hidden">
+							<button class="close-modal">&times;</button>
+							<div class="find-friends-container">
+								<div class="find-friends-header">
+									<div class="heading">Find Friends</div>
+									<div class="search">
+										<form action="">
+											<input
+												type="text"
+												id="search"
+												placeholder="Enter a friend's name"
+												onkeyup="searchFunction()" />
+										</form>
+									</div>
+								</div>
+								<div class="find-friends-result">
 								</div>
 							</div>
-							<button class="active-member-btn">Active</button>
-							<i class="fa-solid fa-user-xmark"></i>
 						</div>
-						<button class="add-friend">+ Add a Friend</button>
+						<div class="overlay hidden"></div>
 					</div>
 				</div>
 			</div>

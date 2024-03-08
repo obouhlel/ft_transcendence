@@ -5,45 +5,54 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
 from django.conf import settings
 
+error_pages = ['400', '401', '403', '404', '405']
+allowed_pages = ['login', 'register', 'profile', 'edit_profile',
+				'games', 'game-1', 'game-2', 'join-tournament',
+				'create-tournament', 'lobby-tournament', 'dashboard']
+games_pages = ['pong', 'TicTacToe']
+
 @ensure_csrf_cookie
 def index(request):
-	return render(request, 'index.html')
+	games = Game.objects.all()
+	return render(request, 'index.html', {'games': games})
 
 def page(request, page):
-	allowed_pages = [
-		'login',
-		'register',
-		'profile',
-		'edit_profile',
-		'games',
-		'game-1',
-		'game-2',
-		'join-tournament',
-		'create-tournament',
-		'lobby-tournament',
-		'pong',
-		'TicTacToe',
-	]
-	error_pages = ['400', '401', '403', '404', '405']
 	games = Game.objects.all()
+	context = {
+		'games': games,
+	}
 	if page == 'home':
-		html_content = render_to_string('home.html', request=request, context={'games': games,'notifications': [] if request.user.is_anonymous else request.user.get_notifications()})
-		return JsonResponse({'page': html_content})
+		html_content = render_to_string('home.html', request=request, context=context)
+		return JsonResponse({'html': html_content})
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
-		return JsonResponse({'page': html_content})
+		return JsonResponse({'html': html_content})
 	elif (page != 'login' and page != 'register') and not request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/401.html', request=request)
-		return JsonResponse({'page': html_content})
+		return JsonResponse({'html': html_content})
+	elif page in games_pages:
+		html_content = ''
+		return JsonResponse({'html': html_content})
 	elif page in allowed_pages:
-		html_content = render_to_string('views/' + page + '.html', request=request, context={'games': games})
-		return JsonResponse({'page': html_content})
+		html_content = render_to_string('views/' + page + '.html', request=request, context=context)
+		return JsonResponse({'html': html_content})
 	elif page in error_pages:
 		html_content = render_to_string('error/' + page + '.html', request=request)
-		return JsonResponse({'page': html_content})
+		return JsonResponse({'html': html_content})
 	else:
 		html_content = render_to_string('error/404.html', request=request)
-		return JsonResponse({'page': html_content})
+		return JsonResponse({'html': html_content})
+	
+def update_header(request):
+	if request.user.is_authenticated:
+		notifications = Notification.objects.filter(user=request.user)
+	else:
+		notifications = []
+	context = {
+		'notifications': notifications
+	}
+	html_content = render_to_string('header.html', request=request, context=context)
+	return JsonResponse({'html': html_content})
 	
 def config(request):
 	return render(request, 'config.js', content_type='application/javascript', context={'CLIENT_ID': settings.API_42_UID})

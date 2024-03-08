@@ -1,6 +1,6 @@
 export const SERVER_URL = window.location.origin;
 
-function getCookie(name)
+export function getCookie(name)
 {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -9,7 +9,7 @@ function getCookie(name)
             let cookie = cookies[i].trim();
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+                break ;
             }
         }
     }
@@ -35,7 +35,7 @@ export const doRequest = {
 			options.headers['Content-Type'] = 'application/json';
 			options.body = JSON.stringify(data);
 		}
-        fetch(url, options)
+        fetch(`${SERVER_URL}${url}`, options)
             .then(response => response.json())
             .then(data => { callback(data); })
             .catch(error => { console.error(error); });
@@ -62,4 +62,20 @@ export const doRequest = {
             console.error(error);
         }
     },
+
+    delete: function(url, callback)
+    {
+        const csrftoken = getCookie('csrftoken');
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            credentials: 'include'
+        };
+        fetch(`${SERVER_URL}${url}`, options)
+            .then(response => response.json())
+            .then(data => { callback(); })
+            .catch(error => { console.error(error); });
+    }
 };

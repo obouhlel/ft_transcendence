@@ -3,7 +3,7 @@
     justify-content: center;
     align-items: center;
     text-align: center;
-    min-height: 100vh;
+    min-height: 80vh;
     width: 100vw; 
   }
   
@@ -16,7 +16,8 @@
     box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
     color: #fff;
     border-radius: 10px;
-    padding: 30px 40px;
+    padding: 30px 40px 45px 40px;
+    margin-bottom: 140px;
   }
   
 .error-wrapper h1 {
@@ -31,7 +32,31 @@
 }
   
 .error-wrapper p {
-      font-size: 23px;
+      font-size: 22px;
       color: #ffffffd1; 
-      margin-bottom: 60px;
+      margin-bottom: 6px;
 }
+
+.error-btn {
+  margin-top: 60px;
+}
+
+
+@media screen and (max-width: 430px)
+  {
+    .error-wrapper h1 {
+      font-size: 120px;
+  }
+    
+  .error-wrapper h2 {
+      font-size: 30px;
+      margin-bottom: 20px; 
+      color: #fff;
+  }
+    
+  .error-wrapper p {
+        font-size: 17px;
+        color: #ffffffd1; 
+        margin-bottom: 6px;
+  }
+  }

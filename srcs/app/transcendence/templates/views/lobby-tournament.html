@@ -1,0 +1,26 @@
+{% load static %}
+<main class="lobby-container">
+    <div class="lobby-wrapper game-tour-wrapper">
+        <h1>Lobby</h1>
+        <h2>Tournament Name</h2>
+        <form id="aliasForm">
+            <input type="text" id="alias" name="alias" placeholder="Select your alias (optional)">
+            <button class="blue-btn lobby-btn">Submit</button>
+        </form>
+        <h3 class="players-heading">Players Waiting:</h3>
+        <div class="players-list">
+            <div class="player">
+                <img src="{% static 'img/user-image.png' %}" alt="User1 Avatar">
+                <p>User1</p>
+            </div>
+            <div class="player">
+                <img src="{% static 'img/user-image.png' %}" alt="User2 Avatar">
+                <p>User2</p>
+            </div>
+            <div class="player">
+                <img src="{% static 'img/user-image.png' %}" alt="User2 Avatar">
+                <p>User3</p>
+            </div>
+        </div>
+    </div>
+</main>

@@ -71,7 +71,7 @@ def getFriends(request):
 @require_http_methods(['GET'])
 def getOnlineFriends(request):
 	user = request.user
-	friends = user.friends.filter(status='online')
+	friends = user.friends.filter(status='Online')
 	data = [friend.user_data() for friend in friends]
 	return JsonResponse({'status': 'ok', 'friends': data})
 
@@ -79,7 +79,7 @@ def getOnlineFriends(request):
 @require_http_methods(['GET'])
 def getOfflineFriends(request):
 	user = request.user
-	friends = user.friends.filter(status='offline')
+	friends = user.friends.filter(status='Offline')
 	data = [friend.user_data() for friend in friends]
 	return JsonResponse({'status': 'ok', 'friends': data})
 
@@ -93,6 +93,15 @@ def getUserConnected(request):
 		return JsonResponse({'status': 'ok', 'user': data})
 	else:
 		return JsonResponse({'status': 'error', 'message': 'No user connected'}, status=404)
+
+@login_required
+@require_http_methods(['GET'])
+def searchUser(request, username):
+	users = CustomUser.objects.filter(username__icontains=username)
+	data = []
+	for user in users:
+		data += [user.user_data()]
+	return JsonResponse({'status': 'ok', 'users': data})
 
 
 #Leaderboard
