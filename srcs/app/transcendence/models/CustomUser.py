@@ -28,7 +28,14 @@ class CustomUser(AbstractUser):
 	def update_avatar(self, avatar: str):
 		self.avatar = avatar
 		self.save()
-	def user_data(self):
+	def user_data(self, minimal: bool = False):
+		if minimal:
+			return {
+				'id': self.id,
+				'username': self.username,
+				'avatar': self.avatar.path if self.avatar else None,
+				'status': self.status,
+			}
 		return {
 			'id': self.id,
 			'email': self.email,

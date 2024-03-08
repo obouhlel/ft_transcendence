@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
-from transcendence.models import CustomUser
+from transcendence.models import CustomUser, Stat_User_by_Game, Game
 import pytz
 
 @require_http_methods(['POST'])
@@ -16,6 +16,7 @@ def register_user(request):
 	lastname = data.get('lastname')
 	sexe = data.get('sexe')
 	birthdate = data.get('birthdate')
+	
 
 	data_list = [username, password, email, firstname, lastname]
 	for data in data_list:
@@ -56,6 +57,13 @@ def register_user(request):
 			{'status': 'error', 'message': 'Birthdate is in the future.'},
 			status=400
 		)
+	if 'avatar' in request.FILES:
+		avatar = request.FILES['avatar']
+		if avatar.size > 1024 * 1024:
+			return JsonResponse(
+				{'status': 'error', 'message': 'Image is too large. (Max 1MB). User not created.'},
+				status=400
+			)
 
 	user = CustomUser.objects.create(
 		username=username,
@@ -65,18 +73,10 @@ def register_user(request):
 		last_name=lastname,
 		sexe=sexe,
 		birthdate=birthdate,
-		date_joined=timezone.now()
+		date_joined=timezone.now(),
+		avatar=avatar
 	)
-
-	if 'avatar' in request.FILES:
-		avatar = request.FILES['avatar']
-		if avatar.size > 1024 * 1024:
-			return JsonResponse(
-				{'status': 'error', 'message': 'Image is too large. (Max 1MB)'},
-				status=400
-			)
-		user.avatar = avatar
-
-	user.save()
-	
+	# delete this if many games or many users
+	for game in Game.objects.all():
+		Stat_User_by_Game.objects.create(user=user, game=game)
 	return JsonResponse({'status': 'ok', 'message': 'Your account has been successfully created.'})
