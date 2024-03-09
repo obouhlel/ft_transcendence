@@ -28,15 +28,19 @@ class CustomUser(AbstractUser):
 
 	def __str__(self):
 		return f"{self.username}"
+
 	def update_status(self, status: str):
 		self.status = status
 		self.save()
+
 	def update_last_connexion(self):
 		self.last_connexion = timezone.now()
 		self.save()
+
 	def update_avatar(self, avatar: str):
 		self.avatar = avatar
 		self.save()
+
 	def user_data(self, minimal: bool = False):
 		if minimal:
 			return {
