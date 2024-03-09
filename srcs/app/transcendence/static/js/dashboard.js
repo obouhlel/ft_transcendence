@@ -156,8 +156,8 @@ function renderAgeDemographicsChart(ageRanges) {
   });
 }
 
-async function fetchLeaderboardData() {
-  const leaderboardUrl = '/api/get_leaderboard/1';
+async function fetchLeaderboardData(gameId) {
+  const leaderboardUrl = `/api/get_leaderboard/${gameId}`;
   const usersUrl = '/api/get_all_users/';
 
   try {
@@ -175,6 +175,7 @@ async function fetchLeaderboardData() {
     return { leaderboardData: null, usersData: null };
   }
 }
+
 
 function processAndAssociateData(leaderboardData) {
   const leaderboard = leaderboardData.users.map(entry => {
@@ -233,13 +234,25 @@ async function updateDashboardStats(leaderboard) {
   document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
 }
 
-export async function updateDashboardDisplay() {
-  const { leaderboardData, usersData } = await fetchLeaderboardData();
+export async function updateDashboardDisplay(gameId) {
+  const { leaderboardData, usersData } = await fetchLeaderboardData(gameId);
   if (leaderboardData.status === "ok" && usersData.status === "ok") {
-      const leaderboard = processAndAssociateData(leaderboardData);
-      displayLeaderboard(leaderboard);
-      updateDashboardStats(leaderboard);
+    const leaderboard = processAndAssociateData(leaderboardData);
+    displayLeaderboard(leaderboard);
+    updateDashboardStats(leaderboard);
   } else {
-      console.error("Failed to fetch data");
+    console.error("Failed to fetch data");
   }
+}
+
+export function setupTabEventListeners() {
+  document.querySelectorAll('.tab-link').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      const gameId = this.getAttribute('data-tab') === 'tab1' ? 1 : 2;
+      updateDashboardDisplay(gameId);
+    });
+  });
 }

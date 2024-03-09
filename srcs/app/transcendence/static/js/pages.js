@@ -10,14 +10,13 @@ import { message } from './utils/message.js';
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
-import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay } from './dashboard.js';
-import { test } from './test.js';
+import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay, setupTabEventListeners} from './dashboard.js';
 
 export const pageHandlers = {
 	'400': [message],
     'login': [handleLoginFormSubmit],
     'register': [handleRegisterFormSubmit, changeAvatar],
-	'dashboard': [test, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay],
+	'dashboard': [setupTabEventListeners, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, () => updateDashboardDisplay(1)],
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
