@@ -65,12 +65,12 @@ export function handlerNotificationAction() {
 		const denyElement = document.getElementById(`deny-${id}`);
 
 		acceptElement.addEventListener("click", () => {
-			// send accept notification
+			// send accept friendrequest
 			console.log(`Accept clicked for notification ${id}`);
 		});
 
 		denyElement.addEventListener("click", () => {
-			// send deny notification
+			// send deny friendrequest
 			console.log(`Deny clicked for notification ${id}`);
 		});
 	});
