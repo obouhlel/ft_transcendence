@@ -67,17 +67,7 @@ class CustomUser(AbstractUser):
 
 	def getFriends(self):
 		list_friends = self.list_friends.all()
-		# friends_data = []
-		# for friend in list_friends:
-		# 	friend_data = {
-		# 		'id': friend.id,
-		# 		'username': friend.username,
-		# 		'status': friend.status,
-		# 		'avatar': friend.avatar.url if friend.avatar else None,
-		# 	}
-		# 	friends_data.append(friend_data)
-		# return friends_data
-		return [friend.user_data(self, True) for friend in list_friends]
+		return [friend.user_data(self, minimal=True) for friend in list_friends]
 
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
