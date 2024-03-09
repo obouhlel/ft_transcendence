@@ -41,9 +41,6 @@ urlpatterns = [
 
 	path('join_lobby/', joinLobby, name='joinLobby'),
 	path('quit_lobby/', quitLobby, name='quitLobby'),
-	path('send_friend_request/', sendFriendRequest, name='sendFriendRequest'),
-	path('respond_friend_request/', RespondFriendRequest, name='acceptFriendRequest'),
-	path('remove_friend/', removeFriend, name='removeFriend'),
 
 	# path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),
 	# TOURNAMENTS
@@ -53,8 +50,9 @@ urlpatterns = [
 	path('search_user/<str:username>', searchUser, name='searchUser'),
 
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
-	path('add_friend/<int:id_user>', addFriend, name='addFriend'),
+	path('add_friend/', sendFriendRequest, name='addFriend'),
 	path('delete_friend/<int:id_user>', deleteFriend, name='deleteFriend'),
+	path('respond_friend_request/', RespondFriendRequest, name='acceptFriendRequest'),
 	path('get_friend_request/', getFriendRequest, name='getFriendRequest'),
 	path('accept_friend_request/<int:id_user>', acceptFriendRequest, name='acceptFriendRequest'),
 ]

@@ -66,11 +66,21 @@ export function handlerNotificationAction() {
 
 		acceptElement.addEventListener("click", () => {
 			// send accept friendrequest
+			const data = {
+				"request_id": id,
+				"action": "accept"
+			}
+			doRequest.post('/api/respond_friend_request/', data, updateHeader);
 			console.log(`Accept clicked for notification ${id}`);
 		});
 
 		denyElement.addEventListener("click", () => {
 			// send deny friendrequest
+			const data = {
+				"request_id": id,
+				"action": "decline"
+			}
+			doRequest.post('/api/respond_friend_request/', data, updateHeader);
 			console.log(`Deny clicked for notification ${id}`);
 		});
 	});

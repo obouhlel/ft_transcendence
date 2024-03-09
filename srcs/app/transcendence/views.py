@@ -71,7 +71,7 @@ def page(request, page):
 	
 def update_header(request):
 	if request.user.is_authenticated:
-		notifications = Notification.objects.filter(user=request.user)
+		notifications = FriendRequest.objects.filter(receiver=request.user)
 	else:
 		notifications = []
 	context = {
