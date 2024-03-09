@@ -176,32 +176,23 @@ async function fetchLeaderboardData() {
   }
 }
 
-function processAndAssociateData(leaderboardData, usersData) {
-  
-  const usersMap = new Map(usersData.users.map(user => [user.username, user]));
-
-  const leaderboard = leaderboardData.users.filter(entry => entry.user).map(leaderboardEntry => {
-    const userDetails = usersMap.get(leaderboardEntry.user);
-
-    if (userDetails) {
-      const stats = userDetails.stat.length > 0 ? userDetails.stat.find(stat => stat.user === userDetails.id && stat.game === 1) : null;
+function processAndAssociateData(leaderboardData) {
+  const leaderboard = leaderboardData.users.map(entry => {
+      const { user, stat } = entry;
 
       return {
-        username: userDetails.username,
-        avatar: userDetails.avatar || defaultAvatarUrl,
-        nbPlayed: stats ? stats.nb_played : 0,
-        ratio: leaderboardEntry.ratio * 100, 
+          username: user.username,
+          avatar: user.avatar || defaultAvatarUrl,
+          nbPlayed: stat.nb_played,
+          ratio: stat.ratio * 100,
       };
-    } else {
-      return null;
-    }
-  }).filter(entry => entry !== null); 
+  });
 
-  leaderboard.sort((a, b) => b.ratio - a.ratio); // Sort by ratio, descending
+  // Sort by ratio, descending
+  leaderboard.sort((a, b) => b.ratio - a.ratio);
 
   return leaderboard;
 }
-
 
 function displayLeaderboard(leaderboard) {
   const tbody = document.getElementById('leaderboardBody');
@@ -228,35 +219,27 @@ async function fetchCurrentUserName() {
   return data.username;
 }
 
-async function updateDashboardStats(leaderboard, usersData) {
+async function updateDashboardStats(leaderboard) {
   const currentUser = await fetchCurrentUserName();
   const currentUserIndex = leaderboard.findIndex(player => player.username === currentUser);
-  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N-A';
-  
-  // Safely access the best player if the leaderboard has entries
-  const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
-  const totalPlayers = usersData.users.length;
+  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N/A';
 
-  // Safely update the dashboard, checking if bestPlayer exists
+  const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
+  const totalPlayers = leaderboard.length; 
+
   document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
-  if(bestPlayer) {
-    document.querySelector('.best-player-name').innerText = bestPlayer.username;
-    document.querySelector('.best-player img').src = bestPlayer.avatar || defaultAvatarUrl;
-  } else {
-    document.querySelector('.best-player-name').innerText = 'N-A';
-    document.querySelector('.best-player img').src = defaultAvatarUrl; // Fallback to default avatar
-  }
+  document.querySelector('.best-player-name').innerText = bestPlayer ? bestPlayer.username : 'N/A';
+  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Fallback to default avatar
   document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
 }
-
 
 export async function updateDashboardDisplay() {
   const { leaderboardData, usersData } = await fetchLeaderboardData();
   if (leaderboardData.status === "ok" && usersData.status === "ok") {
-    const leaderboard = processAndAssociateData(leaderboardData, usersData);
-    displayLeaderboard(leaderboard);
-    updateDashboardStats(leaderboard, usersData);
+      const leaderboard = processAndAssociateData(leaderboardData);
+      displayLeaderboard(leaderboard);
+      updateDashboardStats(leaderboard);
   } else {
-    console.error("Failed to fetch data");
+      console.error("Failed to fetch data");
   }
 }
