@@ -26,11 +26,11 @@
   }
   .nav-btns {
     background-color: #37358c;
-    width: 152px;
+    width: 175px;
     height: 67px;
     display: flex;
     justify-content: center;
-    gap: 28px;
+    gap: 29px;
     align-items: center;
     border-radius: 17px;
     position: relative;
@@ -40,14 +40,21 @@
     background-color: transparent;
     border: none;
   }
+
+  .nav-btns .btn-dashboard{
+    width: 28px;
+    height: 24px;
+    position: relative;
+  }
+
   .nav-btns .btn-user {
-    width: 48px;
-    height: 48px;
+    width: 30px;
+    height: 42px;
     position: relative;
     top: 10px;
   }
   .nav-btns .btn-gamepad {
-    width: 32px;
+    width: 29px;
     height: 24px;
     position: relative;
     right: 20px;
