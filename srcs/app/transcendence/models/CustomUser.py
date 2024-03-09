@@ -64,6 +64,7 @@ class CustomUser(AbstractUser):
 			'request_sent': self.getFriendRequestSent(),
 			'stat': self.getStat()
 		}
+
 	def getFriends(self):
 		list_friends = self.list_friends.all()
 		# friends_data = []
@@ -77,12 +78,15 @@ class CustomUser(AbstractUser):
 		# 	friends_data.append(friend_data)
 		# return friends_data
 		return [friend.user_data(self, True) for friend in list_friends]
+
 	def getFriendRequestReceived(self):
 		list_friend_request = self.receiver.all()
 		return [re.friend_request_data() for re in list_friend_request]
+
 	def getFriendRequestSent(self):
 		list_friend_request = self.sender.all()
 		return [re.friend_request_data() for re in list_friend_request]
+
 	def getStat(self):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
