@@ -10,7 +10,7 @@ from .Party import Party, PartyInTournament
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
 	# game = models.ForeignKey('Game', on_delete=models.CASCADE)
-	id_game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
+	game = models.ForeignKey('Game', on_delete=models.CASCADE, related_name='game')
 	name = models.CharField(max_length=30, default='Tournament')
 	creator = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
 	status = models.CharField(max_length=30, default='waiting')
