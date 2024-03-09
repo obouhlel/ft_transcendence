@@ -1,10 +1,12 @@
+/***Notificaton Dropdown***/
+
 .dropdown-content {
     display: none;
     position: absolute;
     left: -185px;
     top: 75px;
     background-color: #f9f9f9;
-    min-width: 360px;
+    min-width: 400px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
     border-radius: 17px;
@@ -14,10 +16,53 @@
   
   .dropdown-content .content {
     display: flex;
-    gap: 10px;
+    gap: 3px;
     align-items: center;
     margin-bottom: 3px;
   }
+
+  .dropdown-content .user-btn {
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dropdown-content .user-btn img{
+    width: 63px;
+    height: 63px;
+    border-radius: 50%;
+  }
+
+  .dropdown-content .message{
+    max-width: 245px;
+    padding: 5px;
+  }
+
+  .dropdown-content .notif:not(:last-of-type) {
+    padding-bottom: 8px;
+    border-bottom: 0.3px solid rgb(169, 169, 172);
+}
+
+  .dropdown-content .check {
+    position: absolute;
+    right: 45px;
+    z-index: 11;
+    cursor: pointer;
+    color: #2a1e64;
+    font-size: 20px;
+  }
+  .dropdown-content .cross {
+    position: absolute;
+    right: 19px;
+    cursor: pointer;
+    color: #2a1e64;
+    font-size: 20px;
+  }
+
+
+/***Logout/change-profile Dropdown***/
+
   .dropdown-content-one {
     display: none;
     position: absolute;
@@ -70,37 +115,13 @@
     align-items: center;
   }
   
-  .dropdown-content-one .usercross{
-    cursor: pointer;
-  }
-  
-  .dropdown-content .check {
-    position: absolute;
-    right: 40px;
-    z-index: 11;
-    cursor: pointer;
-  }
-  .dropdown-content .cross {
-    position: absolute;
-    right: 20px;
-    cursor: pointer;
-  }
   .dropdown-content-one .usercross {
     position: absolute;
     right: 20px;
     font-size: 25px;
+    cursor: pointer;
   }
-  
-  .dropdown-content .user-btn {
-    width: 63px;
-    height: 63px;
-    background: #21194a;
-    border-radius: 50%;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+
   .differ .btn-user , .differ .btn-gamepad{
     position: relative;
     top: 0;
@@ -109,4 +130,59 @@
     color: white;
     position: relative;
     top: 8px;
+  }
+
+  /***Responsive Notification dropdown***/
+  @media screen and (max-width: 995px)
+  { 
+    .dropdown-content {
+      left: -240px;
+    }  
+  }
+
+  @media screen and (max-width: 430px)
+  { 
+    .dropdown-content {
+      min-width: 325px;
+      padding: 10px;
+      left: -200px;
+    }
+
+    .dropdown-content .user-btn img{
+      width: 55px;
+      height: 55px;
+    }
+
+    .dropdown-content .message{
+      max-width: 210px;
+      padding: 5px;
+    }
+
+    .dropdown-content .check {
+      font-size: 15px;
+    }
+    .dropdown-content .cross {
+      font-size: 15px;
+    }
+
+    .dropdown-content-one {
+      min-width: 340px;
+      height: 230px;
+      padding: 20px;
+    }
+  
+  }
+
+  @media screen and (max-width: 365px)
+  { 
+    .dropdown-content {
+      min-width: 335px;
+      padding: 10px;
+    }
+    
+    .dropdown-content-one {
+      min-width: 330px;
+      left: -250px;
+    }
+  
   }

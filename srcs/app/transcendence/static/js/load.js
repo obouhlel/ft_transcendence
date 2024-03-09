@@ -3,7 +3,7 @@ import { handleLoginFormSubmit } from './form/login.js';
 import { handleLogout } from './utils/logout.js';
 import { dropdown, responsiveNav } from './header.js';
 import { searchFunction } from './profile/friends.js';
-import { handlerNotification, handleNotificationVisual } from './notifs.js';
+import { handlerNotification, handleNotificationVisual, handlerNotificationAction } from './notifs.js';
 import { doRequest } from './utils/fetch.js';
 
 let isNotificationHandled = false;
@@ -64,6 +64,7 @@ async function showPage(page, params) {
 		responsiveNav();
 		dropdown();
 		handleNotificationVisual();
+		handlerNotificationAction();
 		if (!isNotificationHandled)
 		{
 			handlerNotification();
