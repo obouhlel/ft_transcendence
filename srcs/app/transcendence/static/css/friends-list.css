@@ -47,6 +47,7 @@
   .friend-list .friend-list-members .friend-card {
     width: 100%;
     height: 66px;
+    position: relative;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -89,8 +90,9 @@
     margin-top: 12px;
   }
   .friend-list .friend-list-members .friend-card .member-details img {
-    width: 40.86px;
-    height: 40.86px;
+    width: 43px;
+    height: 43px;
+    border-radius: 50%;
     object-fit: cover;
   }
   .friend-list .friend-list-members .friend-card .member-details {
@@ -118,7 +120,8 @@
     font-size: 9px;
     color: #000000;
     border: none;
-    position: relative;
+    position: absolute;
+    right: 55px;
   }
   .friend-list .friend-list-members .friend-card .active-member-btn::before {
     content: "";
@@ -146,10 +149,7 @@
     color: white;
     cursor: pointer;
   }
-  .active-member-btn{
-    position: relative;
-    left: 17px;
-  }
+
   .friend-list .add-friend-btn .add-friend {
     width: 100%;
     height: 63px;
@@ -178,13 +178,13 @@
 
 @media screen and (max-width: 1190px) {
   .active-member-btn {
-    left: 0px;
+    right: 50px;
   }
 }
 
 @media screen and (max-width: 1070px) {
   .active-member-btn {
-    left: 0px;
+    right: 50px;
   }
 }
 
@@ -198,7 +198,7 @@
   }
 
   .active-member-btn {
-    left: 0px;
+    right: 50px;
   }
 }
 
@@ -224,9 +224,8 @@
   margin-top: 3px;
 }
 
-@media screen and (max-width: 360px) {
+@media screen and (max-width: 450px) {
   .active-member-btn {
-    position: relative;
-    left: 0px;
+    right: 20px;
   }
 }

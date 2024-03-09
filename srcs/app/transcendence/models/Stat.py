@@ -5,8 +5,8 @@ from django.db import models
 
 class Stat_User_by_Game(models.Model):
 	id = models.AutoField(primary_key=True)
-	id_user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
-	id_game = models.ForeignKey('Game', on_delete=models.CASCADE)
+	user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+	game = models.ForeignKey('Game', on_delete=models.CASCADE)
 	nb_played = models.IntegerField(default=0)
 	time_played = models.IntegerField(default=0)
 	nb_win = models.IntegerField(default=0)
@@ -26,8 +26,8 @@ class Stat_User_by_Game(models.Model):
 	def stat_user_by_game_data(self):
 		return {
 			'id': self.id,
-			'id_user': self.id_user.id,
-			'id_game': self.id_game.id,
+			'id_user': self.user.id,
+			'id_game': self.game.id,
 			'nb_played': self.nb_played,
 			'time_played': self.time_played,
 			'nb_win': self.nb_win,

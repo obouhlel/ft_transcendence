@@ -1,4 +1,3 @@
-
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -107,20 +106,25 @@ def searchUser(request, username):
 #Leaderboard
 from transcendence.models import Game
 
+def leaderboard_data(game, limit=None):
+	stat = game.stat_user_by_game_set.all().order_by('-ratio')
+	if limit:
+		stat = stat[:limit]
+	data = [{"user": s.user.user_data(minimal=True), "stat" : s.stat_user_by_game_data()} for s in stat]
+	return data
+
 @login_required
 @require_http_methods(['GET'])
 def getLeaderboard(request, id_game):
 	game = Game.objects.get(id=id_game)
-	stat = game.stat_user_by_game_set.all().order_by('-ratio')
-	data = [{"game": game.name}] + [{"id_user": s.user.id, "user": s.user.username, "ratio": s.ratio} for s in stat]
+	data =  leaderboard_data(game)
 	return JsonResponse({'status': 'ok', 'users': data})
 
 @login_required
 @require_http_methods(['GET'])
 def getLeaderboard_length(request, id_game, length):
 	game = Game.objects.get(id=id_game)
-	stat = game.stat_user_by_game_set.all().order_by('-ratio')[0:length]
-	data = [{"game": game.name}] + [{"id_user": s.user.id, "user": s.user.username, "ratio": s.ratio} for s in stat]
+	data = leaderboard_data(game, length)
 	return JsonResponse({'status': 'ok', 'users': data})
 
 

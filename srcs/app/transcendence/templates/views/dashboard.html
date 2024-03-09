@@ -21,44 +21,8 @@
                                 <th>Win %</th>
                             </tr>
                             </thead>
-
-                            <tbody>
-                            <tr>
-                                <td>01</td>
-                                <td class="lead-user-td">
-                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
-                                    <span class="name-leaderboard">Robert</span>
-                                </td>
-                                <td>16</td>
-                                <td>50%</td>
-                            </tr>
-                            <tr>
-                                <td>02</td>
-                                <td class="lead-user-td">
-                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
-                                    <span class="name-leaderboard">Robert</span>
-                                </td>
-                                <td>5</td>
-                                <td>50%</td>
-                            </tr>
-                            <tr>
-                                <td>03</td>
-                                <td class="lead-user-td">
-                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
-                                    <span class="name-leaderboard">Robert</span>
-                                </td>
-                                <td>12</td>
-                                <td>40%</td>
-                            </tr>
-                            <tr>
-                                <td>04</td>
-                                <td class="lead-user-td">
-                                    <img src="{% static 'img/user-image.png' %}" class="img-leaderboard" alt="user">&nbsp; 
-                                    <span class="name-leaderboard">Robert</span>
-                                </td>
-                                <td>10</td>
-                                <td>40%</td>
-                            </tr>
+                            <tbody id="leaderboardBody">
+                                <!-- Dynamic rows will be inserted here -->
                             </tbody>
                         </table>
                     </main>
@@ -68,18 +32,18 @@
                             <div class="cards-main">
                                 <div class="dashboard-card">
                                     <h5>Rank</h5>
-                                    <h1>#2</h1>
+                                    <h1>#</h1>
                                 </div>
                                 <div class="dashboard-card">
                                     <h5>Best Player</h5>
                                     <div class="best-player">
                                         <img src="{% static 'img/user-image.png' %}" class="img-leaderboard img-stat" alt="user">
-                                        <p class="best-player-name">Robert</p>
+                                        <p class="best-player-name"></p>
                                     </div>
                                 </div>
                                 <div class="dashboard-card">
                                     <h5>Total Players</h5>
-                                    <h1>52</h1>
+                                    <h1>0</h1>
                                 </div>
                             </div>
                         </div>
