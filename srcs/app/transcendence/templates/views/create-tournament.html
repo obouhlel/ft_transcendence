@@ -1,23 +1,21 @@
 {% load static %}
 <main class="game-tour-wrapper">
-    <h1 class="game-1-header">Game 1</h1>
+    <h1 class="game-1-header">{{game.name}}</h1>
 
     <form class="tournament-create-form">
-        <input type="text" placeholder="Tournament Name" required>
-
-        <br>
-        <br>
-
-        <label class="range-label" for="slider">Points</label>
-        <input type="range" id="slider" name="slider" min="1" max="10" value="5" required>
-
-        <label class="range-label" for="slider2">Players</label>
-        <input type="range" id="slider2" name="slider" min="1" max="10" value="5" required>
-        <br>
-        <br>
-
+        <input id="tour-name" type="text" placeholder="Tournament Name" required value="{{game.name}} by {{user.username}}">
+        
+    
+        <label for="players">Select Number of Players:</label>
+        <select id="nb_players" name="players">
+            <option value="2">2</option>
+            <option selected value="4">4</option>
+            <option value="8">8</option>
+            <option value="16">16</option>
+        </select>
+        <input type="hidden" id="game_id" value="{{game.id}}">
         <div class="button-container">
-            <button type="button" class="blue-btn">Tournament</button>
+            <button type="button" class="create-tour-btn blue-btn">Create</button>
         </div>
     </form>
 </main>

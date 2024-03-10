@@ -4,9 +4,9 @@
 	<table class="table">
 		<thead>
 			<tr>
-				<th>Ranked</th>
+				<th>Tournament name</th>
 				<th>Players</th>
-				<th>Points</th>
+				<th>Status</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -15,16 +15,24 @@
 			{% for tournament in tournaments %}
 				<tr>
 					<td>{{ tournament.name }}</td>
-					<td>{{ tournament.players }}/4</td>
-					<td>{{ tournament.points }}</td>
-					<td><button class="blue-btn">Join</button></td>
+					<td>{{ tournament.users_count }}/{{tournament.nb_player_to_start}}</td>
+					<td>{% if tournament.users_count == tournament.nb_player_to_start %}
+						Full
+					{% else %}
+						{{tournament.status}}
+					{% endif %} </td>
+					{% if current_tournament != tournament.id %}
+						<td><a class="blue-btn join-tournament-btn" data-tournamnet-id="{{tournament.id}}" >Join</a></td>
+					{% else %}
+						<td><a class="blue-btn" href="#leave-tournament?id={{tournament.id}}" data-tournamnet-id="{{tournament.id}}">Leave</a></td>
+					{% endif %}
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
 	<div class="button-container">
-		<a href="#create-tournament" type="button" class="white-btn">
-            Create Tournament
+		<a href="#create-tournament?id={{game.id}}" type="button" class="white-btn">
+            Create new tournament
         </a>
 	</div>
 </main>

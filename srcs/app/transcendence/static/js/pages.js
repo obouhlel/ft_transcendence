@@ -12,18 +12,22 @@ import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges } from './dashboard.js';
 import { test } from './test.js';
+import { tournamentHandler, createTournamentHandler } from './games/tournament.js';
+
 
 export const pageHandlers = {
 	'400': [message],
-    'login': [handleLoginFormSubmit],
-    'register': [handleRegisterFormSubmit, changeAvatar],
+	'login': [handleLoginFormSubmit],
+	'register': [handleRegisterFormSubmit, changeAvatar],
 	'dashboard': [test, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges],
-    'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
+	'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
 				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
 				switchGameTab, deleteFriend],
-    'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
+	'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
 	'game-1': [() => matchmacking('pong')],
 	'game-2': [() => matchmacking('ticTacToe')],
 	'pong': [pong3D],
 	'TicTacToe': [ticTacToe3D],
+	'tournament': [tournamentHandler],
+	'create-tournament': [createTournamentHandler],
 };

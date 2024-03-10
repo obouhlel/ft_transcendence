@@ -52,6 +52,11 @@ urlpatterns = [
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
 	path('search_user/<str:username>', searchUser, name='searchUser'),
 
+	path('join_tournament/', joinTournament, name='joinTournament'),
+	path('create_tournament/', createTournament, name='createTournament'),
+	path('leave_tournament/', leaveTournament, name='quitTournament'),
+
+
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 	path('add_friend/<int:id_user>', addFriend, name='addFriend'),
 	path('delete_friend/<int:id_user>', deleteFriend, name='deleteFriend'),
