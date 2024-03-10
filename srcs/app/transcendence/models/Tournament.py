@@ -6,7 +6,6 @@ from django.http import JsonResponse
 from .Party import Party, PartyInTournament
 
 
-
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
 	game = models.ForeignKey('Game', on_delete=models.CASCADE)

@@ -190,3 +190,222 @@
 .player p{
   font-size: 23px;
 }
+
+/***Responsive***/
+
+@media (max-width: 780px) {
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .main-content {
+    max-width: 90%;
+    margin: 20px auto;
+    margin-bottom: 80px;
+  }
+  .index-container {
+    max-width: 90%;
+  }
+  .footer-container p {
+    font-size: 18px;
+  }
+  .games-section {
+    margin: 30px 20px;
+    padding: 20px;
+  }
+  .game-wrapper {
+    margin: 30px 20px;
+    padding: 20px;
+  }
+  .games-grid {
+    grid-template-columns: 100%;
+  }
+  .game-rules {
+    max-width: 95%;
+  }
+  .games-btns {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 60px;
+  }
+  .table {
+    min-width: 100%;
+  }
+  .tournament-create-form {
+    min-width: 100%;
+  }
+  .table {
+    overflow-x: auto;
+    table-layout: fixed;
+  }
+
+  .blue-btn {
+    width: 60%;
+    font-weight: 400;
+    padding: 10px 20px;
+  }
+
+  .button-container a {
+    left: 0px;
+  }
+
+  .game-tour-wrapper .join-btn {
+    width: 100px;
+  }
+}
+
+@media (min-width: 779px) and (max-width: 991px) {
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .main-content {
+    max-width: 70%;
+    margin: 30px auto;
+  }
+  .index-container {
+    max-width: 70%;
+  }
+  .footer-container p {
+    font-size: 18px;
+  }
+  .game-image {
+    height: 400px;
+  }
+  .games-grid {
+    grid-template-columns: 100%;
+  }
+}
+@media (min-width: 991px) and (max-width: 1199px) {
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  .main-content {
+    max-width: 70%;
+    margin: 30px auto;
+  }
+  .index-container {
+    max-width: 70%;
+  }
+  .footer-container p {
+    font-size: 18px;
+  }
+  .game-image {
+    height: 450px;
+  }
+}
+
+@media screen and (max-width: 840px) {
+  .game-tour-wrapper .join-btn {
+    font-size: 0.9rem;
+    padding: 8px 30px;
+    font-weight: 500;
+  }
+}
+
+@media screen and (max-width: 430px) {
+  .game-image {
+    height: 250px;
+  }
+
+  .game-tour-wrapper .table {
+    margin: 20px 10px 20px 30px;
+    width: 100%;
+  }
+
+  .table {
+    display: block;
+  }
+
+  .tournament-table {
+    margin-left: 10px;
+  }
+
+  .tournament-table tbody td {
+    padding: 4px;
+  }
+
+  .tournament-table thead th {
+    padding: 8px;
+    font-weight: 400;
+  }
+
+  .game-tour-wrapper .white-btn {
+    font-size: 15px;
+    font-weight: 400;
+    padding: 10px 15px;
+  }
+
+  .game-tour-wrapper .join-btn {
+    font-size: 15px;
+    font-weight: 400;
+    padding: 10px 15px;
+    width: 80px;
+  }
+
+  .responsive-table {
+    padding: 20px 0px 20px 5px;
+    margin: 5px 20px 80px 20px;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  .game-tour-wrapper .table {
+    margin: 20px 5px 20px 5px;
+    width: 100%;
+  }
+
+  .tournament-table tbody td {
+    padding: 3px;
+  }
+}
+
+/****Lobby tournament*****/
+@media screen and (max-width: 780px)
+{
+
+  .lobby-container .lobby-btn{
+    width: 120px;
+  }
+
+}
+
+@media screen and (max-width: 430px)
+{ 
+  .lobby-container .game-tour-wrapper{
+    margin: 10px 5px 80px 5px;
+  }
+
+  .lobby-wrapper h1 {
+    font-size: 35px;
+    margin-bottom: 12px;
+  }
+
+  .lobby-wrapper h2 {
+    font-size: 25px;
+  }
+
+  .lobby-wrapper input {
+    width: 285px;
+  }
+
+  .lobby-btn {
+    margin-top: 15px;
+  }
+
+  .lobby-container .lobby-btn{
+    width: 285px;
+    margin-left: 0px;
+  }
+
+  #aliasForm {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}

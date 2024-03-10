@@ -112,10 +112,11 @@ def page(request, page):
 		return JsonResponse({'html': html_content})
 	
 def update_header(request):
+	notifications = []
 	if request.user.is_authenticated:
-		notifications = Notification.objects.filter(user=request.user)
-	else:
-		notifications = []
+		pending = FriendRequest.objects.filter(receiver=request.user)
+		for p in pending:
+			notifications.append(p.friend_request_data())
 	context = {
 		'notifications': notifications
 	}

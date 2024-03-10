@@ -279,3 +279,193 @@
   .data-four{
     width: 50px;
   }
+
+  /***Responsive User profile***/
+
+@media screen and (max-width: 1280.89px) {
+  .User-section .user-cont {
+    max-width: 68%;
+    width: 100%;
+  }
+  .User-section .navs-tabs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .User-section .navs-tabs .navs,
+  .User-section .active-tab {
+    width: 100%;
+    justify-content: center;
+  }
+  .User-section .tab-content .Matches {
+    margin: 12px auto;
+  }
+  .User-section .tab-content .stats {
+    margin: 0 auto;
+  }
+}
+@media screen and (max-width: 992px) {
+  .User-section .user-main-cont {
+    flex-wrap: wrap;
+  }
+  .User-section .user-cont {
+    max-width: 100%;
+    width: 100%;
+  }
+  .User-section .tab-content .stats .cards-main {
+    flex-wrap: wrap !important;
+    justify-content: center;
+    align-items: center;
+  }
+  .User-section .main-user .user-details .user-img {
+    width: 94.98px;
+    height: 94.98px;
+    border-radius: 50%;
+  }
+  .User-section .main-user .user-details .content h2 {
+    font-size: 36px;
+  }
+  .User-section .navs-tabs .navs a {
+    font-size: 18px;
+  }
+  .User-section .navs-tabs .navs {
+    display: flex;
+    gap: 18px;
+  }
+  .User-section .tab-content .stats h1 {
+    font-size: 38px;
+  }
+  .User-section .tab-content .Matches h1 {
+    font-size: 38px;
+  }
+  .User-section .tab-content .stats .cards-main .card h1 {
+    font-size: 46px;
+  }
+  .User-section .tab-content .stats .cards-main .card h5 {
+    font-weight: 500;
+    font-size: 14px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .User-section .navs-tabs .navs {
+    display: flex;
+    gap: 14px;
+  }
+  .User-section .navs-tabs .navs a {
+    height: 64px;
+    font-size: 16px;
+    border-radius: 10px;
+  }
+  .User-section .tab-content .stats h1 {
+    font-size: 32px;
+  }
+  .User-section .tab-content .Matches h1 {
+    font-size: 32px;
+  }
+
+  .User-section .tab-content .stats .cards-main .card {
+    width: 234px;
+    gap: 6px;
+  }
+}
+@media screen and (max-width: 576px) {
+  .User-section .main-user {
+    height: fit-content;
+    gap: 10px;
+    justify-content: center;
+  }
+  .User-section .main-user .user-details .content h2 {
+    font-size: 28px;
+  }
+  .User-section .main-user .active-btn button {
+    width: 150px;
+    height: 42px;
+    font-size: 18px;
+  }
+  .User-section .navs-tabs .navs {
+    display: flex;
+    gap: 10px;
+  }
+  .User-section .navs-tabs .navs a {
+    height: 54px;
+  }
+
+  .User-section .tab-content .stats {
+    padding: 19px 8px 25px 8px;
+  }
+
+  .User-section .main-user .user-details .content {
+    align-items: center;
+  }
+  .User-section .main-user .user-details {
+    gap: 15px;
+  }
+  .User-section .main-user .user-details .user-img {
+    width: 112.98px;
+    height: 112.98px;
+  }
+  .User-section .main-user .active-btn button::before {
+    width: 12px;
+    height: 12px;
+    right: -5px;
+    top: -5;
+  }
+}
+@media screen and (max-width: 558px) {
+  .User-section .main-user .user-details {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+  }
+  .User-section .tab-content .stats .cards-main .card {
+    width: 100%;
+    height: 140px;
+  }
+  .User-section .tab-content .stats {
+    padding: 19px 20px 25px 20px;
+  }
+  .User-section .tab-content .Matches {
+    padding: 14px 20px 20px 20px;
+  }
+
+  .User-section .tab-content .Matches .table .thead .tr {
+    margin-left: -10px;
+  }
+
+  .data-three {
+    margin-left: -10px;
+  }
+
+  .data-four {
+    margin-left: 0px;
+  }
+}
+@media screen and (max-width: 430px) {
+  .User-section .tab-content .Matches {
+    height: auto;
+  }
+  .User-section .tab-content .Matches .table .thead {
+    padding: 0 12px;
+  }
+  .User-section .tab-content .Matches .table .tbody .tr{
+    padding: 0 18px;
+  }
+  .data-four {
+    margin-left: 10px;
+  }
+
+  .User-section .tab-content .Matches .table .tbody .data-four{
+    padding-left: 10px;
+  }
+
+  .User-section .tab-content .Matches .table .tbody .data-one{
+    padding-left: 7px;
+  }
+
+  .User-section .tab-content .Matches .table .tbody .data-two{
+    padding-right: 7px;
+    margin-right: 6px;
+  }
+}
