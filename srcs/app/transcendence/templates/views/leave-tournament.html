@@ -1,9 +1,0 @@
-{% load static %}
-<main class="leave-tournament">
-	<h1>Leave the tournament</h1>
-	<form action="/api/leave_tournament/" method="post">
-		{% csrf_token %}
-		<input type="hidden" name="tournament_id" value="{{ tournament.id }}">
-		<button type="submit" class="blue-btn">Leave</button>
-	</form>
-</main>

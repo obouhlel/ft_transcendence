@@ -9,6 +9,12 @@ export function tournamentHandler() {
 				console.log(reponse_data);
 			});
 		}
+		else if (event.target.matches('.leave-tournament-btn')) {
+			let data = { id_tournament: event.target.dataset.tournamnetId };
+			doRequest.post(`/api/leave_tournament/`, data, (reponse_data) => {
+				console.log(reponse_data);
+			});
+		}
 	};
 	document.body.addEventListener('click', handleClick);
 	return () => document.body.removeEventListener('click', handleClick);

@@ -206,8 +206,8 @@ def inviteUserToTournament(request, id_tournament, id_user):
 @require_http_methods(['POST'])
 def leaveTournament(request):
 	try:
-		tournament_id = int(request.POST.get('tournament_id'))
-		tournament = Tournament.objects.get(id=tournament_id)
+		id = json.loads(request.body)['id_tournament']
+		tournament = Tournament.objects.get(id=id)
 		if (request.user not in tournament.users.all()):
 			return JsonResponse({'status': 'error', 'message': 'You are not in the tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
