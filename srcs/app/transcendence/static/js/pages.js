@@ -12,6 +12,7 @@ import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges } from './dashboard.js';
 import { test } from './test.js';
+import { tournamentCreation } from './games/tournament/createTournament.js'
 
 export const pageHandlers = {
 	'400': [message],
@@ -26,4 +27,5 @@ export const pageHandlers = {
 	'game-2': [() => matchmacking('ticTacToe')],
 	'pong': [pong3D],
 	'ticTacToe': [ticTacToe3D],
+	'create-tournament': [() => tournamentCreation('pong')]
 };
