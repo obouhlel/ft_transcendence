@@ -25,5 +25,5 @@ export const pageHandlers = {
 	'game-1': [() => matchmacking('pong')],
 	'game-2': [() => matchmacking('ticTacToe')],
 	'pong': [pong3D],
-	'TicTacToe': [ticTacToe3D],
+	'ticTacToe': [ticTacToe3D],
 };

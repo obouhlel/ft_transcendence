@@ -71,14 +71,14 @@ def getUnregisterJson(username):
 						'username': username })
  
 def getMatchmackingJoinJson(username, game):
-	players = playersConnected.getPlayersUsername()
+	players = playersTicTacToe.getPlayersUsername()
 	return json.dumps({ 'matchmaking': 'waitlist joined',
 						'username': username,
 						'game': game,
 	  					'players': players })
  
 def getMatchmackingLeaveJson(username, game):
-	players = playersConnected.getPlayersUsername()
+	players = playersTicTacToe.getPlayersUsername()
 	return json.dumps({ 'matchmaking': 'waitlist leaved',
 						'username': username,
 						'game': game,
@@ -91,7 +91,7 @@ def createUrlPattern(game):
 	newConsumer = None
 	if game == "pong":
 		newConsumer = consumersForPong.PongConsumer.as_asgi()
-	elif game == "TicTacToe":
+	elif game == "ticTacToe":
 		newConsumer = consumersForTicTacToe.TicTacToeConsumer.as_asgi()
 	routing.add_urlpattern(newPattern, newConsumer)
 	return url
@@ -114,9 +114,9 @@ async def matchmackingTicTacToe():
 			return
 		if playersTicTacToe.getLen() >= 2:
 			duoPlayers = playersTicTacToe.doDuo()
-			url = createUrlPattern("TicTacToe")
+			url = createUrlPattern("ticTacToe")
 			for player in duoPlayers:
-				await player.socket.send(getMatchFoundJson("TicTacToe", url))
+				await player.socket.send(getMatchFoundJson("ticTacToe", url))
 		await asyncio.sleep(1)
 
 # -----------------------------Parser--------------------------------
@@ -136,7 +136,7 @@ def matchmakingJoined(message):
 		playersPong.append(player)
 		if playersPong.getLen() == 1:
 			asyncio.create_task(matchmakingPong())
-	if message['game'] == 'TicTacToe':
+	if message['game'] == 'ticTacToe':
 		player = playersConnected.getPlayer(message['username'])
 		player.mmr = message['mmr']
 		playersTicTacToe.append(player)
@@ -147,7 +147,7 @@ def matchmakingJoined(message):
 def matchmakingLeaved(message):
 	if message['game'] == 'pong':
 		playersPong.remove(message['username'])
-	elif message['game'] == 'TicTacToe':
+	elif message['game'] == 'ticTacToe':
 		playersTicTacToe.remove(message['username'])
 	return getMatchmackingLeaveJson(message['username'], message['game'])
 
