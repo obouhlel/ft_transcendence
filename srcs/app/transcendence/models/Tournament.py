@@ -16,24 +16,26 @@ class Tournament(models.Model):
 	nb_round = models.IntegerField(default=2)
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(null=True, blank=True)
-	# is_active = models.BooleanField(default=False)
-	user_tournament = models.ManyToManyField('CustomUser', related_name='user')
-	invited_user = models.ManyToManyField('CustomUser', related_name='invited')
-	winner_Tournament = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='winner_Tournament')
+	users = models.ManyToManyField('CustomUser', related_name='tournaments')
+	# invited_user = models.ManyToManyField('CustomUser', related_name='tournament_invited_user')
+	winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE,null=True, related_name='winner_Tournament')
+	@property
+	def users_count(self):
+		return self.users.count()
 	def __str__(self):
-		return f"{self.name} tournament {self.id} for {self.id_game} game by {self.creator}"
+		return f"{self.name} tournament {self.id} for {self.game.name} game by {self.creator}"
 	def getAllParties(self):
 		list_party = self.parties.all()
 		party = [party.Party_data() for party in list_party]
 		return party
 	def getAllUser(self):
-		list_user = self.user_tournament.all()
+		list_user = self.users.all()
 		user = [user.id for user in list_user]
 		return user
-	def getAllInvitedUser(self):
-		list_user = self.invited_user.all()
-		user = [user.id for user in list_user]
-		return user
+	# def getAllInvitedUser(self):
+	# 	list_user = self.invited_user.all()
+	# 	user = [user.id for user in list_user]
+	# 	return user
 	def getParties(self):
 		list_party = self.party_set.all()
 		return [party.id for party in list_party]
@@ -50,8 +52,8 @@ class Tournament(models.Model):
 			'parties': self.getParties(),
 			'nb_round': self.nb_round,
 			'user_tournament': self.getAllUser(),
-			'invited_user': self.getAllInvitedUser(),
-			'winner_id': self.winner_Tournament.id if self.winner_Tournament else None
+			# 'invited_user': self.getAllInvitedUser(),
+			'winner_id': self.winner.id if self.winner else None
 	}
 	def end_tournament(self):
 		self.ended_at = timezone.now()

@@ -7,8 +7,12 @@ import { handlerNotification, handleNotificationVisual, handlerNotificationActio
 import { doRequest } from './utils/fetch.js';
 
 let isNotificationHandled = false;
+window.clean = [];
 
 window.addEventListener('hashchange', function() {
+	// Remove all event listeners
+	window.clean.forEach((func) => func());
+	window.clean = [];
 	let [page, params] = hashChangeHandler();
 	window.searchFunction = searchFunction;
 	showPage(page, params);
@@ -40,7 +44,10 @@ function is_logged_in()
 
 async function executeHandlers(page) {
     for (const func of pageHandlers[page]) {
-        await func();
+        const res = await func();
+		if (typeof res === 'function'){
+			window.clean.push(res);
+		}
     }
 }
 
