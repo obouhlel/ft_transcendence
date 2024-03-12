@@ -2,6 +2,7 @@ import { doRequest } from "./utils/fetch.js";
 import { handleLogout } from "./utils/logout.js";
 import { dropdown, responsiveNav } from "./header.js";
 import { show_dynamic_friends } from "./profile/friends.js";
+import { hashChangeHandler } from "./load.js";
 
 export async function handlerNotification() {
 	// setup chat scoket
@@ -23,11 +24,12 @@ export async function handlerNotification() {
 	notifyScoket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
 		const message = data.message;
+		const pages = hashChangeHandler();
 		
 		if (message === "Send") {
 			updateHeader();
 		}
-		else if (message === "Accepted") {
+		if (message === "Accepted" && pages[0] === "profile") {
 			console.log("Friend request accepted");
 			show_dynamic_friends();
 		}
@@ -45,6 +47,7 @@ export async function handlerNotification() {
 
 async function updateHeader() {
 	const header = document.getElementById("header");
+	const pages = hashChangeHandler();
 	const data = await doRequest.get(`/update_header/`);
 	header.innerHTML = data.html;
 	handleNotificationVisual();
@@ -52,6 +55,9 @@ async function updateHeader() {
 	handleLogout();
 	responsiveNav();
 	dropdown();
+	if (pages[0] === "profile") {
+		show_dynamic_friends();
+	}
 }
 
 export function handleNotificationVisual() {

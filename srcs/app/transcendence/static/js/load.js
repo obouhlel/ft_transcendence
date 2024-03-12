@@ -24,7 +24,7 @@ window.addEventListener('load', function() {
 	showPage(page, params);
 });
 
-function hashChangeHandler() {
+export function hashChangeHandler() {
     let hash = window.location.hash.substring(1);
     let [page, params] = hash.split('?');
 
@@ -32,7 +32,6 @@ function hashChangeHandler() {
 
 	return [page, params];
 }
-
 
 function is_logged_in()
 {
@@ -50,7 +49,6 @@ async function executeHandlers(page) {
 		}
     }
 }
-
 
 async function showPage(page, params) {
 	const data_header = await doRequest.get(`/update_header/`);

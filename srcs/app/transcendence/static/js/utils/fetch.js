@@ -17,9 +17,7 @@ export function getCookie(name)
 }
 
 export const doRequest = {
-
-    post: function(url, data, callback)
-    {
+    post: async function(url, data, callback) {
         const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'POST',
@@ -28,17 +26,24 @@ export const doRequest = {
             },
             credentials: 'include',
         };
-		if (data instanceof FormData)
+
+        if (data instanceof FormData) {
             options.body = data;
-		else
-		{
-			options.headers['Content-Type'] = 'application/json';
-			options.body = JSON.stringify(data);
-		}
-        fetch(`${SERVER_URL}${url}`, options)
-            .then(response => response.json())
-            .then(data => { callback(data); })
-            .catch(error => { console.error(error); });
+        }
+        else {
+            options.headers['Content-Type'] = 'application/json';
+            options.body = JSON.stringify(data);
+        }
+
+        try {
+            const response = await fetch(`${SERVER_URL}${url}`, options);
+            const responseData = await response.json();
+            if (callback)
+                callback(responseData);
+        }
+        catch (error) {
+            console.error("Can't do request post");
+        }
     },
 
     get: async function(url) {
@@ -51,31 +56,33 @@ export const doRequest = {
             credentials: 'include'
         };
         try {
-            const response = await fetch(url, options);
-            const data = await response.json();
+            const response = await fetch(`${SERVER_URL}${url}`, options);
             if (!response.ok) {
-                throw new Error(`Error : ${data.message} - ${response.status}`);
+                throw new Error(`Error : ${response.statusText} - ${response.status}`);
             }
-            return data;
+            return await response.json();
         }
         catch (error) {
-            console.error(error);
+            console.error("Can't do request get");
         }
     },
 
-    delete: function(url, callback)
-    {
+    delete: async function(url, callback) {
         const csrftoken = getCookie('csrftoken');
         const options = {
             method: 'DELETE',
             headers: {
-                'X-CSRFToken': csrftoken
+                'X-CSRFToken': csrftoken,
             },
-            credentials: 'include'
+            credentials: 'include',
         };
-        fetch(`${SERVER_URL}${url}`, options)
-            .then(response => response.json())
-            .then(data => { callback(); })
-            .catch(error => { console.error(error); });
+        try {
+            const response = await fetch(`${SERVER_URL}${url}`, options);
+            const data = await response.json();
+            callback();
+        }
+        catch (error) {
+            console.error("Can't do request delete");
+        }
     }
 };

@@ -59,7 +59,10 @@ export function friendsTab()
 	const allFriendsBtn = document.querySelector('.all-friends-btn');
 	const onlineFriendsBtn = document.querySelector('.online-friends-btn');
 	const offlineFriendsBtn = document.querySelector('.offline-friends-btn');
-
+	if (!allFriendsBtn || !onlineFriendsBtn || !offlineFriendsBtn) {
+		console.error('One or more buttons not found');
+		return;
+	}
 
 	allFriendsBtn.addEventListener('click', function() {
 		filterFriends(true, true);

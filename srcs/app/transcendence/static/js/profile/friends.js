@@ -2,6 +2,8 @@ import { doRequest } from '../utils/fetch.js';
 
 export async function show_dynamic_friends() {
     const dataUserConnected = await doRequest.get('/api/get_user_connected');
+	if (!dataUserConnected)
+		return;
 	const userConnected = dataUserConnected.user;
     const userID = userConnected.id;
     fetch(`/api/get_all_friends/${userID}`)
@@ -58,8 +60,11 @@ export async function deleteFriend()
 
 export function searchFunction()
 {
-	let searchInput = document.getElementById('search').value;
-	if (!searchInput || searchInput.trim() === '')
+	let searchInput = document.getElementById('search');
+	if (!searchInput)
+		return;
+	searchInput = searchInput.value;
+	if (searchInput.trim() === '')
 		return;
 	if (searchInput != '')
 	{
@@ -136,6 +141,11 @@ export function openModal()
 	const overlay = document.querySelector('.overlay');
 	const btnCloseModal = document.querySelector('.close-modal');
 	const btnOpenModal = document.querySelector('.show-modal');
+	if (!modal || !overlay || !btnCloseModal || !btnOpenModal)
+	{
+		console.error('Element not found');
+		return ;
+	}
 
 	const openModal = function () {
 		document.getElementById('search').value = '';
