@@ -26,3 +26,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
 	async def send_notification(self, event):
 		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+
+	async def delete_notification(self, event):
+		await self.send(text_data=json.dumps({ 'message': event['message'] }))

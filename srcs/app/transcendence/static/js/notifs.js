@@ -21,8 +21,14 @@ export async function handlerNotification() {
 	// on receiving message on group
 	notifyScoket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
-		console.log(data);
-		updateHeader();
+		const message = data.message;
+		
+		if (message === "Send") {
+			updateHeader();
+		}
+		else if (message === "Accepted") {
+			console.log("Friend request accepted");
+		}
 	};
 
 	// Listen for hash changes
