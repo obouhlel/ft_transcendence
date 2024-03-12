@@ -80,7 +80,7 @@ def user1_received_request_from_user2(user1, user2):
 @require_http_methods(['POST'])
 def sendFriendRequest(request):
 	data = json.loads(request.body)
-	friend_id = data['friend_id']
+	friend_id = data['id_user']
 	user = request.user
 	try:
 		friend = CustomUser.objects.get(id=friend_id)

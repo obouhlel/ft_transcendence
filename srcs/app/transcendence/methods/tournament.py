@@ -89,6 +89,7 @@ def createTournament(request):
 	data = json.loads(request.body)
 	nb_player = data['nb_players'] if 'nb_players' in data else 4
 	user = request.user
+	name = data['name'] if 'name' in data else None
 	if not is_power_of_two(nb_player):
 		return JsonResponse({'status': 'error', 'message': 'The number of players must be a power of 2(2,4,8,16...).'}, status=400)
 	if 'id_game' not in data:
@@ -101,7 +102,7 @@ def createTournament(request):
 		tournament.nb_round = math.log2(nb_player)
 		tournament.status = 'waiting'
 		tournament.start_date = timezone.now()
-		tournament.name = game.name + ' tournament by ' + user.username
+		tournament.name = name if name else f"{game.name} tournament by {user.username}"
 		tournament.users.add(user)
 		tournament.save()
 		# lobby = Lobby.objects.create((all_party_in_tournament := self.tournament.partyintournament.all()):
@@ -121,7 +122,7 @@ def createTournament(request):
 
 #another user can join the tournament
 @login_required
-@require_http_methods(['PUT'])
+@require_http_methods(['POST'])
 def joinTournament(request):
 	id_tournament = json.loads(request.body)['id_tournament']
 	try:
@@ -135,9 +136,9 @@ def joinTournament(request):
 			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
 		tournament.users.add(user)
 		tournament.save()
-		if (tournament.invited_users.filter(id=user.id)):
-			tournament.invited_users.remove(user)
-			tournament.save()
+		# if (tournament.invited_users.filter(id=user.id)):
+		# 	tournament.invited_users.remove(user)
+		# 	tournament.save()
 		if (tournament.users.count() >= tournament.nb_player_to_start):
 			# envoie un signal poiur surligner le bouton start
 			pass
@@ -202,15 +203,16 @@ def inviteUserToTournament(request, id_tournament, id_user):
 
 
 @login_required
-@require_http_methods(['PUT'])
-def quitTournament(request, id_tournament):
+@require_http_methods(['POST'])
+def leaveTournament(request):
 	try:
-		tournament = Tournament.objects.get(id=id_tournament)
-		if (request.user not in tournament.user_tournament.all()):
+		id = json.loads(request.body)['id_tournament']
+		tournament = Tournament.objects.get(id=id)
+		if (request.user not in tournament.users.all()):
 			return JsonResponse({'status': 'error', 'message': 'You are not in the tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
 			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
-		tournament.user_tournament.remove(request.user)
+		tournament.users.remove(request.user)
 		tournament.save()
 		return JsonResponse({'status': 'ok', 'message': 'You quit the tournament.'})
 	except Tournament.DoesNotExist:

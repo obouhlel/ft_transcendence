@@ -111,12 +111,18 @@ export async function addFriendHandler()
 		if (!target.classList.contains('modal-add-btn'))
 			return;
 		const friendID = document.querySelector('.user-row').id;
-		// Need to send a request to the server to add a friend
-        doRequest.post(`/api/add_friend/${friendID}`, {}, data => {
+		const messageElement = document.getElementById("message");
+		const dataSend = {
+			"id_user": friendID,
+		}
+        doRequest.post(`/api/add_friend/`, dataSend, data => {
             if (data.status === 'ok') {
-				show_dynamic_friends();
+				message.innerHTML = data.message;
+				message.style.color = 'green';
             }
 			else {
+				message.innerHTML = data.message;
+				message.style.color = 'red';
                 console.error(data.message);
             }
         });

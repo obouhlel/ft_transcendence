@@ -1,21 +1,22 @@
 {% load static %}
 <main class="game-wrapper">
-	<h1 class="game-1-header">{{ games.1.name }}</h1>
-
+	<h1 class="game-1-header">{{ game.name }}</h1>
+  
 	<ul class="game-rules">
 	  <li>
-		Genres : {{ games.1.genre }}</li>
+		Genres : {{ game.genre }}</li>
 	  </li>
 	  <li>
-		Description : {{ games.1.description }}
+		Description : {{ game.description }}
 	  </li>
 	  <li>
-		Rules : {{ games.1.rules }}
+		Rules : {{ game.rule }}
 	  </li>
 	</ul>
-
+  
 	<div class="button-container games-btns">
 	  <button type="button" class="blue-btn" id="matchmaking">Matchmaking</button>
-	  <a href="#join-tournament" type="button" class="blue-btn">Join Tournament</a>
+	  <a href="#tournament?id={{ game.id }}" type="button" class="blue-btn">Tournament</a>
 	</div>
+  
 </main>

@@ -39,7 +39,7 @@ def getStatsUsersByGame(request, id_game):
 	try:
 		game = Game.objects.get(id=id_game)
 		try:
-			stat_user = request.user.stat_user_by_game_set.get(id_game=game)
+			stat_user = request.user.stat_user_by_game_set.get(game=game)
 			data = {
 				'nb_played': stat_user.nb_played,
 				'time_played': stat_user.time_played,
