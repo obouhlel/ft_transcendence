@@ -8,7 +8,7 @@ from django.conf import settings
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'profile', 'edit_profile',
 				'games', 'game-1', 'game-2', 'join-tournament',
-				'create-tournament', 'lobby-tournament', 'dashboard']
+				'create-tournament', 'lobby-tournament', 'dashboard', 'loading']
 games_pages = ['pong', 'TicTacToe']
 
 @ensure_csrf_cookie
