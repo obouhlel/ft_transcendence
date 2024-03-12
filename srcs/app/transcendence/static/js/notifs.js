@@ -1,6 +1,7 @@
 import { doRequest } from "./utils/fetch.js";
 import { handleLogout } from "./utils/logout.js";
 import { dropdown, responsiveNav } from "./header.js";
+import { show_dynamic_friends } from "./profile/friends.js";
 
 export async function handlerNotification() {
 	// setup chat scoket
@@ -28,6 +29,7 @@ export async function handlerNotification() {
 		}
 		else if (message === "Accepted") {
 			console.log("Friend request accepted");
+			show_dynamic_friends();
 		}
 	};
 
