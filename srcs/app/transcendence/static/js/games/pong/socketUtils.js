@@ -48,7 +48,8 @@ function parseMessage(message, game) {
         if (message['game'] == 'end') {
             game.needStop = true;
             // here we can update the database
-            UTILS.updateScore(game.scene, message['score'], game);
+            if (message['score'])
+                UTILS.updateScore(game.scene, message['score'], game);
             setTimeout(() => {
                 window.location.hash = 'home';
             }, 5000);

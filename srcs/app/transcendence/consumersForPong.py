@@ -21,12 +21,13 @@ class Ball():
     def __init__(self):
         self.position = {'x': 0, 'z': 0}
         self.direction = {'x': 0, 'z': 0}
+        self.size = 0.4
 
-    def isPlayerHitted(self, playerPos: float):
-        topLeft = {'x': playerPos['x'] - 0.5,
-                   'z': playerPos['z'] - 1}
-        botRight = {'x': playerPos['x'] + 0.5,
-                    'z': playerPos['z'] + 1}
+    def ifPlayerHitted(self, playerPos: float):
+        topLeft = {'x': playerPos['x'] - 0.5 - self.size,
+                   'z': playerPos['z'] - 1 - self.size}
+        botRight = {'x': playerPos['x'] + 0.5 + self.size,
+                    'z': playerPos['z'] + 1 + self.size}
         if self.position['x'] >= topLeft['x'] and self.position['x'] <= botRight['x']:
             if self.position['z'] >= topLeft['z'] and self.position['z'] <= botRight['z']:
                 self.direction['x'] = self.position['x'] - playerPos['x']
@@ -36,11 +37,20 @@ class Ball():
                     self.direction['x'] /= maxVal
                     self.direction['z'] /= maxVal
 
-    def isTopBotHitted(self):
-        if self.position['z'] >= 10 or self.position['z'] <= -10:
+    def isBallLeftSide(self):
+        return self.position['x'] < 0
+    
+    def isBallRightSide(self):
+        return self.position['x'] > 0
+
+    def isStoped(self):
+        return (self.direction['x'] > 0 and self.direction['x'] < 0.5) or (self.direction['x'] < 0 and self.direction['x'] > -0.5) or (self.position['x'] != 0 and self.direction['x'] == 0)
+
+    def ifTopBotHitted(self):
+        if self.position['z'] >= 10 - self.size or self.position['z'] <= -10 + self.size:
             self.direction['z'] *= -1
             
-    def isScored(self, players: dict[str, Player]):
+    def ifScored(self, players: dict[str, Player]):
         if self.position['x'] >= 10 or self.position['x'] <= -10:
             if self.position['x'] >= 10:
                 players['left'].score += 1
@@ -48,14 +58,22 @@ class Ball():
                 players['right'].score += 1
             self.reset()
 
+    def antiBlock(self):
+        if self.isStoped():
+            if self.isBallLeftSide():
+                self.direction['x'] += 0.1
+            if self.isBallRightSide():
+                self.direction['x'] -= 0.1
+
     def move(self, players: dict[str, Player]):
         if self.direction['x'] == 0:
             self.reset()
         else:
-            self.isPlayerHitted({ 'z': players['left'].position, 'x': -9 })
-            self.isPlayerHitted({ 'z': players['right'].position, 'x': 9 })
-            self.isTopBotHitted()
-            self.isScored(players)
+            self.ifPlayerHitted({ 'z': players['left'].position, 'x': -9 })
+            self.ifPlayerHitted({ 'z': players['right'].position, 'x': 9 })
+            self.ifTopBotHitted()
+            self.antiBlock()
+            self.ifScored(players)
             self.position['x'] += self.direction['x'] / 10
             self.position['z'] += self.direction['z'] / 10
         

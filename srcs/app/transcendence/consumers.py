@@ -127,6 +127,8 @@ def register(socket, message):
  
 def unregister(message):
 	playersConnected.remove(message['username'])
+	playersPong.remove(message['username'])
+	playersTicTacToe.remove(message['username'])
 	return getUnregisterJson(message['username'])
 
 def matchmakingJoined(message):
