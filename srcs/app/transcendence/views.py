@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
+from django.conf import settings
 
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'profile', 'edit_profile',
@@ -15,6 +16,8 @@ def index(request):
 	games = Game.objects.all()
 	return render(request, 'index.html', {'games': games})
 
+import logging
+logger = logging.getLogger(__name__)
 def page(request, page):
 	games = Game.objects.all()
 	context = {
@@ -23,6 +26,72 @@ def page(request, page):
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
+	if page == 'game' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			game = Game.objects.get(id = id)
+			html_content = render_to_string('views/game.html', request=request, context={'game': game})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			game = Game.objects.get(id = id)
+			tournaments = Tournament.objects.filter(game=game)
+			user = request.user
+			if user.tournaments.filter(game=game).count() > 0:
+				current_tournament = user.tournaments.get(game=game).id
+			else:
+				current_tournament = None
+
+
+			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
+			return JsonResponse({'html': html_content})
+		except Exception as e:
+			logger.error(e)
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+		
+	if page == 'join-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id)
+			html_content = render_to_string('views/join-tournament.html', request=request, context={'tournament': tournament, "is_creator": request.user == tournament.creator})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'leave-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id)
+			html_content = render_to_string('views/leave-tournament.html', request=request, context={'tournament': tournament})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'create-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			user = request.user
+			game = Game.objects.get(id = id)
+			html_content = render_to_string('views/create-tournament.html', request=request, context={'game': game, 'user': user})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})	
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
 		return JsonResponse({'html': html_content})
@@ -43,12 +112,16 @@ def page(request, page):
 		return JsonResponse({'html': html_content})
 	
 def update_header(request):
+	notifications = []
 	if request.user.is_authenticated:
-		notifications = Notification.objects.filter(user=request.user)
-	else:
-		notifications = []
+		pending = FriendRequest.objects.filter(receiver=request.user)
+		for p in pending:
+			notifications.append(p.friend_request_data())
 	context = {
 		'notifications': notifications
 	}
 	html_content = render_to_string('header.html', request=request, context=context)
 	return JsonResponse({'html': html_content})
+	
+def config(request):
+	return render(request, 'config.js', content_type='application/javascript', context={'CLIENT_ID': settings.API_42_UID})

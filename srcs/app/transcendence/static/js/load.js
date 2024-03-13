@@ -3,30 +3,34 @@ import { handleLoginFormSubmit } from './form/login.js';
 import { handleLogout } from './utils/logout.js';
 import { dropdown, responsiveNav } from './header.js';
 import { searchFunction } from './profile/friends.js';
-import { handlerNotification, handleNotificationVisual } from './notifs.js';
+import { handlerNotification, handleNotificationVisual, handlerNotificationAction } from './notifs.js';
 import { doRequest } from './utils/fetch.js';
 
 let isNotificationHandled = false;
+window.clean = [];
 
 window.addEventListener('hashchange', function() {
-	let page = hashChangeHandler();
+	// Remove all event listeners
+	window.clean.forEach((func) => func());
+	window.clean = [];
+	let [page, params] = hashChangeHandler();
 	window.searchFunction = searchFunction;
-	showPage(page);
+	showPage(page, params);
 });
 
 window.addEventListener('load', function() {
-	let page = hashChangeHandler();
+	let [page, params] = hashChangeHandler();
 	window.searchFunction = searchFunction;
-	showPage(page);
+	showPage(page, params);
 });
 
-function hashChangeHandler() {
-	let hash = window.location.hash.substring(1);
-	let page = hash.split('?')[0];
-	if (!page) {
-		page = 'home';
-	}
-	return page;
+export function hashChangeHandler() {
+    let hash = window.location.hash.substring(1);
+    let [page, params] = hash.split('?');
+
+	page = page || 'home';
+
+	return [page, params];
 }
 
 function is_logged_in()
@@ -39,16 +43,19 @@ function is_logged_in()
 
 async function executeHandlers(page) {
     for (const func of pageHandlers[page]) {
-        await func();
+        const res = await func();
+		if (typeof res === 'function'){
+			window.clean.push(res);
+		}
     }
 }
 
-async function showPage(page) {
+async function showPage(page, params) {
 	const data_header = await doRequest.get(`/update_header/`);
 	const header_content = document.getElementById('header');
 	header_content.innerHTML = data_header.html;
 
-	const data_page = await doRequest.get(`/pages/${page}`);
+	const data_page = await doRequest.get(`/pages/${page}${params ? '?' + params : ''}`);
 	const page_content = document.getElementById('page');
 	page_content.innerHTML = data_page.html;
 	const isLogged = is_logged_in();
@@ -62,6 +69,7 @@ async function showPage(page) {
 		responsiveNav();
 		dropdown();
 		handleNotificationVisual();
+		handlerNotificationAction();
 		if (!isNotificationHandled)
 		{
 			handlerNotification();

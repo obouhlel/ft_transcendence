@@ -156,3 +156,103 @@ function renderAgeDemographicsChart(ageRanges) {
   });
 }
 
+async function fetchLeaderboardData(gameId) {
+  const leaderboardUrl = `/api/get_leaderboard/${gameId}`;
+  const usersUrl = '/api/get_all_users/';
+
+  try {
+    const [leaderboardResponse, usersResponse] = await Promise.all([
+      fetch(leaderboardUrl).then(res => res.json()),
+      fetch(usersUrl).then(res => res.json()),
+    ]);
+
+    return {
+      leaderboardData: leaderboardResponse,
+      usersData: usersResponse,
+    };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return { leaderboardData: null, usersData: null };
+  }
+}
+
+
+function processAndAssociateData(leaderboardData) {
+  const leaderboard = leaderboardData.users.map(entry => {
+      const { user, stat } = entry;
+
+      return {
+          username: user.username,
+          avatar: user.avatar || defaultAvatarUrl,
+          nbPlayed: stat.nb_played,
+          ratio: stat.ratio * 100,
+      };
+  });
+
+  // Sort by ratio, descending
+  leaderboard.sort((a, b) => b.ratio - a.ratio);
+
+  return leaderboard;
+}
+
+function displayLeaderboard(leaderboard) {
+  const tbody = document.getElementById('leaderboardBody');
+  tbody.innerHTML = '';
+
+  leaderboard.forEach((entry, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td class="lead-user-td">
+        <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
+        <span class="name-leaderboard">${entry.username}</span>
+      </td>
+      <td>${entry.nbPlayed}</td>
+      <td>${entry.ratio.toFixed(2)}%</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function fetchCurrentUserName() {
+  const response = await fetch('/api/get_user_name/');
+  const data = await response.json();
+  return data.username;
+}
+
+async function updateDashboardStats(leaderboard) {
+  const currentUser = await fetchCurrentUserName();
+  const currentUserIndex = leaderboard.findIndex(player => player.username === currentUser);
+  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N/A';
+
+  const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
+  const totalPlayers = leaderboard.length; 
+
+  document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
+  document.querySelector('.best-player-name').innerText = bestPlayer ? bestPlayer.username : 'N/A';
+  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Fallback to default avatar
+  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
+}
+
+export async function updateDashboardDisplay(gameId) {
+  const { leaderboardData, usersData } = await fetchLeaderboardData(gameId);
+  if (leaderboardData.status === "ok" && usersData.status === "ok") {
+    const leaderboard = processAndAssociateData(leaderboardData);
+    displayLeaderboard(leaderboard);
+    updateDashboardStats(leaderboard);
+  } else {
+    console.error("Failed to fetch data");
+  }
+}
+
+export function setupTabEventListeners() {
+  document.querySelectorAll('.tab-link').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.tab-link').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+
+      const gameId = this.getAttribute('data-tab') === 'tab1' ? 1 : 2;
+      updateDashboardDisplay(gameId);
+    });
+  });
+}

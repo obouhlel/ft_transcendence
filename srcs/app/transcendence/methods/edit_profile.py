@@ -56,12 +56,14 @@ def edit_profile(request):
 
 	password = data.get('password')
 	password_confirm = data.get('password_confirm')
-	if password and password_confirm:
-		if password != password_confirm:
-			return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
-		if len(password) < 8:
-			return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
-		user.password = make_password(password)  # Fix: Use user.password instead of reassigning user
+	if password is None and password_confirm is not None:
+		return JsonResponse({'status': 'error', 'message': 'Password is required.'}, status=400)
+	if len(password) < 8:
+		return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
+	if password != password_confirm:
+		return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
+	
+	user.password = make_password(password)  # Fix: Use user.password instead of reassigning user
 
 	user.save()
 	authenticate(request, username=user.username, password=password)

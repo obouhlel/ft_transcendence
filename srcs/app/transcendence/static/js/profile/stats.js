@@ -1,38 +1,37 @@
 import { doRequest } from '../utils/fetch.js';
 
-export function show_dynamic_stats(gameID)
-{
-	if (!gameID)
-	{
+export async function show_dynamic_stats(gameID) {
+	if (!gameID) {
 		const tabId = this.getAttribute('data-tab');
-		if (!tabId)
+		if (!tabId) {
 			console.error('No tab ID class "data-tab" not found');
+			return;
+		}
 		gameID = tabId.slice(3);
 	}
-	fetch(`/api/get_stats_users_by_game/${gameID}`)
-	.then(response => response.json())
-	.then(data => {
+	try {
+		const response = await fetch(`/api/get_stats_users_by_game/${gameID}`);
+		const data = await response.json();
 		if (data.status === 'ok') {
-			document.querySelector('.card:nth-child(1) h1').textContent = data.stat.nb_win;
-			document.querySelector('.card:nth-child(2) h1').textContent = data.stat.nb_lose;
-			if (data.stat.nb_win + data.stat.nb_lose === 0)
-				document.querySelector('.card:nth-child(3) h1').textContent = 0;
-			else
-				document.querySelector('.card:nth-child(3) h1').textContent = (data.stat.nb_win / (data.stat.nb_win + data.stat.nb_lose)).toFixed(2);
-			document.querySelector('.card:nth-child(4) h1').textContent = data.stat.nb_played;
-		} else {
+			const cards = document.querySelectorAll('.card h1');
+			cards[0].textContent = data.stat.nb_win;
+			cards[1].textContent = data.stat.nb_lose;
+			cards[2].textContent = (data.stat.nb_win + data.stat.nb_lose === 0) ? 0 : (data.stat.nb_win / (data.stat.nb_win + data.stat.nb_lose)).toFixed(2);
+			cards[3].textContent = data.stat.nb_played;
+		}
+		else {
 			console.error(data.message);
 		}
-	})
-	.catch(error => {
-		console.error(error);
-	});
+	}
+	catch (error) {
+		console.error("Can't fetch stats users, because not logged in");
+	}
 }
 
 export async function show_dynamic_history(gameID) {
-	fetch(`/api/get_user_history_by_game/${gameID}`)
-	.then(response => response.json())
-	.then(async data => {
+	try {
+		const response = await fetch(`/api/get_user_history_by_game/${gameID}`);
+		const data = await response.json();
 		if (data.status === 'ok') {
 			const tbody = document.querySelector('.Matches .table .tbody');
 			if (!tbody) {
@@ -49,13 +48,11 @@ export async function show_dynamic_history(gameID) {
 				let party_status = 0;
 				const winner_score = party.score1 > party.score2 ? party.score1 : party.score2;
 				const loser_score = party.score1 < party.score2 ? party.score1 : party.score2;
-				if (party.winner_party === userConnected.id)
-				{
+				if (party.winner_party === userConnected.id) {
 					score = `${winner_score} - ${loser_score}`;
 					party_status = 'Win';
 				}
-				else
-				{
+				else {
 					score = `${loser_score} - ${winner_score}`;
 					party_status = 'Lose';
 				}
@@ -76,5 +73,8 @@ export async function show_dynamic_history(gameID) {
 		else {
 			console.error(data.message);
 		}
-	});
+	}
+	catch (error) {
+		console.error("Can't fetch history, because not logged in");
+	}
 }
