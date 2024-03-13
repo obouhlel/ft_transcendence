@@ -21,6 +21,6 @@ export function tournamentCreation(gameName) {
 	pageGestion(sliderPoints, sliderPlayers, pointsInfo, playersInfo);
 
 	btn.addEventListener('click', () => {
-		
+		console.log("should create a tournament");
 	});
 }
