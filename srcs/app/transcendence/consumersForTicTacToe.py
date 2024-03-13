@@ -12,6 +12,7 @@ class Player():
         self.pawn: str = pawn
         self.socket: AsyncWebsocketConsumer = websocket
         self.played: bool = False
+        self.disconected: bool = False
 
 class Map():
     def __init__(self):
@@ -75,6 +76,18 @@ class Duo():
                 return player
         return None
 
+    def isSomeoneDisconected(self):
+        for player in self.players:
+            if player.disconected == True:
+                return True
+        return False
+    
+    def getDisconectedPlayer(self):
+        for player in self.players:
+            if player.disconected == True:
+                return player
+        return None
+
     async def broadcast(self, message: dict):
         for player in self.players:
             await player.socket.send(json.dumps(message))
@@ -82,6 +95,14 @@ class Duo():
     async def gameLoop(self):
         sended = False
         while True:
+            if self.isSomeoneDisconected() == True:
+                disconnectedPlayer = self.getDisconectedPlayer()
+                winner = self.getOtherPlayer(disconnectedPlayer.username)
+                await winner.socket.send(json.dumps({ 'game': 'end',
+                                                      'winner': winner.username }))
+                self.remove(disconnectedPlayer)
+                self.remove(winner)
+                return
             playerTurn = self.getPlayerWithPawn(self.turn)
             if sended == False:
                 await playerTurn.socket.send(json.dumps({ 'game': 'play' }))
@@ -135,6 +156,8 @@ class Game():
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
                 asyncio.create_task(duo.gameLoop())
+            elif len(duo.players) == 0:
+                self.remove(duo)
 
 ticTakToe = Game()
 
@@ -159,11 +182,7 @@ def leaveDuo(message: dict):
     if duo != None:
         player = duo.getPlayer(message['username'])
         if player != None:
-            winner = duo.getOtherPlayer(message['username'])
-            player.socket.close()
-            duo.remove(player)
-            if len(duo.players) == 0:
-                ticTakToe.remove(duo)
+            player.disconected = True
     return None
 
 def position(message: dict):

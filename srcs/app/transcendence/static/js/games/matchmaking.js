@@ -1,5 +1,8 @@
 import * as JS_UTILS from './jsUtils.js';
 
+import { doRequest } from '../utils/fetch.js';
+
+// ----------------- Send functions -----------------
 function sendRegister(socket, infos) {
     const message = {
         register: 'in',
@@ -36,14 +39,6 @@ function sendMatchmakingLeave(socket, infos) {
     JS_UTILS.sendMessageToSocket(socket, message);
 }
 
-function doMatchmaking(socket, infos, button) {
-    if (button.innerHTML == 'Matchmaking') {
-        sendMatchmakingJoin(socket, infos);
-    } else if (button.innerHTML == 'Cancel matchmaking') {
-        sendMatchmakingLeave(socket, infos);
-    }
-}
-
 function parseMessage(message, infos) {
     if ('register' in message) {
         if (message['register'] == 'connected') {
@@ -65,6 +60,7 @@ function parseMessage(message, infos) {
     }
 }
 
+// ----------------- Listeners -----------------
 function socketListener(socket, infos) {
     socket.onopen = function () {
         console.log('Connection established');
@@ -87,31 +83,40 @@ function socketListener(socket, infos) {
     };
 }
 
-// temp username
-function generateRandomString(length) {
-    let result = '';
-    let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
-
-export function matchmacking(gameName) {
-    const url = `wss://${window.location.host}/ws/matchmaking/`;
-    const socketMatchmaking = new WebSocket(url);
-    let infos = { username: generateRandomString(10), mmr: 0, registered: false, gameName: gameName };
-    JS_UTILS.createCookie('username', infos['username'], 1);
-    socketListener(socketMatchmaking, infos);
-
-    const btn = document.getElementById('matchmaking');
-    btn.addEventListener('click', function () {
-        doMatchmaking(socketMatchmaking, infos, btn);
-    });
+function windowListener(socket, infos, btn) {
     window.addEventListener('hashchange', function () {
-        if (socketMatchmaking.readyState == 1) {
-            sendUnregister(socketMatchmaking, infos);
-            socketMatchmaking.close();
+        if (socket.readyState == 1) {
+            sendUnregister(socket, infos);
+            socket.close();
         }
     });
+
+    window.addEventListener('beforeunload', function () {
+        if (socket.readyState == 1) {
+            sendUnregister(socket, infos);
+            socket.close();
+        }
+    });
+
+    btn.addEventListener('click', function () {
+        if (btn.innerHTML == 'Matchmaking') {
+            sendMatchmakingJoin(socket, infos);
+        } else if (btn.innerHTML == 'Cancel matchmaking') {
+            sendMatchmakingLeave(socket, infos);
+        }
+    });
+}
+
+export async function matchmacking(gameName) {
+    const url = `wss://${window.location.host}/ws/matchmaking/`;
+    const socketMatchmaking = new WebSocket(url);
+
+    const JsonUsername = await doRequest.get(`/api/get_user_name/`);
+    const infos = { username: JsonUsername['username'], mmr: 0, registered: false, gameName: gameName };
+    JS_UTILS.createCookie('username', infos['username'], 1);
+    
+    const btn = document.getElementById('matchmaking');
+    
+    socketListener(socketMatchmaking, infos);
+    windowListener(socketMatchmaking, infos, btn);
 }

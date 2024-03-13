@@ -15,17 +15,19 @@ class Player():
         self.memScore: int = 0
         self.side: str = side
         self.socket: AsyncWebsocketConsumer = websocket
+        self.disconnected: bool = False
 
 class Ball():
     def __init__(self):
         self.position = {'x': 0, 'z': 0}
         self.direction = {'x': 0, 'z': 0}
+        self.size = 0.4
 
-    def isPlayerHitted(self, playerPos: float):
-        topLeft = {'x': playerPos['x'] - 0.5,
-                   'z': playerPos['z'] - 1}
-        botRight = {'x': playerPos['x'] + 0.5,
-                    'z': playerPos['z'] + 1}
+    def ifPlayerHitted(self, playerPos: float):
+        topLeft = {'x': playerPos['x'] - 0.5 - self.size,
+                   'z': playerPos['z'] - 1 - self.size}
+        botRight = {'x': playerPos['x'] + 0.5 + self.size,
+                    'z': playerPos['z'] + 1 + self.size}
         if self.position['x'] >= topLeft['x'] and self.position['x'] <= botRight['x']:
             if self.position['z'] >= topLeft['z'] and self.position['z'] <= botRight['z']:
                 self.direction['x'] = self.position['x'] - playerPos['x']
@@ -35,11 +37,20 @@ class Ball():
                     self.direction['x'] /= maxVal
                     self.direction['z'] /= maxVal
 
-    def isTopBotHitted(self):
-        if self.position['z'] >= 10 or self.position['z'] <= -10:
+    def isBallLeftSide(self):
+        return self.position['x'] < 0
+    
+    def isBallRightSide(self):
+        return self.position['x'] > 0
+
+    def isStoped(self):
+        return (self.direction['x'] > 0 and self.direction['x'] < 0.5) or (self.direction['x'] < 0 and self.direction['x'] > -0.5) or (self.position['x'] != 0 and self.direction['x'] == 0)
+
+    def ifTopBotHitted(self):
+        if self.position['z'] >= 10 - self.size or self.position['z'] <= -10 + self.size:
             self.direction['z'] *= -1
             
-    def isScored(self, players: dict[str, Player]):
+    def ifScored(self, players: dict[str, Player]):
         if self.position['x'] >= 10 or self.position['x'] <= -10:
             if self.position['x'] >= 10:
                 players['left'].score += 1
@@ -47,14 +58,22 @@ class Ball():
                 players['right'].score += 1
             self.reset()
 
+    def antiBlock(self):
+        if self.isStoped():
+            if self.isBallLeftSide():
+                self.direction['x'] += 0.1
+            if self.isBallRightSide():
+                self.direction['x'] -= 0.1
+
     def move(self, players: dict[str, Player]):
         if self.direction['x'] == 0:
             self.reset()
         else:
-            self.isPlayerHitted({ 'z': players['left'].position, 'x': -9 })
-            self.isPlayerHitted({ 'z': players['right'].position, 'x': 9 })
-            self.isTopBotHitted()
-            self.isScored(players)
+            self.ifPlayerHitted({ 'z': players['left'].position, 'x': -9 })
+            self.ifPlayerHitted({ 'z': players['right'].position, 'x': 9 })
+            self.ifTopBotHitted()
+            self.antiBlock()
+            self.ifScored(players)
             self.position['x'] += self.direction['x'] / 10
             self.position['z'] += self.direction['z'] / 10
         
@@ -123,12 +142,34 @@ class Duo():
             return True
         return playerLeft.score == 10 or playerRight.score == 10
 
+    def isSomeoneDisconected(self):
+        for player in self.players:
+            if player.disconnected == True:
+                return True
+        return False
+    
+    def getDisconectedPlayer(self):
+        for player in self.players:
+            if player.disconnected == True:
+                return player
+        return None
+
     async def broadcast(self, message: dict):
         for player in self.players:
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
         while True:
+            if self.isSomeoneDisconected() == True:
+                disconnectedPlayer = self.getDisconectedPlayer()
+                winner = self.getOtherPlayer(disconnectedPlayer.username)
+                scoreString = "10 - 0" if winner.side == 'left' else "0 - 10"
+                await self.broadcast({ 'game': 'end',
+                                       'score': scoreString,
+                                       'winner': winner.side })
+                self.remove(disconnectedPlayer)
+                self.remove(winner)
+                return
             playerLeft = self.getPlayerLeft()
             playerRight = self.getPlayerRight()
             if playerLeft != None and playerRight != None:
@@ -179,6 +220,8 @@ class Game():
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
                 asyncio.create_task(duo.gameLoop())
+            elif len(duo.players) == 0:
+                self.remove(duo)
 
 pong = Game()
 
@@ -203,13 +246,7 @@ def leaveDuo(message: dict):
     if duo != None:
         player = duo.getPlayer(message['username'])
         if player != None:
-            winner = duo.getOtherPlayer(message['username'])
-            if winner != None:
-                winner.score = 10
-            player.socket.close()
-            duo.remove(player)
-            if len(duo.players) == 0:
-                pong.remove(duo)
+            player.disconnected = True
     return None
 
 def position(message: dict):
