@@ -1,4 +1,4 @@
-import { pageHandlers } from './pages.js';
+import { pageHandlers, handleGameRequest } from './pages.js';
 import { handleLoginFormSubmit } from './form/login.js';
 import { handleLogout } from './utils/logout.js';
 import { dropdown, responsiveNav } from './header.js';
@@ -61,6 +61,8 @@ async function showPage(page, params) {
 	const isLogged = is_logged_in();
 	if (!isLogged && page === 'home')
 		handleLoginFormSubmit();
+	else if (page === "game")
+		handleGameRequest(params.split('=')[1]);
 	else if (pageHandlers[page])
 		executeHandlers(page);
 	if (isLogged)

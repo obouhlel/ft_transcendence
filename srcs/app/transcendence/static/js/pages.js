@@ -13,19 +13,29 @@ import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay, setupTabEventListeners} from './dashboard.js';
 import { tournamentHandler, createTournamentHandler } from './games/tournament.js';
 
+export function handleGameRequest(gameId) {
+    switch(gameId) {
+        case '1':
+            return matchmacking('pong');
+        case '2':
+            return matchmacking('ticTacToe');
+        default:
+            console.error('Unknown game id');
+    }
+}
+
 export const pageHandlers = {
-	'400': [message],
+    '400': [message],
     'login': [handleLoginFormSubmit],
     'register': [handleRegisterFormSubmit, changeAvatar],
-	'dashboard': [setupTabEventListeners, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, () => updateDashboardDisplay(1)],
+    'dashboard': [setupTabEventListeners, fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, () => updateDashboardDisplay(1)],
     'profile': [show_dynamic_friends, openModal, addFriendHandler, searchFunction,
-				() => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
-				switchGameTab, deleteFriend],
-	'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
-	'game-1': [() => matchmacking('pong')],
-	'game-2': [() => matchmacking('ticTacToe')],
-	'pong': [pong3D],
-	'TicTacToe': [ticTacToe3D],
-	'tournament': [tournamentHandler],
-	'create-tournament': [createTournamentHandler],
+                () => show_dynamic_history(1), () => show_dynamic_stats(1), friendsTab,
+                switchGameTab, deleteFriend],
+    'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
+    'game': [gameId => handleGameRequest(gameId)],
+    'pong': [pong3D],
+    'TicTacToe': [ticTacToe3D],
+    'tournament': [tournamentHandler],
+    'create-tournament': [createTournamentHandler],
 };
