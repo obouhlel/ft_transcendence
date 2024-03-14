@@ -6,12 +6,13 @@ import { show_dynamic_stats, show_dynamic_history } from './profile/stats.js';
 import { switchGameTab, friendsTab } from './profile/tabs.js';
 import { handleLogout } from './utils/logout.js';
 import { changeAvatar } from './utils/avatar.js';
-import { message } from './utils/message.js';
+import { message } from './utils/message.js'; // Added import statement
 import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay, setupTabEventListeners} from './dashboard.js';
 import { tournamentHandler, createTournamentHandler } from './games/tournament.js';
+import { GameHandler } from './games/game.js';
 
 export const pageHandlers = {
 	'400': [message],
@@ -24,6 +25,7 @@ export const pageHandlers = {
 	'edit_profile': [handleEditProfileFormSubmit, changeAvatar],
 	'game-1': [() => matchmacking('pong')],
 	'game-2': [() => matchmacking('ticTacToe')],
+	'game': [GameHandler], // Added 'game' page handler
 	'pong': [pong3D],
 	'TicTacToe': [ticTacToe3D],
 	'tournament': [tournamentHandler],

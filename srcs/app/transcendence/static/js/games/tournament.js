@@ -4,13 +4,13 @@ import { doRequest } from '../utils/fetch.js';
 export function tournamentHandler() {
 	const handleClick = (event) => {
 		if (event.target.matches('.join-tournament-btn')) {
-			let data = { id_tournament: event.target.dataset.tournamnetId };
+			let data = { id_tournament: event.target.dataset.tournamentId };
 			doRequest.post(`/api/join_tournament/`, data, (reponse_data) => {
 				console.log(reponse_data);
 			});
 		}
 		else if (event.target.matches('.leave-tournament-btn')) {
-			let data = { id_tournament: event.target.dataset.tournamnetId };
+			let data = { id_tournament: event.target.dataset.tournamentId };
 			doRequest.post(`/api/leave_tournament/`, data, (reponse_data) => {
 				console.log(reponse_data);
 			});

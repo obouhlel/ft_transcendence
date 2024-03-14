@@ -10,12 +10,12 @@
 		Description : {{ game.description }}
 	  </li>
 	  <li>
-		Rules : {{ game.rule }}
+		Rules : {{ game.rules }}
 	  </li>
 	</ul>
   
 	<div class="button-container games-btns">
-	  <button type="button" class="blue-btn" id="matchmaking">Matchmaking</button>
+	  <a type="button" class="blue-btn matchmaking-btn" data-game-id = {{game.id}}>Matchmaking</a>
 	  <a href="#tournament?id={{ game.id }}" type="button" class="blue-btn">Tournament</a>
 	</div>
   

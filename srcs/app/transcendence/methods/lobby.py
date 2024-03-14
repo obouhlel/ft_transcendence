@@ -113,28 +113,19 @@ def newLobby(game, type):
 import logging
 logger = logging.getLogger(__name__)
 @login_required
-@require_http_methods(['POST', 'PUT'])
+@require_http_methods(['POST'])
 def joinLobby(request):
 	data = json.loads(request.body)
+	if 'id_game' not in data:
+		return JsonResponse({'status': 'error', 'message': 'Missing id_game.'}, status=400)
 	id_game = data['id_game']
-	type = data['type'] if 'type' in data else 'Public' #todo: check if type is valid
 	try:
 		game = Game.objects.get(id=id_game)
-		lobby = game.lobby_set.all()
-		#if no lobby for this game, create a new lobby
-		if len(lobby) == 0:
-			lobby = newLobby(game, type)
-		#if there is a lobby of given type, join the lobby
-		else:
-			lobby = lobby.filter(type=type)
-			if len(lobby) == 0:
-				lobby = newLobby(game, type)
-			else:
-				lobby = lobby[0]
+		lobby = game.lobby_set.all().first()
+		if len(game.lobby_set.all()) != 1:
+			return JsonResponse({'status': 'error', 'message': 'SOMETHINGWRONNG CONTACT ADMIN.'}, status=404)
 		user = request.user
-		if (UserInLobby.objects.filter(id_user=user, id_lobby=lobby).count() > 0):
-			return JsonResponse({'status': 'ok', 'id_lobby': lobby.id})
-		UserInLobby.objects.create(id_user=user, id_lobby=lobby)
+		lobby.users.add(user)
 		return JsonResponse({'status': 'ok', 'id_lobby': lobby.id})
 	except Game.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)

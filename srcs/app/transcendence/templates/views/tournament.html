@@ -22,9 +22,9 @@
 						{{tournament.status}}
 					{% endif %} </td>
 					{% if current_tournament != tournament.id %}
-						<td><a class="blue-btn join-tournament-btn" data-tournamnet-id="{{tournament.id}}" >Join</a></td>
+						<td><a class="blue-btn join-tournament-btn" data-tournament-id="{{tournament.id}}" >Join</a></td>
 					{% else %}
-						<td><a class="blue-btn leave-tournament-btn" data-tournamnet-id="{{tournament.id}}">Leave</a></td>
+						<td><a class="blue-btn leave-tournament-btn" data-tournament-id="{{tournament.id}}">Leave</a></td>
 					{% endif %}
 				</tr>
 			{% endfor %}

@@ -3,23 +3,6 @@
     <h1 class="game-1-header">{{game.name}}</h1>
 
     <form class="tournament-create-form">
-<<<<<<< HEAD
-        <input type="text" placeholder="Tournament Name" required>
-
-        <br>
-        <br>
-
-        <label class="range-label" for="slider" id="points">Points</label>
-        <input type="range" id="slider" name="slider" min="1" max="10" value="10" required>
-
-        <label class="range-label" for="slider2" id="players">Players</label>
-        <input type="range" id="slider2" name="slider" min="4" max="8" value="4" step="4" required>
-        <br>
-        <br>
-
-        <div class="button-container">
-            <button type="button" class="blue-btn" id="createTournament">Tournament</button>
-=======
         <input id="tour-name" type="text" placeholder="Tournament Name" required value="{{game.name}} by {{user.username}}">
         
     
@@ -33,7 +16,6 @@
         <input type="hidden" id="game_id" value="{{game.id}}">
         <div class="button-container">
             <button type="button" class="create-tour-btn blue-btn">Create</button>
->>>>>>> 42-Networks
         </div>
     </form>
 </main>

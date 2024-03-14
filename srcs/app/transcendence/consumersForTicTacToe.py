@@ -155,7 +155,7 @@ class Game():
         for duo in self.duos:
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
-                asyncio.create_task(duo.gameLoop())
+                asyncio.create_task(duo.gameLoop()) #a utiliser pour lancer le jeu
             elif len(duo.players) == 0:
                 self.remove(duo)
 
