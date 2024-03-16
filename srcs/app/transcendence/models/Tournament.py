@@ -33,7 +33,7 @@ class Tournament(models.Model):
 
 	def getAllUser(self):
 		list_user = self.users.all()
-		user = [user.id for user in list_user]
+		user = [user.user_data(minimal=True) for user in list_user]
 		return user
 
 	def getParties(self):
@@ -52,7 +52,7 @@ class Tournament(models.Model):
 			'ended_at': self.ended_at,
 			'parties': self.getParties(),
 			'nb_round': self.nb_round,
-			'user_tournament': self.getAllUser(),
+			'users': self.getAllUser(),
 			'winner_id': self.winner.id if self.winner else None
 	}
 
