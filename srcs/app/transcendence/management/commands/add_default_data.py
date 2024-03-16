@@ -55,6 +55,7 @@ class Command(BaseCommand):
 		)
 
 		Stat_Game.objects.get_or_create(game=game1)
+		Lobby.objects.get_or_create(game=game1)
 
 
 		description_tictactoe = """
@@ -76,16 +77,8 @@ class Command(BaseCommand):
 			rules=rule_tictactoe,
 		)
 
-		defaut_lobby1, _created = Lobby.objects.get_or_create(
-			game=game1,
-		)
-
-		defaut_lobby1, _created = Lobby.objects.get_or_create(
-			game=game2,
-		)
-
-
 		Stat_Game.objects.get_or_create(game=game2)
+		Lobby.objects.get_or_create(game=game2)
 
 
 		user1_stat_game1, _created =Stat_User_by_Game.objects.get_or_create(user=user1, game=game1)

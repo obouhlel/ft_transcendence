@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
+from .Game import Game
 
 
 # AbstractUser has the following fields:
@@ -70,7 +71,7 @@ class CustomUser(AbstractUser):
 		}
 
 	def getFriends(self):
-		list_friends = self.list_friends.all()
+		list_friends = self.list_friends.auser.joinLobbyll()
 		return [friend.user_data(minimal=True) for friend in list_friends]
 
 	def getFriendRequestReceived(self):
@@ -85,11 +86,15 @@ class CustomUser(AbstractUser):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
 
-	# def get_notifications(self):
-	# 	list_notification = self.notification_set.all()
-	# 	notification = [notification.notification_data() for notification in list_notification]
-	# 	return notification
-
+	def joinLobby(self, game_id: int):
+		game = Game.objects.get(id=game_id)
+		lobby = game.lobby
+		if self in lobby.users.all():
+			return game_id
+		if self.lobby_set.count() > 0:
+			return None
+		lobby.users.add(self)
+		return game_id
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)

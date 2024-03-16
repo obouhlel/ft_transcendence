@@ -1,11 +1,13 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import sync_to_async
 
 import asyncio
 import uuid
 from . import routing
 from . import consumersForPong
 from . import consumersForTicTacToe
+from transcendence.models import Game, UserInLobby, Party
 
 import logging
 logger = logging.getLogger(__name__)
@@ -17,7 +19,7 @@ class Player():
 		self.mmr = mmr
 		self.socket = websocket
 
-class Game():
+class GameX():
 	def __init__(self):
 		self.__players = []
   
@@ -52,9 +54,9 @@ class Game():
 		duoPlayers.append(self.pop(0))
 		return duoPlayers
 
-playersConnected = Game()
-playersPong = Game()
-playersTicTacToe = Game()
+playersConnected = GameX()
+playersPong = GameX()
+playersTicTacToe = GameX()
 
 # -----------------------------Json Message--------------------------------
 def getMatchFoundJson(game, url):
@@ -97,6 +99,8 @@ def createUrlPattern(game):
 	return url
 
 
+
+
 async def matchmakingPong():
 	while True:
 		if playersPong.getLen() == 0:
@@ -120,43 +124,48 @@ async def matchmackingTicTacToe():
 		await asyncio.sleep(1)
 
 # -----------------------------Parser--------------------------------
+@sync_to_async
 def register(socket, message):
-	newPlayer = Player(message['username'], 0, socket)
+	game_id = message['gameId']
+
+	socket.user = socket.scope['user']
+	if socket.user.joinLobby(game_id) == None:
+		return json.dumps({ 'error': 'You can not join this game' })
+	newPlayer = Player(socket.user.username, 0, socket)
 	playersConnected.append(newPlayer)
 	return getRegisterJson(newPlayer.username)
  
-def unregister(message):
-	playersConnected.remove(message['username'])
-	playersPong.remove(message['username'])
-	playersTicTacToe.remove(message['username'])
-	return getUnregisterJson(message['username'])
+def unregister(socket, message):
+	playersConnected.remove(socket.user.username)
+	playersPong.remove(socket.user.username)
+	playersTicTacToe.remove(socket.user.username)
+	return getUnregisterJson(socket.user.username)
 
-def matchmakingJoined(message):
+def matchmakingJoined(socket,message):
 	if message['game'] == 'pong':
-		player = playersConnected.getPlayer(message['username'])
-		player.mmr = message['mmr']
+		player = playersConnected.getPlayer(socket.user.username)
 		playersPong.append(player)
 		if playersPong.getLen() == 1:
 			asyncio.create_task(matchmakingPong())
 	if message['game'] == 'ticTacToe':
-		player = playersConnected.getPlayer(message['username'])
-		player.mmr = message['mmr']
+		player = playersConnected.getPlayer(socket.user.username)
 		playersTicTacToe.append(player)
 		if playersTicTacToe.getLen() == 1:
 			asyncio.create_task(matchmackingTicTacToe())
-	return getMatchmackingJoinJson(message['username'], message['game'])
+	return getMatchmackingJoinJson(socket.user.username, message['game'])
 
-def matchmakingLeaved(message):
+def matchmakingLeaved(socket, message):
 	if message['game'] == 'pong':
-		playersPong.remove(message['username'])
+		playersPong.remove(socket.user.username)
 	elif message['game'] == 'ticTacToe':
-		playersTicTacToe.remove(message['username'])
-	return getMatchmackingLeaveJson(message['username'], message['game'])
+		playersTicTacToe.remove(socket.user.username)
+	return getMatchmackingLeaveJson(socket.user.username, message['game'])
 
-def parseMessage(self, message):
+
+async def parseMessage(self, message):
 	if 'register' in message:
 		if message['register'] == 'in':
-			return register(self, message)
+			return await register(self, message)
 		elif message['register'] == 'out':
 			return unregister(message)
 
@@ -170,6 +179,7 @@ def parseMessage(self, message):
 class MatchmakingConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		await self.accept()
+		self.user = self.scope['user']
 		data = { 'message': 'Connection etablished !' }
 		await self.send(text_data=json.dumps(data))
 
@@ -178,5 +188,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 	async def receive(self, text_data):
 		message = json.loads(text_data)
-		response = parseMessage(self, message)
+		response = await parseMessage(self, message)
+		logger.info(response)
 		await self.send(response)
