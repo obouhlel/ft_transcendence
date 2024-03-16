@@ -17,28 +17,29 @@ class Tournament(models.Model):
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(null=True, blank=True)
 	users = models.ManyToManyField('CustomUser', related_name='tournaments')
-	# invited_user = models.ManyToManyField('CustomUser', related_name='tournament_invited_user')
-	winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE,null=True, related_name='winner_Tournament')
+	winner = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='winner_Tournament')
+
 	@property
 	def users_count(self):
 		return self.users.count()
+
 	def __str__(self):
 		return f"{self.name} tournament {self.id} for {self.game.name} game by {self.creator}"
+
 	def getAllParties(self):
 		list_party = self.parties.all()
 		party = [party.Party_data() for party in list_party]
 		return party
+
 	def getAllUser(self):
 		list_user = self.users.all()
 		user = [user.id for user in list_user]
 		return user
-	# def getAllInvitedUser(self):
-	# 	list_user = self.invited_user.all()
-	# 	user = [user.id for user in list_user]
-	# 	return user
+
 	def getParties(self):
 		list_party = self.party_set.all()
 		return [party.id for party in list_party]
+
 	def tournament_data(self):
 		return {
 			'id': self.id,
@@ -52,9 +53,9 @@ class Tournament(models.Model):
 			'parties': self.getParties(),
 			'nb_round': self.nb_round,
 			'user_tournament': self.getAllUser(),
-			# 'invited_user': self.getAllInvitedUser(),
 			'winner_id': self.winner.id if self.winner else None
 	}
+
 	def end_tournament(self):
 		self.ended_at = timezone.now()
 		self.status = 'Finished'
@@ -73,8 +74,8 @@ class Tournament(models.Model):
 			party = Party.startParty(list_players[i], list_players[i+1], self.game, "tournament")
 			PartyInTournament.objects.create(party=party, tournament=self, round_nb=round_nb, index=i//2)
 		return JsonResponse({'status': 'ok', 'message': _('Parties created successfully.')})
+
 	def next_round(self, round_nb):
-		# check if all parties of this round are finished
 		if self.partyintournament_set.filter(round_nb=round_nb, party__status='finished').count() != self.partyintournament_set.filter(round_nb=round_nb).count():
 			return JsonResponse({'status': 'error', 'message': _('All parties of this round are not finished yet.')}, status=400)
 		parties = self.partyintournament_set.filter(round_nb=round_nb)

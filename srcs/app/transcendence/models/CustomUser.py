@@ -19,6 +19,7 @@ from django.utils import timezone
 # - last_login
 # - date_joined
 class CustomUser(AbstractUser):
+	alias = models.CharField(max_length=30)
 	avatar = models.ImageField(upload_to='avatars/')
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
@@ -84,11 +85,6 @@ class CustomUser(AbstractUser):
 	def getStat(self):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
-
-	# def get_notifications(self):
-	# 	list_notification = self.notification_set.all()
-	# 	notification = [notification.notification_data() for notification in list_notification]
-	# 	return notification
 
 
 class FriendRequest(models.Model):

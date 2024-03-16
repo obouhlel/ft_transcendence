@@ -3,16 +3,18 @@ import { doRequest } from '../utils/fetch.js';
 
 export function tournamentHandler() {
 	const handleClick = (event) => {
-		if (event.target.matches('.join-tournament-btn')) {
-			let data = { id_tournament: event.target.dataset.tournamnetId };
-			doRequest.post(`/api/join_tournament/`, data, (reponse_data) => {
-				console.log(reponse_data);
+		if (event.target.matches('[id^="join-tournament-btn-"]')) {
+			let tournamentId = event.target.id.split('-')[3];
+			let data = { id_tournament: tournamentId };
+			doRequest.post(`/api/join_tournament/`, data, (response_data) => {
+				console.log(response_data);
 			});
 		}
-		else if (event.target.matches('.leave-tournament-btn')) {
-			let data = { id_tournament: event.target.dataset.tournamnetId };
-			doRequest.post(`/api/leave_tournament/`, data, (reponse_data) => {
-				console.log(reponse_data);
+		else if (event.target.matches('[id^="leave-tournament-btn-"]')) {
+			let tournamentId = event.target.id.split('-')[3];
+			let data = { id_tournament: tournamentId };
+			doRequest.post(`/api/leave_tournament/`, data, (response_data) => {
+				console.log(response_data);
 			});
 		}
 	};
@@ -23,7 +25,7 @@ export function tournamentHandler() {
 
 export const createTournamentHandler = () => {
 	const handleClick = (event) => {
-		if (event.target.matches('.create-tour-btn')) {
+		if (event.target.matches('#create')) {
 			let data = { 
 				name: document.getElementById('tour-name').value,
 				nb_players: parseInt(document.getElementById('nb_players').value),

@@ -90,6 +90,8 @@ def createTournament(request):
 	nb_player = data['nb_players'] if 'nb_players' in data else 4
 	user = request.user
 	name = data['name'] if 'name' in data else None
+	if name and Tournament.objects.filter(name=name).exists():
+		return JsonResponse({'status': 'error', 'message': 'This tournament name already exists.'}, status=400)
 	if not is_power_of_two(nb_player):
 		return JsonResponse({'status': 'error', 'message': 'The number of players must be a power of 2(2,4,8,16...).'}, status=400)
 	if 'id_game' not in data:
@@ -104,15 +106,6 @@ def createTournament(request):
 		tournament.start_date = timezone.now()
 		tournament.name = name if name else f"{game.name} tournament by {user.username}"
 		tournament.users.add(user)
-		tournament.save()
-		# lobby = Lobby.objects.create((all_party_in_tournament := self.tournament.partyintournament.all()):
-				# if self.index == len(all_party_in_tournament):
-				# 	self.tournament.start_new_round()
-				# else:
-				# 	self.tournament.start_new_party()type='tournament', game=game)
-		# lobby.user.add(user)
-		# lobby.tournament = tournament
-		# lobby.save()
 		tournament.save()
 		return JsonResponse({'status': 'ok', 'id_tournament': tournament.id})
 	except Game.DoesNotExist:
