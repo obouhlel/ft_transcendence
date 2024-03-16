@@ -1,54 +1,25 @@
 import * as JS_UTILS from "./jsUtils.js";
-
-import { doRequest } from "../utils/fetch.js";
-
 // ----------------- Send functions -----------------
-function sendRegister(socket, infos) {
+
+export function sendMatchmakingJoin(socket, infos) {
   const message = {
-    register: "in",
+    matchmaking: "join",
     gameId: infos["gameId"],
   };
   JS_UTILS.sendMessageToSocket(socket, message);
 }
 
-function sendUnregister(socket, infos) {
-  const message = {
-    register: "out",
-    username: infos["username"],
-  };
-  JS_UTILS.sendMessageToSocket(socket, message);
-}
-
-function sendMatchmakingJoin(socket, infos) {
-  const message = {
-    matchmaking: "join",
-    game: infos["gameName"],
-    mmr: infos["mmr"],
-    username: infos["username"],
-  };
-  JS_UTILS.sendMessageToSocket(socket, message);
-}
-
-function sendMatchmakingLeave(socket, infos) {
+export function sendMatchmakingLeave(socket, infos) {
   const message = {
     matchmaking: "leave",
-    game: infos["gameName"],
-    mmr: infos["mmr"],
-    username: infos["username"],
+    gameId: infos["gameId"],
   };
   JS_UTILS.sendMessageToSocket(socket, message);
 }
 
 function parseMessage(message, infos) {
-  if ("register" in message) {
-    if (message["register"] == "connected") {
-      infos["registered"] = true;
-    } else if (message["register"] == "disconnected") {
-      infos["registered"] = false;
-    }
-  }
   if ("matchmaking" in message) {
-    const button = document.getElementById("matchmaking");
+    const button = document.querySelector(".matchmaking-btn");
     if (message["matchmaking"] == "waitlist joined") {
       button.innerHTML = "Cancel matchmaking";
     } else if (message["matchmaking"] == "waitlist leaved") {
@@ -61,16 +32,11 @@ function parseMessage(message, infos) {
 }
 
 // ----------------- Listeners -----------------
-function socketListener(socket, infos) {
-  socket.onopen = function () {
-    console.log("Connection established");
-    sendRegister(socket, infos);
-  };
-
+function socketListener(socket) {
   socket.onmessage = function (e) {
     let data = JSON.parse(e.data);
     console.log("Received message: " + e.data);
-    parseMessage(data, infos);
+    parseMessage(data);
   };
 
   socket.onclose = function () {
@@ -86,35 +52,22 @@ function socketListener(socket, infos) {
 function windowListener(socket, infos, btn) {
   window.addEventListener("hashchange", function () {
     if (socket.readyState == 1) {
-      sendUnregister(socket, infos);
       socket.close();
+      window.socketMatchmaking = null;
     }
   });
 
   window.addEventListener("beforeunload", function () {
     if (socket.readyState == 1) {
-      sendUnregister(socket, infos);
       socket.close();
+      window.socketMatchmaking = null;
     }
   });
-
-  // btn.addEventListener('click', function () {
-  //     if (btn.innerHTML == 'Matchmaking') {
-  //         sendMatchmakingJoin(socket, infos);
-  //     } else if (btn.innerHTML == 'Cancel matchmaking') {
-  //         sendMatchmakingLeave(socket, infos);
-  //     }
-  // });
 }
 
-export async function matchmacking(gameId) {
+export async function connectWebsocketMatchmacking() {
   const url = `wss://${window.location.host}/ws/matchmaking/`;
-  const socketMatchmaking = new WebSocket(url);
-
-  const infos = { gameId };
-
-  const btn = document.getElementById("matchmaking");
-
-  socketListener(socketMatchmaking, infos);
-  windowListener(socketMatchmaking, infos);
+  window.socketMatchmaking = new WebSocket(url);
+  socketListener(socketMatchmaking);
+  windowListener(socketMatchmaking);
 }

@@ -14,14 +14,13 @@ logger = logging.getLogger(__name__)
 
 # -----------------------------Classes--------------------------------
 class Player():
-	def __init__(self, username, mmr, websocket):
+	def __init__(self, username, websocket):
 		self.username = username
-		self.mmr = mmr
 		self.socket = websocket
 
 class GameX():
 	def __init__(self):
-		self.__players = []
+		self.__players = set()
   
 	def getPlayersUsername(self):
 		return [player.username for player in self.__players]
@@ -32,26 +31,33 @@ class GameX():
 				return player
 		return None
  
-	def __sort (self):
-		self.__players = sorted(self.__players, key=lambda player: player.mmr)
- 
 	def getLen(self):
 		return len(self.__players)
 
 	def append(self, player):
-		self.__players.append(player)
-		self.__sort()
-	
-	def pop(self, index):
-		return self.__players.pop(index)
+		self.remove(player.username)
+		self.__players.add(player)
 
 	def remove(self, username):
-		self.__players = [player for player in self.__players if player.username != username]
+		player_to_remove = None
+		for player in self.__players:
+			if player.username == username:
+				player_to_remove = player
+				break
+		if player_to_remove:
+			self.__players.remove(player_to_remove)
 
 	def doDuo(self):
+		if len(self.__players) < 2:
+			return None # Not enough players to form a duo
 		duoPlayers = []
-		duoPlayers.append(self.pop(0))
-		duoPlayers.append(self.pop(0))
+		# Since sets are unordered, we need to ensure we get two different players
+		for player in self.__players:
+			duoPlayers.append(player)
+			if len(duoPlayers) == 2:
+				break
+		for player in duoPlayers:
+			self.__players.remove(player)
 		return duoPlayers
 
 playersConnected = GameX()
@@ -65,26 +71,16 @@ def getMatchFoundJson(game, url):
 						'url': url })
  
 def getRegisterJson(username):
-	return json.dumps({ 'register': 'connected',
-						'username': username })
+	return json.dumps({ 'register': 'connected'})
  
 def getUnregisterJson(username):
-	return json.dumps({ 'register': 'disconnected',
-						'username': username })
+	return json.dumps({ 'register': 'disconnected',})
  
 def getMatchmackingJoinJson(username, game):
-	players = playersTicTacToe.getPlayersUsername()
-	return json.dumps({ 'matchmaking': 'waitlist joined',
-						'username': username,
-						'game': game,
-	  					'players': players })
+	return json.dumps({ 'matchmaking': 'waitlist joined'})
  
 def getMatchmackingLeaveJson(username, game):
-	players = playersTicTacToe.getPlayersUsername()
-	return json.dumps({ 'matchmaking': 'waitlist leaved',
-						'username': username,
-						'game': game,
-						'players': players })
+	return json.dumps({ 'matchmaking': 'waitlist leaved'})
 
 # -----------------------------Matchmaking--------------------------------
 def createUrlPattern(game):
@@ -101,21 +97,13 @@ def createUrlPattern(game):
 
 
 
-async def matchmakingPong():
+async def matchmaking():
 	while True:
-		if playersPong.getLen() == 0:
-			return
 		if playersPong.getLen() >= 2:
 			duoPlayers = playersPong.doDuo()
 			url = createUrlPattern("pong")
 			for player in duoPlayers:
 				await player.socket.send(getMatchFoundJson("pong", url))
-		await asyncio.sleep(1)
-
-async def matchmackingTicTacToe():
-	while True:
-		if playersTicTacToe.getLen() == 0:
-			return
 		if playersTicTacToe.getLen() >= 2:
 			duoPlayers = playersTicTacToe.doDuo()
 			url = createUrlPattern("ticTacToe")
@@ -125,58 +113,53 @@ async def matchmackingTicTacToe():
 
 # -----------------------------Parser--------------------------------
 @sync_to_async
-def register(socket, message):
-	game_id = message['gameId']
-
-	socket.user = socket.scope['user']
-	if socket.user.joinLobby(game_id) == None:
-		return json.dumps({ 'error': 'You can not join this game' })
-	newPlayer = Player(socket.user.username, 0, socket)
-	playersConnected.append(newPlayer)
-	return getRegisterJson(newPlayer.username)
- 
-def unregister(socket, message):
-	playersConnected.remove(socket.user.username)
-	playersPong.remove(socket.user.username)
-	playersTicTacToe.remove(socket.user.username)
-	return getUnregisterJson(socket.user.username)
-
 def matchmakingJoined(socket,message):
-	if message['game'] == 'pong':
-		player = playersConnected.getPlayer(socket.user.username)
+	gameId = message.get('gameId')
+	if gameId is None:
+		return json.dumps({ 'error': 'Invalid message' })
+	game = Game.objects.get(id=gameId)
+	user = socket.user
+	user.joinLobby(gameId)
+	player = Player(socket.user.username, socket)
+	playersConnected.append(player)
+	if game.name.lower() == 'pong':
+		logger.info(playersPong.getLen())
+		logger.info(playersPong.getPlayersUsername())
 		playersPong.append(player)
-		if playersPong.getLen() == 1:
-			asyncio.create_task(matchmakingPong())
-	if message['game'] == 'ticTacToe':
-		player = playersConnected.getPlayer(socket.user.username)
+	elif game.name.lower() == 'tictactoe':
 		playersTicTacToe.append(player)
-		if playersTicTacToe.getLen() == 1:
-			asyncio.create_task(matchmackingTicTacToe())
-	return getMatchmackingJoinJson(socket.user.username, message['game'])
+	return getMatchmackingJoinJson(socket.user.username, gameId)
 
+@sync_to_async
 def matchmakingLeaved(socket, message):
-	if message['game'] == 'pong':
-		playersPong.remove(socket.user.username)
-	elif message['game'] == 'ticTacToe':
-		playersTicTacToe.remove(socket.user.username)
-	return getMatchmackingLeaveJson(socket.user.username, message['game'])
+	gameId = message.get('gameId')
+	if gameId is None:
+		return json.dumps({ 'error': 'Invalid message' })
+	game = Game.objects.get(id=gameId)
+	user = socket.user
+	user.leaveLobby(gameId)
+	player = playersConnected.getPlayer(socket.user.username)
+	if game.name.lower() == 'pong':
+		playersPong.remove(player)
+	elif game.name.lower() == 'tictactoe':
+		playersTicTacToe.remove(player)
+	return getMatchmackingLeaveJson(socket.user.username, gameId)
 
 
 async def parseMessage(self, message):
-	if 'register' in message:
-		if message['register'] == 'in':
-			return await register(self, message)
-		elif message['register'] == 'out':
-			return unregister(message)
-
 	if 'matchmaking' in message:
 		if message['matchmaking'] == 'join':
-			return matchmakingJoined(message)
+			return await  matchmakingJoined(self, message)
 		elif message['matchmaking'] == 'leave':
-			return matchmakingLeaved(message)
+			return await matchmakingLeaved(self, message)
 	return json.dumps({ 'error': 'Invalid token' })
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
+
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		asyncio.create_task(matchmaking())
+
 	async def connect(self):
 		await self.accept()
 		self.user = self.scope['user']
@@ -191,3 +174,4 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		response = await parseMessage(self, message)
 		logger.info(response)
 		await self.send(response)
+

@@ -95,6 +95,13 @@ class CustomUser(AbstractUser):
 			return None
 		lobby.users.add(self)
 		return game_id
+	def leaveLobby(self, game_id: int):
+		game = Game.objects.get(id=game_id)
+		lobby = game.lobby
+		if self not in lobby.users.all():
+			return None
+		lobby.users.remove(self)
+		return game_id
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)
