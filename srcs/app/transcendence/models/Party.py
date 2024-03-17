@@ -27,7 +27,7 @@ class Party(models.Model):
 		super().__init__(*args, **kwargs)
 	def __str__(self):
 		return f"{self.name} party {self.id} for {self.game} game between {self.player1} and {self.player2}"
-	def update_end(self):
+	def update_end(self, draw=False):
 		self.ended_at = timezone.now()
 		self.status = 'finished'
 		if self.score1 > self.score2:
@@ -40,8 +40,8 @@ class Party(models.Model):
 			self.winner_party = None
 			self.loser_party = None
 		self.time_played = (self.ended_at - self.started_at).seconds
-		self.player1.updateStat(self.game.id, self.time_played, self.winner_party == self.player1 if self.winner_party else True)
-		self.player2.updateStat(self.game.id, self.time_played, self.winner_party == self.player2 if self.winner_party else True)
+		self.player1.updateStat(self.game.id, self.time_played, self.winner_party == self.player1, draw)
+		self.player2.updateStat(self.game.id, self.time_played, self.winner_party == self.player2, draw)
 		self.game.update_stat(self.time_played)
 		self.save()
 	def party_data(self):

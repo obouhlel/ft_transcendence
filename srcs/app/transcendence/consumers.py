@@ -11,6 +11,7 @@ from transcendence.models import Game, UserInLobby, Party, Lobby
 from django.utils import timezone
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+import random
 
 import logging
 logger = logging.getLogger(__name__)
@@ -54,7 +55,6 @@ def makeParty(lobby):
 	#if the player wait for 2 seconds, the tolerance is 20%
 	#if the player wait for 3 seconds, the tolerance is 30%
 
-	
 	for user in lobby.users.all():
 		user_in_lobby = UserInLobby.objects.get(user=user, lobby=lobby)
 		if user_in_lobby.entry_at is None:

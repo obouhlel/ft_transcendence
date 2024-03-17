@@ -14,18 +14,18 @@ logger = logging.getLogger(__name__)
 def updateParty(winner, loser, isDraw=False):
     logger.info(f"updateParty: {winner.username} vs {loser.username}")
     game = GameModel.objects.get(name='Tictactoe')
-    user1 = CustomUser.objects.get(username=winner.username)
-    user2 = CustomUser.objects.get(username=loser.username)
-    party = Party.objects.filter(player1=user1, player2=user2, game=game, status='Waiting').last()
+    winner = CustomUser.objects.get(username=winner.username)
+    loser = CustomUser.objects.get(username=loser.username)
+    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='Waiting').last()
     if party is None:
-        party = Party.objects.filter(player1=user2, player2=user1, game=game, status='Waiting').last()
+        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='Waiting').last()
         if party is None:
             logger.error(f"party not found: {winner.username} vs {loser.username}")
             return
     if isDraw:
         party.score1 = 1
         party.score2 = 1
-    elif winner.username == user1.username:
+    elif party.player1 == winner:
         party.score1 = 2
         party.score2 = 0
     else:
@@ -149,6 +149,7 @@ class Duo():
                                            'winner': playerTurn.username ,})
                     return
                 if self.map.isFull():
+                    await updateParty(playerTurn, otherPlayer, True)
                     await self.broadcast({ 'game': 'end',
                                            'winner': 'draw' })
                     return

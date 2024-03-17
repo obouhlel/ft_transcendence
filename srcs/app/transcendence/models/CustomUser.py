@@ -103,16 +103,10 @@ class CustomUser(AbstractUser):
 			return None
 		lobby.users.remove(self)
 		return game_id
-	def updateStat(self, game_id: int, time: int, win: bool):
+	def updateStat(self, game_id: int, time: int, win: bool, draw: bool = False):
 		game = Game.objects.get(id=game_id)
 		stat = self.stats.get(game=game)
-		stat.time_played += time
-		stat.nb_played += 1
-		if win:
-			stat.nb_win += 1
-		else:
-			stat.nb_lose += 1
-		stat.save()
+		stat.update(time, win, draw)
 		return game_id
 
 class FriendRequest(models.Model):
