@@ -11,7 +11,7 @@ import { matchmacking } from './games/matchmaking.js';
 import { pong3D } from './games/pong/pong.js';
 import { ticTacToe3D } from './games/ticTacToe/ticTacToe.js';
 import { fetchUserDataAndRenderChart, fetchUserDataAndProcessAges, updateDashboardDisplay, setupTabEventListeners} from './dashboard.js';
-import { tournamentHandler, createTournamentHandler } from './games/tournament.js';
+import { tournamentHandler, createTournamentHandler, aliasFormsHandler } from './games/tournament.js';
 
 export function handleGameRequest(gameId) {
     switch(gameId) {
@@ -36,6 +36,6 @@ export const pageHandlers = {
     'game': [gameId => handleGameRequest(gameId)],
     'pong': [pong3D],
     'TicTacToe': [ticTacToe3D],
-    'tournament': [tournamentHandler],
+    'tournament': [tournamentHandler, aliasFormsHandler],
     'create-tournament': [createTournamentHandler],
 };
