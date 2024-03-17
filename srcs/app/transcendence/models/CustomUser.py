@@ -48,7 +48,7 @@ class CustomUser(AbstractUser):
 				'id': self.id,
 				'username': self.username,
 				'alias': self.alias,
-				'avatar': self.avatar.path if self.avatar else None,
+				'avatar': self.avatar.url if self.avatar else None,
 				'status': self.status,
 			}
 		return {

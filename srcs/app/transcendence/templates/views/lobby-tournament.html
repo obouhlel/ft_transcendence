@@ -8,7 +8,7 @@
             {% for player in tournament.users %}
                 <div class="player">
                     {% if player.avatar %}
-                        <img src="{{ player.avatar.url }}" alt="{{ player.username }} Avatar">
+                        <img src="{{ player.avatar }}" alt="{{ player.username }} Avatar">
                     {% else %}
                         <img src="{% static 'img/user-image.png' %}" alt="{{ player.username }} Avatar">
                     {% endif %}
