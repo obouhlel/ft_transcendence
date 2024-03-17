@@ -13,12 +13,15 @@ logger = logging.getLogger(__name__)
 @sync_to_async
 def updateParty(winner, loser, isDraw=False):
     logger.info(f"updateParty: {winner.username} vs {loser.username}")
-    game = GameModel.objects.get(name='TicTacToe')
+    game = GameModel.objects.get(name='Tictactoe')
     user1 = CustomUser.objects.get(username=winner.username)
     user2 = CustomUser.objects.get(username=loser.username)
-    party = Party.objects.get(player1=user1, player2=user2, game=game, status='Waiting')
+    party = Party.objects.filter(player1=user1, player2=user2, game=game, status='Waiting').last()
     if party is None:
-        party = Party.objects.create(game=game, player1=user1, player2=user2)
+        party = Party.objects.filter(player1=user2, player2=user1, game=game, status='Waiting').last()
+        if party is None:
+            logger.error(f"party not found: {winner.username} vs {loser.username}")
+            return
     if isDraw:
         party.score1 = 1
         party.score2 = 1
