@@ -5,6 +5,35 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
 import asyncio
 import random
+from asgiref.sync import sync_to_async
+from .models import Game as GameModel, CustomUser, Party
+
+import logging
+logger = logging.getLogger(__name__)
+@sync_to_async
+def updateParty(winner, loser, isDraw=False):
+    logger.info(f"updateParty: {winner.username} vs {loser.username}")
+    game = GameModel.objects.get(name='Tictactoe')
+    winner = CustomUser.objects.get(username=winner.username)
+    loser = CustomUser.objects.get(username=loser.username)
+    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='Waiting').last()
+    if party is None:
+        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='Waiting').last()
+        if party is None:
+            logger.error(f"party not found: {winner.username} vs {loser.username}")
+            return
+    if isDraw:
+        party.score1 = 1
+        party.score2 = 1
+    elif party.player1 == winner:
+        party.score1 = 2
+        party.score2 = 0
+    else:
+        party.score1 = 0
+        party.score2 = 2
+    party.update_end()
+    
+
 
 class Player():
     def __init__(self, username, pawn, websocket):
@@ -90,6 +119,7 @@ class Duo():
 
     async def broadcast(self, message: dict):
         for player in self.players:
+            message['username'] = player.username
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
@@ -114,10 +144,12 @@ class Duo():
                                                      'z': self.map.lastPlayedPos['y'] }))
                 playerTurn.played = False
                 if self.map.isWin(playerTurn):
+                    await updateParty(playerTurn, otherPlayer)
                     await self.broadcast({ 'game': 'end',
-                                           'winner': playerTurn.username })
+                                           'winner': playerTurn.username ,})
                     return
                 if self.map.isFull():
+                    await updateParty(playerTurn, otherPlayer, True)
                     await self.broadcast({ 'game': 'end',
                                            'winner': 'draw' })
                     return

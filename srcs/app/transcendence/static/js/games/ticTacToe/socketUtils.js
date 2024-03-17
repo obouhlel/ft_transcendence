@@ -56,7 +56,7 @@ function parseMessage(data, game) {
       game.arena[data["x"]][data["z"]].pawnOnThis = pawn;
     }
     if (data["game"] == "end") {
-      if (data["winner"] == game.username) {
+      if (data["winner"] == data["username"]) {
         TIK_TAK_TOE.updateTurn(game.scene, "You Win", game);
       } else if (data["winner"] == "draw") {
         TIK_TAK_TOE.updateTurn(game.scene, "  Draw  ", game);

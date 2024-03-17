@@ -7,67 +7,19 @@ import uuid
 from . import routing
 from . import consumersForPong
 from . import consumersForTicTacToe
-from transcendence.models import Game, UserInLobby, Party
+from transcendence.models import Game, UserInLobby, Party, Lobby
+from django.utils import timezone
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+import random
 
 import logging
 logger = logging.getLogger(__name__)
 
-# -----------------------------Classes--------------------------------
-class Player():
-	def __init__(self, username, websocket):
-		self.username = username
-		self.socket = websocket
-
-class GameX():
-	def __init__(self):
-		self.__players = set()
-  
-	def getPlayersUsername(self):
-		return [player.username for player in self.__players]
-		
-	def getPlayer(self, username):
-		for player in self.__players:
-			if player.username == username:
-				return player
-		return None
- 
-	def getLen(self):
-		return len(self.__players)
-
-	def append(self, player):
-		self.remove(player.username)
-		self.__players.add(player)
-
-	def remove(self, username):
-		player_to_remove = None
-		for player in self.__players:
-			if player.username == username:
-				player_to_remove = player
-				break
-		if player_to_remove:
-			self.__players.remove(player_to_remove)
-
-	def doDuo(self):
-		if len(self.__players) < 2:
-			return None # Not enough players to form a duo
-		duoPlayers = []
-		# Since sets are unordered, we need to ensure we get two different players
-		for player in self.__players:
-			duoPlayers.append(player)
-			if len(duoPlayers) == 2:
-				break
-		for player in duoPlayers:
-			self.__players.remove(player)
-		return duoPlayers
-
-playersConnected = GameX()
-playersPong = GameX()
-playersTicTacToe = GameX()
-
 # -----------------------------Json Message--------------------------------
 def getMatchFoundJson(game, url):
 	return json.dumps({ 'matchmaking': 'match found',
-						'game': game,
+						'game': game.lower(),
 						'url': url })
  
 def getRegisterJson(username):
@@ -89,26 +41,75 @@ def createUrlPattern(game):
 	newConsumer = None
 	if game == "pong":
 		newConsumer = consumersForPong.PongConsumer.as_asgi()
-	elif game == "ticTacToe":
+	elif game == "tictactoe":
 		newConsumer = consumersForTicTacToe.TicTacToeConsumer.as_asgi()
+	logger.info(f"New pattern: {newPattern}")
+	logger.info(f"New consumer: {newConsumer}")
 	routing.add_urlpattern(newPattern, newConsumer)
 	return url
 
+def makeParty(lobby):
+	compatible = None
+	now = timezone.now()
+	#example: if the player wait for 1 second, the tolerance is 10%
+	#if the player wait for 2 seconds, the tolerance is 20%
+	#if the player wait for 3 seconds, the tolerance is 30%
 
-
+	for user in lobby.users.all():
+		user_in_lobby = UserInLobby.objects.get(user=user, lobby=lobby)
+		if user_in_lobby.entry_at is None:
+			user_in_lobby.entry_at = now
+			user_in_lobby.save()
+		waiting_time = now - user_in_lobby.entry_at
+		toleance =  waiting_time.seconds / 10
+		if user.stats.filter(game=lobby.game).get().nb_played == 0:
+			user_ratio = 0
+		else:
+			user_ratio = user.stats.filter(game=lobby.game).get().nb_win/user.stats.filter(game=lobby.game).get().nb_played
+		#find the most compatible users with the acceptable tolerance
+		for user2 in lobby.users.all():
+			if user2 != user:
+				if user2.stats.filter(game=lobby.game).get().nb_played == 0:
+					user2_ratio = 0
+				else:
+					user2_ratio = user2.stats.filter(game=lobby.game).get().nb_win/user2.stats.filter(game=lobby.game).get().nb_played
+				if compatible == None:
+					compatible = user2
+				else:
+					ratio = abs(user2_ratio - user_ratio)
+					if ratio < toleance:
+						compatible = user2
+						break
+				if compatible:
+					party = Party.objects.create(game=lobby.game, player1=user, player2=compatible, started_at=timezone.now())
+					lobby.users.remove(user)
+					lobby.users.remove(compatible)
+					return party
+@sync_to_async
+def  xxx():
+	for game in Game.objects.all():
+			if  game.lobby.users.count() >= 2:
+				party =  makeParty(game.lobby)
+				url = createUrlPattern(game.name.lower())
+				channel_layer = get_channel_layer()
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.player1.id),
+					{
+						"type": "startParty",
+						"message":getMatchFoundJson(game.name, url)
+					}
+				)
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.player2.id),
+					{
+						"type": "startParty",
+						"message":getMatchFoundJson(game.name, url)
+					}
+				)
 
 async def matchmaking():
 	while True:
-		if playersPong.getLen() >= 2:
-			duoPlayers = playersPong.doDuo()
-			url = createUrlPattern("pong")
-			for player in duoPlayers:
-				await player.socket.send(getMatchFoundJson("pong", url))
-		if playersTicTacToe.getLen() >= 2:
-			duoPlayers = playersTicTacToe.doDuo()
-			url = createUrlPattern("ticTacToe")
-			for player in duoPlayers:
-				await player.socket.send(getMatchFoundJson("ticTacToe", url))
+		await xxx()
 		await asyncio.sleep(1)
 
 # -----------------------------Parser--------------------------------
@@ -117,17 +118,10 @@ def matchmakingJoined(socket,message):
 	gameId = message.get('gameId')
 	if gameId is None:
 		return json.dumps({ 'error': 'Invalid message' })
-	game = Game.objects.get(id=gameId)
+	if not Game.objects.filter(id=gameId).exists():
+		return json.dumps({ 'error': 'Invalid message' })
 	user = socket.user
 	user.joinLobby(gameId)
-	player = Player(socket.user.username, socket)
-	playersConnected.append(player)
-	if game.name.lower() == 'pong':
-		logger.info(playersPong.getLen())
-		logger.info(playersPong.getPlayersUsername())
-		playersPong.append(player)
-	elif game.name.lower() == 'tictactoe':
-		playersTicTacToe.append(player)
 	return getMatchmackingJoinJson(socket.user.username, gameId)
 
 @sync_to_async
@@ -135,14 +129,10 @@ def matchmakingLeaved(socket, message):
 	gameId = message.get('gameId')
 	if gameId is None:
 		return json.dumps({ 'error': 'Invalid message' })
-	game = Game.objects.get(id=gameId)
+	if not Game.objects.filter(id=gameId).exists():
+		return json.dumps({ 'error': 'Invalid message' })
 	user = socket.user
 	user.leaveLobby(gameId)
-	player = playersConnected.getPlayer(socket.user.username)
-	if game.name.lower() == 'pong':
-		playersPong.remove(player)
-	elif game.name.lower() == 'tictactoe':
-		playersTicTacToe.remove(player)
 	return getMatchmackingLeaveJson(socket.user.username, gameId)
 
 
@@ -162,11 +152,19 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 	async def connect(self):
 		await self.accept()
+		await self.channel_layer.group_add(
+			"game__uid_" + str(self.scope['user'].id),
+			self.channel_name
+		)
 		self.user = self.scope['user']
 		data = { 'message': 'Connection etablished !' }
 		await self.send(text_data=json.dumps(data))
 
 	async def disconnect(self, close_code):
+		await self.channel_layer.group_discard(
+			"game__uid_" + str(self.scope['user'].id),
+			self.channel_name
+		)
 		await self.close(close_code)
 
 	async def receive(self, text_data):
@@ -174,4 +172,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		response = await parseMessage(self, message)
 		logger.info(response)
 		await self.send(response)
+
+	async def startParty(self, event):
+		await self.send(text_data=event['message'])
 

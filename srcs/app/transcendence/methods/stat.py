@@ -39,7 +39,7 @@ def getStatsUsersByGame(request, id_game):
 	try:
 		game = Game.objects.get(id=id_game)
 		try:
-			stat_user = request.user.stat_user_by_game_set.get(game=game)
+			stat_user = request.user.stats.get(game=game)
 			data = {
 				'nb_played': stat_user.nb_played,
 				'time_played': stat_user.time_played,
@@ -60,7 +60,7 @@ def addWinToUser(request, id_game):
 		if request.user.is_authenticated:
 			try:
 				game = Game.objects.get(id=id_game)
-				stat_user = request.user.stat_user_by_game_set.get(id_game=game)
+				stat_user = request.user.stats.get(id_game=game)
 				stat_user.nb_win += 1
 				stat_user.save()
 				return JsonResponse({'status': 'ok', 'message': 'Statistiques mises à jour avec succès.'})

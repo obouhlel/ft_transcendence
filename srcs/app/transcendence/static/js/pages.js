@@ -51,7 +51,7 @@ export const pageHandlers = {
   edit_profile: [handleEditProfileFormSubmit, changeAvatar],
   game: [GameHandler], // Added 'game' page handler
   pong: [pong3D],
-  ticTacToe: [ticTacToe3D],
+  tictactoe: [ticTacToe3D],
   tournament: [tournamentHandler, aliasFormsHandler],
   "create-tournament": [createTournamentHandler],
 };
