@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
+from .Game import Game
 
 
 # AbstractUser has the following fields:
@@ -86,7 +87,22 @@ class CustomUser(AbstractUser):
 	def getStat(self):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
-
+	def joinLobby(self, game_id: int):
+		game = Game.objects.get(id=game_id)
+		lobby = game.lobby
+		if self in lobby.users.all():
+			return game_id
+		if self.lobby_set.count() > 0:
+			return None
+		lobby.users.add(self)
+		return game_id
+	def leaveLobby(self, game_id: int):
+		game = Game.objects.get(id=game_id)
+		lobby = game.lobby
+		if self not in lobby.users.all():
+			return None
+		lobby.users.remove(self)
+		return game_id
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)

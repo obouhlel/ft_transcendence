@@ -155,7 +155,7 @@ class Game():
         for duo in self.duos:
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
-                asyncio.create_task(duo.gameLoop())
+                asyncio.create_task(duo.gameLoop()) #a utiliser pour lancer le jeu
             elif len(duo.players) == 0:
                 self.remove(duo)
 
@@ -171,23 +171,26 @@ def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
     if duo == None:
         duo = Duo(message['id'])
-    player = Player(message['username'], assignPawn(duo), socket)
+    user = socket.scope['user']
+    player = Player(user.username, assignPawn(duo), socket)
     duo.append(player)
     ticTakToe.append(duo)
     return { 'game': 'starting',
              'pawn': player.pawn } 
 
-def leaveDuo(message: dict):
+def leaveDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
     if duo != None:
-        player = duo.getPlayer(message['username'])
+        user = socket.scope['user']
+        player = duo.getPlayer(user.username)
         if player != None:
             player.disconected = True
     return None
 
-def position(message: dict):
+def position(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
-    player = duo.getPlayer(message['username'])
+    user = socket.scope['user']
+    player = duo.getPlayer(user.username)
     if duo.map.getMapCase(message['x'], message['y']) == '0':
         duo.map.map[message['x']][message['y']] = player.pawn
         duo.map.lastPlayedPos = { 'x': message['x'], 'y': message['y'] }
@@ -199,9 +202,9 @@ def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
         if message['game'] == 'starting':
             return assignDuo(message, socket)
         if message['game'] == 'leaved':
-            return leaveDuo(message)
+            return leaveDuo(message, socket)
         if message['game'] == 'position':
-            return position(message)
+            return position(message, socket)  
     return { 'error': 'Invalid message' }
 
 class TicTacToeConsumer(AsyncWebsocketConsumer):

@@ -39,7 +39,7 @@ urlpatterns = [
 	path('get_lobby_by_id/<int:id>', getLobbyById, name='getLobbyById'),
 	path('get_all_party/', getAllParties, name='getPartyById'),
 
-	path('join_lobby/', joinLobby, name='joinLobby'),
+	# path('join_lobby/', joinLobby, name='joinLobby'),
 	path('quit_lobby/', quitLobby, name='quitLobby'),
 
 	# path('add_win_to_user/<int:id_game>', addWinToUser, name='addWinToUser'),

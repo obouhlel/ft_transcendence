@@ -235,24 +235,27 @@ def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = pong.getDuo(message['id'])
     if duo == None:
         duo = Duo(message['id'])
-    player = Player(message['username'], assignSide(duo), socket)
+    user = socket.scope['user']
+    player = Player(user.username, assignSide(duo), socket)
     duo.append(player)
     pong.append(duo)
     return { 'game': 'starting',
              'side': player.side } 
 
-def leaveDuo(message: dict):
+def leaveDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = pong.getDuo(message['id'])
     if duo != None:
-        player = duo.getPlayer(message['username'])
+        user = socket.scope['user']
+        player = duo.getPlayer(user.username)
         if player != None:
             player.disconnected = True
     return None
 
-def position(message: dict):
+def position(message: dict, socket: AsyncWebsocketConsumer):
     duo = pong.getDuo(message['id'])
     if duo:
-        player = duo.getPlayer(message['username'])
+        user = socket.scope['user']
+        player = duo.getPlayer(user.username)
         if player != None:
             player.position = message['position']
     return None
@@ -262,9 +265,9 @@ def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
         if message['game'] == 'starting':
             return assignDuo(message, socket)
         if message['game'] == 'leaved':
-            return leaveDuo(message)
+            return leaveDuo(message, socket)
         if message['game'] == 'player position':
-            return position(message)
+            return position(message, socket)
     return { 'error': 'Invalid message' }
 
 class PongConsumer(AsyncWebsocketConsumer):

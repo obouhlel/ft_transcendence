@@ -7,6 +7,7 @@ class Game(models.Model):
 	id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=30, unique=True)
 	description = models.TextField()
+	rules = models.TextField()
 	image = models.CharField(max_length=128, default='/var/www/static/default_game.webp')
 	genre = models.CharField(max_length=80)
 	created_at = models.DateTimeField(auto_now_add=True)
