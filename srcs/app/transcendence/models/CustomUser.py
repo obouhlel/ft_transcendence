@@ -20,6 +20,7 @@ from .Game import Game
 # - last_login
 # - date_joined
 class CustomUser(AbstractUser):
+	alias = models.CharField(max_length=30)
 	avatar = models.ImageField(upload_to='avatars/')
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
@@ -47,7 +48,8 @@ class CustomUser(AbstractUser):
 			return {
 				'id': self.id,
 				'username': self.username,
-				'avatar': self.avatar.path if self.avatar else None,
+				'alias': self.alias,
+				'avatar': self.avatar.url if self.avatar else None,
 				'status': self.status,
 			}
 		return {
@@ -85,7 +87,6 @@ class CustomUser(AbstractUser):
 	def getStat(self):
 		list_stat = self.stat_user_by_game_set.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
-
 	def joinLobby(self, game_id: int):
 		game = Game.objects.get(id=game_id)
 		lobby = game.lobby

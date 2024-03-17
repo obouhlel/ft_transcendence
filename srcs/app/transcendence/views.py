@@ -80,6 +80,18 @@ def page(request, page):
 		except:
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})
+	if page == 'lobby-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id).tournament_data()
+			html_content = render_to_string('views/lobby-tournament.html', request=request, context={'tournament': tournament})
+			return JsonResponse({'html': html_content})
+		except Exception as e:
+			logger.error(e)
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
 	if page == 'create-tournament' and request.user.is_authenticated:
 		try:
 			id = request.GET.get('id')

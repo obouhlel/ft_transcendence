@@ -47,6 +47,7 @@ urlpatterns = [
 	path('get_all_tournaments/', getAllTournaments, name='getAllTournaments'),
 	path('get_tournament_by_id/<int:id>', getTournamentById, name='getTournamentById'),
 	path('get_tournament_by_game/<int:id>', getTournamentByGame, name='getTournamentByGame'),
+    path('alias/', postAlias, name='alias'),
 	path('search_user/<str:username>', searchUser, name='searchUser'),
 
 	path('join_tournament/', joinTournament, name='joinTournament'),

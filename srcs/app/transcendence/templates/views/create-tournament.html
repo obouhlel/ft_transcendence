@@ -1,7 +1,7 @@
 {% load static %}
 <main class="game-tour-wrapper">
     <h1 class="game-1-header">{{game.name}}</h1>
-
+    <p id="message"></p>
     <form class="tournament-create-form">
         <input id="tour-name" type="text" placeholder="Tournament Name" required value="{{game.name}} by {{user.username}}">
         
@@ -15,7 +15,7 @@
         </select>
         <input type="hidden" id="game_id" value="{{game.id}}">
         <div class="button-container">
-            <button type="button" class="create-tour-btn blue-btn">Create</button>
+            <button type="button" class="blue-btn" id="create">Create</button>
         </div>
     </form>
 </main>

@@ -10,10 +10,8 @@ import {
 } from "./profile/friends.js";
 import { show_dynamic_stats, show_dynamic_history } from "./profile/stats.js";
 import { switchGameTab, friendsTab } from "./profile/tabs.js";
-import { handleLogout } from "./utils/logout.js";
 import { changeAvatar } from "./utils/avatar.js";
-import { message } from "./utils/message.js"; // Added import statement
-import { connectWebsocketMatchmacking } from "./games/matchmaking.js";
+import { message } from "./utils/message.js";
 import { pong3D } from "./games/pong/pong.js";
 import { ticTacToe3D } from "./games/ticTacToe/ticTacToe.js";
 import {
@@ -25,6 +23,7 @@ import {
 import {
   tournamentHandler,
   createTournamentHandler,
+  aliasFormsHandler,
 } from "./games/tournament.js";
 import { GameHandler } from "./games/game.js";
 
@@ -53,6 +52,6 @@ export const pageHandlers = {
   game: [GameHandler], // Added 'game' page handler
   pong: [pong3D],
   ticTacToe: [ticTacToe3D],
-  tournament: [tournamentHandler],
+  tournament: [tournamentHandler, aliasFormsHandler],
   "create-tournament": [createTournamentHandler],
 };
