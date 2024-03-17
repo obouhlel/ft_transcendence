@@ -61,31 +61,18 @@ class Tournament(models.Model):
 		self.status = 'Finished'
 		last_party = self.partyintournament_set.filter(round_nb=self.nb_round)
 		if last_party.count() > 1:
-			return JsonResponse({'status': 'error', 'message': _('Something went wrong. Contact Tham')}, status=500)
+			return JsonResponse({'status': 'error', 'message': _('Something went wrong. Contact admin')}, status=500)
 		elif last_party.count() == 1:
 			self.winner_tournament = last_party.party.winner_party
 		self.save()
 		return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
 	
 	def make_party_of_round(self, round_nb, list_players):
-		if len(list_players) != 2**round_nb:
-			return JsonResponse({'status': 'error', 'message': _('The number of players is not correct.')}, status=400)
+		if len(list_players) == 1:
+			self.winner_tournament = list_players[0]
+			return None
 		for i in range(0, len(list_players), 2):
 			party = Party.startParty(list_players[i], list_players[i+1], self.game, "tournament")
 			PartyInTournament.objects.create(party=party, tournament=self, round_nb=round_nb, index=i//2)
-		return JsonResponse({'status': 'ok', 'message': _('Parties created successfully.')})
-
-	def next_round(self, round_nb):
-		if self.partyintournament_set.filter(round_nb=round_nb, party__status='finished').count() != self.partyintournament_set.filter(round_nb=round_nb).count():
-			return JsonResponse({'status': 'error', 'message': _('All parties of this round are not finished yet.')}, status=400)
-		parties = self.partyintournament_set.filter(round_nb=round_nb)
-		winners = []
-		for party in parties:
-			winners.append(party.party.winner_party)
-		if len(winners) == 1:
-			self.winner_tournament = winners[0]
-			self.end_tournament()
-		else:
-			self.make_party_of_rounb(round_nb+1, winners)
-		return JsonResponse({'status': 'ok', 'message': ('Next round started successfully.')})
+		return PartyInTournament.objects.filter(tournament=self, round_nb=round_nb)
 

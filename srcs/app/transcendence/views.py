@@ -43,17 +43,17 @@ def page(request, page):
 			if not id:
 				raise Exception
 			game = Game.objects.get(id = id)
-			tournaments = Tournament.objects.filter(game=game)
+			tournaments = Tournament.objects.filter(game=game, status='waiting')
 			user = request.user
-			if user.tournaments.filter(game=game).count() > 0:
-				current_tournament = user.tournaments.get(game=game).id
+			if user.tournaments.filter(game=game, status='waiting').count() > 0:
+				current_tournament = user.tournaments.filter(game=game, status='waiting').first()
 			else:
 				current_tournament = None
 
 
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
 			return JsonResponse({'html': html_content})
-		except Exception as e:
+		except game.DoesNotExist:
 			logger.error(e)
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})

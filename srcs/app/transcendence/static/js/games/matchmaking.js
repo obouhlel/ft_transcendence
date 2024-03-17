@@ -69,5 +69,5 @@ export async function connectWebsocketMatchmacking() {
   const url = `wss://${window.location.host}/ws/matchmaking/`;
   window.socketMatchmaking = new WebSocket(url);
   socketListener(socketMatchmaking);
-  windowListener(socketMatchmaking);
+  // windowListener(socketMatchmaking);
 }
