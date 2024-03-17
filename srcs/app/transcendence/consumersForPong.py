@@ -2,9 +2,31 @@ from typing import List
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from transcendence.models import Party, CustomUser
+from transcendence.models import Game  as GameModel
+from asgiref.sync import sync_to_async
 
 import asyncio
 import random
+
+import logging
+logger = logging.getLogger(__name__)
+@sync_to_async
+def updateParty(player1, player2):
+    logger.info(f"updateParty: {player1.username} vs {player2.username}")
+    game = GameModel.objects.get(name='Pong')
+    user1 = CustomUser.objects.get(username=player1.username)
+    user2 = CustomUser.objects.get(username=player2.username)
+    party = Party.objects.filter(player1=user1,  player2=user2, status='Waiting', game=game).last()
+    if party is None:
+        party = Party.objects.filter(player1=user2,  player2=user1, status='Waiting', game=game).last()
+        party.score1 = player2.score
+        party.score2 = player1.score
+    else:
+        party.score1 = player1.score
+        party.score2 = player2.score
+    party.update_end()
+    
 
 # -----------------------------Classes--------------------------------
 class Player():
@@ -138,7 +160,11 @@ class Duo():
     def isEnd(self):
         playerLeft = self.getPlayerLeft()
         playerRight = self.getPlayerRight()
-        if playerLeft == None or playerRight == None:
+        if playerLeft == None:
+            playerRight.score = 10
+            return True
+        if playerRight == None:
+            playerLeft.score = 10
             return True
         return playerLeft.score == 10 or playerRight.score == 10
 
@@ -156,6 +182,7 @@ class Duo():
 
     async def broadcast(self, message: dict):
         for player in self.players:
+            message["username"] = player.username
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
@@ -184,8 +211,11 @@ class Duo():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
+                logger.info(f"end: {playerLeft.username} vs {playerRight.username}")
+                await updateParty(playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
-                                       'winner': playerLeft.score == 10 and 'left' or 'right' })
+                                       'winner': playerLeft.username if playerLeft.score == 10 else playerRight.username, 
+                                       })
                 return
             await asyncio.sleep(0.01)
     

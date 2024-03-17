@@ -33,13 +33,17 @@ class Party(models.Model):
 		if self.score1 > self.score2:
 			self.winner_party = self.player1
 			self.loser_party = self.player2
-		else:
+		elif self.score1 < self.score2:
 			self.winner_party = self.player2
 			self.loser_party = self.player1
+		else:
+			self.winner_party = None
+			self.loser_party = None
 		self.time_played = (self.ended_at - self.started_at).seconds
+		self.player1.updateStat(self.game.id, self.time_played, self.winner_party == self.player1 if self.winner_party else True)
+		self.player2.updateStat(self.game.id, self.time_played, self.winner_party == self.player2 if self.winner_party else True)
+		self.game.update_stat(self.time_played)
 		self.save()
-		if self.partyintournament:
-			self.partyintournament.update_end()
 	def party_data(self):
 		return {
 			'id': self.id,

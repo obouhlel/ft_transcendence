@@ -119,30 +119,3 @@ def EndPartyinTournament(tournament, party):
 	party.update_end()
 
 
-@login_required
-@require_http_methods(['POST'])
-def addPointToParty(request, id_party):
-	data = json.loads(request.body)
-	id_party = data['id_party']
-	id_user = request.user.id
-	try:
-		party = Party.objects.get(id=id_party)
-		user = CustomUser.objects.get(id=id_user)
-		if isUserInParty(party, user):
-			if party.player1 == user:
-				party.score1 += 1
-			else:
-				party.score2 += 1
-			party.save()
-			if party.score1 == party.id_game.point_to_win or party.score2 == party.id_game.point_to_win:
-				party.update_end()
-				return JsonResponse({'status': 'ok', 'message': 'Party ended successfully.'})
-			return JsonResponse({'status': 'ok', 'message': 'Point added successfully.'})
-		else:
-			return JsonResponse({'status': 'error', 'message': 'You are not in this party.'}, status=400)
-	except Party.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'This party does not exist.'}, status=404)
-	except CustomUser.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'This user does not exist.'}, status=404)
-
-

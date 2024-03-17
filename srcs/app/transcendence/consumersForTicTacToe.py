@@ -5,6 +5,32 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
 import asyncio
 import random
+from asgiref.sync import sync_to_async
+from .models import Game as GameModel, CustomUser, Party
+
+import logging
+logger = logging.getLogger(__name__)
+@sync_to_async
+def updateParty(winner, loser, isDraw=False):
+    logger.info(f"updateParty: {winner.username} vs {loser.username}")
+    game = GameModel.objects.get(name='TicTacToe')
+    user1 = CustomUser.objects.get(username=winner.username)
+    user2 = CustomUser.objects.get(username=loser.username)
+    party = Party.objects.get(player1=user1, player2=user2, game=game, status='Waiting')
+    if party is None:
+        party = Party.objects.create(game=game, player1=user1, player2=user2)
+    if isDraw:
+        party.score1 = 1
+        party.score2 = 1
+    elif winner.username == user1.username:
+        party.score1 = 2
+        party.score2 = 0
+    else:
+        party.score1 = 0
+        party.score2 = 2
+    party.update_end()
+    
+
 
 class Player():
     def __init__(self, username, pawn, websocket):
@@ -90,6 +116,7 @@ class Duo():
 
     async def broadcast(self, message: dict):
         for player in self.players:
+            message['username'] = player.username
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
@@ -114,8 +141,9 @@ class Duo():
                                                      'z': self.map.lastPlayedPos['y'] }))
                 playerTurn.played = False
                 if self.map.isWin(playerTurn):
+                    await updateParty(playerTurn, otherPlayer)
                     await self.broadcast({ 'game': 'end',
-                                           'winner': playerTurn.username })
+                                           'winner': playerTurn.username ,})
                     return
                 if self.map.isFull():
                     await self.broadcast({ 'game': 'end',

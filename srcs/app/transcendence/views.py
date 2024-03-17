@@ -9,7 +9,7 @@ error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'profile', 'edit_profile',
 				'games', 'game-1', 'game-2', 'join-tournament',
 				'create-tournament', 'lobby-tournament', 'dashboard']
-games_pages = ['pong', 'ticTacToe']
+games_pages = ['pong', 'tictactoe']
 
 @ensure_csrf_cookie
 def index(request):

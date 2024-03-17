@@ -85,7 +85,7 @@ class CustomUser(AbstractUser):
 		return [re.friend_request_data() for re in list_friend_request]
 
 	def getStat(self):
-		list_stat = self.stat_user_by_game_set.all()
+		list_stat = self.stats.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
 	def joinLobby(self, game_id: int):
 		game = Game.objects.get(id=game_id)
@@ -102,6 +102,17 @@ class CustomUser(AbstractUser):
 		if self not in lobby.users.all():
 			return None
 		lobby.users.remove(self)
+		return game_id
+	def updateStat(self, game_id: int, time: int, win: bool):
+		game = Game.objects.get(id=game_id)
+		stat = self.stats.get(game=game)
+		stat.time_played += time
+		stat.nb_played += 1
+		if win:
+			stat.nb_win += 1
+		else:
+			stat.nb_lose += 1
+		stat.save()
 		return game_id
 
 class FriendRequest(models.Model):
