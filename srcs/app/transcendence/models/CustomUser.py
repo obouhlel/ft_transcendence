@@ -73,7 +73,7 @@ class CustomUser(AbstractUser):
 		}
 
 	def getFriends(self):
-		list_friends = self.list_friends.auser.joinLobbyll()
+		list_friends = self.list_friends.all()
 		return [friend.user_data(minimal=True) for friend in list_friends]
 
 	def getFriendRequestReceived(self):
