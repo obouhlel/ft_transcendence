@@ -111,7 +111,7 @@ def page(request, page):
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'html': html_content})
 	elif page in games_pages:
-		html_content = ''
+		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
 	elif page in allowed_pages:
 		html_content = render_to_string('views/' + page + '.html', request=request, context=context)

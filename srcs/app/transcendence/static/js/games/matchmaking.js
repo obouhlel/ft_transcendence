@@ -22,8 +22,10 @@ function parseMessage(message, infos) {
     const button = document.querySelector(".matchmaking-btn");
     if (message["matchmaking"] == "waitlist joined") {
       button.innerHTML = "Cancel matchmaking";
+      // afficher le pop up load matchmaking
     } else if (message["matchmaking"] == "waitlist leaved") {
       button.innerHTML = "Matchmaking";
+      // cacher le pop up load matchmaking
     } else if (message["matchmaking"] == "match found") {
       JS_UTILS.createCookie("url", message["url"], 1);
       window.location.hash = message["game"];
