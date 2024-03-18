@@ -13,3 +13,4 @@ from .lobby import *
 from .friend import *
 from .friend_request import *
 from .stat import *
+from .alias import *

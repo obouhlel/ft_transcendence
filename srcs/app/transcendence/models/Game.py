@@ -7,6 +7,7 @@ class Game(models.Model):
 	id = models.AutoField(primary_key=True)
 	name = models.CharField(max_length=30, unique=True)
 	description = models.TextField()
+	rules = models.TextField()
 	image = models.CharField(max_length=128, default='/var/www/static/default_game.webp')
 	genre = models.CharField(max_length=80)
 	created_at = models.DateTimeField(auto_now_add=True)
@@ -42,6 +43,9 @@ class Game(models.Model):
 	def getStat(self):
 		stat = self.stat.stat_game_data()
 		return stat
+	def update_stat(self, time: int):
+		self.stats.update(time)
+		return self.id
 
 class Stat_Game(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -49,13 +53,13 @@ class Stat_Game(models.Model):
 	time_played = models.IntegerField(default=0)
 	nb_party = models.IntegerField(default=0)
 	avg_game_time = models.IntegerField(default=0)
-	game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='stat')
+	game = models.OneToOneField(Game, on_delete=models.CASCADE, related_name='stats')
 	def __str__(self):
 		return f"stat for {self.game} game {self.id}"
 	def update(self, time: int):
 		self.nb_played += 1
 		self.time_played += time
-		self.avg_game_time = self.time_played / self.nb_party
+		self.avg_game_time = self.time_played / self.nb_played
 		self.save()
 	def getPaties(self):
 		list_party = self.id_party.all()

@@ -44,12 +44,66 @@ def page(request, page):
 				raise Exception
 			game = Game.objects.get(id = id)
 			tournaments = Tournament.objects.filter(game=game)
-			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game})
+			user = request.user
+			if user.tournaments.filter(game=game).count() > 0:
+				current_tournament = user.tournaments.get(game=game).id
+			else:
+				current_tournament = None
+
+
+			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
 			return JsonResponse({'html': html_content})
 		except Exception as e:
 			logger.error(e)
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})
+		
+	if page == 'join-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id)
+			html_content = render_to_string('views/join-tournament.html', request=request, context={'tournament': tournament, "is_creator": request.user == tournament.creator})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'leave-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id)
+			html_content = render_to_string('views/leave-tournament.html', request=request, context={'tournament': tournament})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'lobby-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			tournament = Tournament.objects.get(id = id).tournament_data()
+			html_content = render_to_string('views/lobby-tournament.html', request=request, context={'tournament': tournament})
+			return JsonResponse({'html': html_content})
+		except Exception as e:
+			logger.error(e)
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
+	if page == 'create-tournament' and request.user.is_authenticated:
+		try:
+			id = request.GET.get('id')
+			if not id:
+				raise Exception
+			user = request.user
+			game = Game.objects.get(id = id)
+			html_content = render_to_string('views/create-tournament.html', request=request, context={'game': game, 'user': user})
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})	
 	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
 		return JsonResponse({'html': html_content})
@@ -70,10 +124,11 @@ def page(request, page):
 		return JsonResponse({'html': html_content})
 	
 def update_header(request):
+	notifications = []
 	if request.user.is_authenticated:
-		notifications = Notification.objects.filter(user=request.user)
-	else:
-		notifications = []
+		pending = FriendRequest.objects.filter(receiver=request.user)
+		for p in pending:
+			notifications.append(p.friend_request_data())
 	context = {
 		'notifications': notifications
 	}

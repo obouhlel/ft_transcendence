@@ -1,6 +1,8 @@
 import { doRequest } from "./utils/fetch.js";
 import { handleLogout } from "./utils/logout.js";
 import { dropdown, responsiveNav } from "./header.js";
+import { show_dynamic_friends } from "./profile/friends.js";
+import { hashChangeHandler } from "./load.js";
 
 export async function handlerNotification() {
 	// setup chat scoket
@@ -21,8 +23,16 @@ export async function handlerNotification() {
 	// on receiving message on group
 	notifyScoket.onmessage = function (e) {
 		const data = JSON.parse(e.data);
-		console.log(data);
-		updateHeader();
+		const message = data.message;
+		const pages = hashChangeHandler();
+		
+		if (message === "Send") {
+			updateHeader();
+		}
+		if (message === "Accepted" && pages[0] === "profile") {
+			console.log("Friend request accepted");
+			show_dynamic_friends();
+		}
 	};
 
 	// Listen for hash changes
@@ -37,6 +47,7 @@ export async function handlerNotification() {
 
 async function updateHeader() {
 	const header = document.getElementById("header");
+	const pages = hashChangeHandler();
 	const data = await doRequest.get(`/update_header/`);
 	header.innerHTML = data.html;
 	handleNotificationVisual();
@@ -44,6 +55,9 @@ async function updateHeader() {
 	handleLogout();
 	responsiveNav();
 	dropdown();
+	if (pages[0] === "profile") {
+		show_dynamic_friends();
+	}
 }
 
 export function handleNotificationVisual() {
@@ -65,10 +79,22 @@ export function handlerNotificationAction() {
 		const denyElement = document.getElementById(`deny-${id}`);
 
 		acceptElement.addEventListener("click", () => {
+			// send accept friendrequest
+			const data = {
+				"request_id": id,
+				"action": "accept"
+			}
+			doRequest.post('/api/respond_friend_request/', data, updateHeader);
 			console.log(`Accept clicked for notification ${id}`);
 		});
 
 		denyElement.addEventListener("click", () => {
+			// send deny friendrequest
+			const data = {
+				"request_id": id,
+				"action": "decline"
+			}
+			doRequest.post('/api/respond_friend_request/', data, updateHeader);
 			console.log(`Deny clicked for notification ${id}`);
 		});
 	});

@@ -2,25 +2,23 @@
 <main class="lobby-container">
     <div class="lobby-wrapper game-tour-wrapper">
         <h1>Lobby</h1>
-        <h2>Tournament Name</h2>
-        <form id="aliasForm">
-            <input type="text" id="alias" name="alias" placeholder="Select your alias (optional)">
-            <button class="blue-btn lobby-btn">Submit</button>
-        </form>
-        <h3 class="players-heading">Players Waiting:</h3>
+        <h2>{{ tournament.name }}</h2>
+        <h3 class="players-heading">Players:</h3>
         <div class="players-list">
-            <div class="player">
-                <img src="{% static 'img/user-image.png' %}" alt="User1 Avatar">
-                <p>User1</p>
-            </div>
-            <div class="player">
-                <img src="{% static 'img/user-image.png' %}" alt="User2 Avatar">
-                <p>User2</p>
-            </div>
-            <div class="player">
-                <img src="{% static 'img/user-image.png' %}" alt="User2 Avatar">
-                <p>User3</p>
-            </div>
+            {% for player in tournament.users %}
+                <div class="player">
+                    {% if player.avatar %}
+                        <img src="{{ player.avatar }}" alt="{{ player.username }} Avatar">
+                    {% else %}
+                        <img src="{% static 'img/user-image.png' %}" alt="{{ player.username }} Avatar">
+                    {% endif %}
+                    {% if player.alias %}
+                        <p>{{ player.alias }}</p>
+                    {% else %}
+                        <p>{{ player.username }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
         </div>
     </div>
 </main>

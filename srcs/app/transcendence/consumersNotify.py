@@ -1,7 +1,5 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-import logging
-logger = logging.getLogger(__name__)
 
 class NotificationConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
@@ -10,8 +8,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 			self.group_name,
 			self.channel_name
 		)
-		logger.info("Connected to public room")
-		logger.info("uid#" + str(self.scope['user'].id))
 		await self.channel_layer.group_add(
 			"uid_" + str(self.scope['user'].id),
 			self.channel_name
@@ -23,6 +19,15 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 			self.group_name,
 			self.channel_name
 		)
+		await self.channel_layer.group_discard(
+			"uid_" + str(self.scope['user'].id),
+			self.channel_name
+		)
+		await self.close()
+
 
 	async def send_notification(self, event):
+		await self.send(text_data=json.dumps({ 'message': event['message'] }))
+
+	async def delete_notification(self, event):
 		await self.send(text_data=json.dumps({ 'message': event['message'] }))

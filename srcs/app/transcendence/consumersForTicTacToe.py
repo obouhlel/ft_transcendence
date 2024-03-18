@@ -5,6 +5,35 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 
 import asyncio
 import random
+from asgiref.sync import sync_to_async
+from .models import Game as GameModel, CustomUser, Party
+
+import logging
+logger = logging.getLogger(__name__)
+@sync_to_async
+def updateParty(winner, loser, isDraw=False):
+    logger.info(f"updateParty: {winner.username} vs {loser.username}")
+    game = GameModel.objects.get(name='Tictactoe')
+    winner = CustomUser.objects.get(username=winner.username)
+    loser = CustomUser.objects.get(username=loser.username)
+    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='Waiting').last()
+    if party is None:
+        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='Waiting').last()
+        if party is None:
+            logger.error(f"party not found: {winner.username} vs {loser.username}")
+            return
+    if isDraw:
+        party.score1 = 1
+        party.score2 = 1
+    elif party.player1 == winner:
+        party.score1 = 2
+        party.score2 = 0
+    else:
+        party.score1 = 0
+        party.score2 = 2
+    party.update_end()
+    
+
 
 class Player():
     def __init__(self, username, pawn, websocket):
@@ -12,6 +41,7 @@ class Player():
         self.pawn: str = pawn
         self.socket: AsyncWebsocketConsumer = websocket
         self.played: bool = False
+        self.disconected: bool = False
 
 class Map():
     def __init__(self):
@@ -75,13 +105,34 @@ class Duo():
                 return player
         return None
 
+    def isSomeoneDisconected(self):
+        for player in self.players:
+            if player.disconected == True:
+                return True
+        return False
+    
+    def getDisconectedPlayer(self):
+        for player in self.players:
+            if player.disconected == True:
+                return player
+        return None
+
     async def broadcast(self, message: dict):
         for player in self.players:
+            message['username'] = player.username
             await player.socket.send(json.dumps(message))
         
     async def gameLoop(self):
         sended = False
         while True:
+            if self.isSomeoneDisconected() == True:
+                disconnectedPlayer = self.getDisconectedPlayer()
+                winner = self.getOtherPlayer(disconnectedPlayer.username)
+                await winner.socket.send(json.dumps({ 'game': 'end',
+                                                      'winner': winner.username }))
+                self.remove(disconnectedPlayer)
+                self.remove(winner)
+                return
             playerTurn = self.getPlayerWithPawn(self.turn)
             if sended == False:
                 await playerTurn.socket.send(json.dumps({ 'game': 'play' }))
@@ -93,10 +144,12 @@ class Duo():
                                                      'z': self.map.lastPlayedPos['y'] }))
                 playerTurn.played = False
                 if self.map.isWin(playerTurn):
+                    await updateParty(playerTurn, otherPlayer)
                     await self.broadcast({ 'game': 'end',
-                                           'winner': playerTurn.username })
+                                           'winner': playerTurn.username ,})
                     return
                 if self.map.isFull():
+                    await updateParty(playerTurn, otherPlayer, True)
                     await self.broadcast({ 'game': 'end',
                                            'winner': 'draw' })
                     return
@@ -134,7 +187,9 @@ class Game():
         for duo in self.duos:
             if len(duo.players) == 2 and duo.activated == False:
                 duo.activated = True
-                asyncio.create_task(duo.gameLoop())
+                asyncio.create_task(duo.gameLoop()) #a utiliser pour lancer le jeu
+            elif len(duo.players) == 0:
+                self.remove(duo)
 
 ticTakToe = Game()
 
@@ -148,27 +203,26 @@ def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
     if duo == None:
         duo = Duo(message['id'])
-    player = Player(message['username'], assignPawn(duo), socket)
+    user = socket.scope['user']
+    player = Player(user.username, assignPawn(duo), socket)
     duo.append(player)
     ticTakToe.append(duo)
     return { 'game': 'starting',
              'pawn': player.pawn } 
 
-def leaveDuo(message: dict):
+def leaveDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
     if duo != None:
-        player = duo.getPlayer(message['username'])
+        user = socket.scope['user']
+        player = duo.getPlayer(user.username)
         if player != None:
-            winner = duo.getOtherPlayer(message['username'])
-            player.socket.close()
-            duo.remove(player)
-            if len(duo.players) == 0:
-                ticTakToe.remove(duo)
+            player.disconected = True
     return None
 
-def position(message: dict):
+def position(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
-    player = duo.getPlayer(message['username'])
+    user = socket.scope['user']
+    player = duo.getPlayer(user.username)
     if duo.map.getMapCase(message['x'], message['y']) == '0':
         duo.map.map[message['x']][message['y']] = player.pawn
         duo.map.lastPlayedPos = { 'x': message['x'], 'y': message['y'] }
@@ -180,9 +234,9 @@ def parseMessage(message: dict, socket: AsyncWebsocketConsumer):
         if message['game'] == 'starting':
             return assignDuo(message, socket)
         if message['game'] == 'leaved':
-            return leaveDuo(message)
+            return leaveDuo(message, socket)
         if message['game'] == 'position':
-            return position(message)
+            return position(message, socket)  
     return { 'error': 'Invalid message' }
 
 class TicTacToeConsumer(AsyncWebsocketConsumer):
