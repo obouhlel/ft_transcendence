@@ -57,6 +57,7 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
         if response:
             await self.send(json.dumps(response))
 
+# IGNORE CA MATHIEU IL VA ETRE DEPLACER
 class TournamentConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.game_id = self.scope['url_route']['kwargs']['game_id']
