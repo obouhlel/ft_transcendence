@@ -24,6 +24,7 @@ import {
   tournamentHandler,
   createTournamentHandler,
   aliasFormsHandler,
+  tournamentLobbyHandler,
 } from "./games/tournament.js";
 import { GameHandler } from "./games/game.js";
 
@@ -54,4 +55,5 @@ export const pageHandlers = {
   tictactoe: [ticTacToe3D],
   tournament: [tournamentHandler, aliasFormsHandler],
   "create-tournament": [createTournamentHandler],
+  "lobby-tournament": [tournamentLobbyHandler],
 };
