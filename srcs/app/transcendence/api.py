@@ -54,7 +54,6 @@ urlpatterns = [
 	path('create_tournament/', createTournament, name='createTournament'),
 	path('leave_tournament/', leaveTournament, name='quitTournament'),
 
-
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 	path('add_friend/', sendFriendRequest, name='addFriend'),
 	path('delete_friend/<int:id_user>', deleteFriend, name='deleteFriend'),
