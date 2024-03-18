@@ -25,7 +25,7 @@ def getTournamentById(request, id):
 		return JsonResponse({'status': 'ok', 'tournament': data})
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
-	
+
 @login_required
 @require_http_methods(['GET'])
 def getAllTournaments(request):
@@ -47,7 +47,7 @@ def getTournamentByGame(request, id_game):
 		return JsonResponse({'status': 'error', 'message': 'This game does not exist.'}, status=404)
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
-	
+
 @login_required
 @require_http_methods(['GET'])
 def getLobbyInTournament(request, id_tournament):
@@ -60,7 +60,7 @@ def getLobbyInTournament(request, id_tournament):
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
 	except Lobby.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This lobby does not exist.'}, status=404)
-	
+
 @login_required
 @require_http_methods(['GET'])
 def getUsersInTournament(request, id_tournament):
@@ -145,7 +145,7 @@ def joinTournament(request):
 		return JsonResponse({'status': 'ok', 'message': 'You joined the tournament.'})
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
-	
+
 #---------------------------------PUT TOURNAMENT---------------------------------#
 
 @login_required

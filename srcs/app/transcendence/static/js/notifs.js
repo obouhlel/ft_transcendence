@@ -25,7 +25,7 @@ export async function handlerNotification() {
 		const data = JSON.parse(e.data);
 		const message = data.message;
 		const pages = hashChangeHandler();
-		
+
 		if (message === "Send") {
 			updateHeader();
 		}

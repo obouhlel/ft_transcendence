@@ -20,26 +20,26 @@ class Player():
 class Game():
 	def __init__(self):
 		self.__players = []
-  
+
 	def getPlayersUsername(self):
 		return [player.username for player in self.__players]
-		
+
 	def getPlayer(self, username):
 		for player in self.__players:
 			if player.username == username:
 				return player
 		return None
- 
+
 	def __sort (self):
 		self.__players = sorted(self.__players, key=lambda player: player.mmr)
- 
+
 	def getLen(self):
 		return len(self.__players)
 
 	def append(self, player):
 		self.__players.append(player)
 		self.__sort()
-	
+
 	def pop(self, index):
 		return self.__players.pop(index)
 
@@ -61,22 +61,22 @@ def getMatchFoundJson(game, url):
 	return json.dumps({ 'matchmaking': 'match found',
 						'game': game,
 						'url': url })
- 
+
 def getRegisterJson(username):
 	return json.dumps({ 'register': 'connected',
 						'username': username })
- 
+
 def getUnregisterJson(username):
 	return json.dumps({ 'register': 'disconnected',
 						'username': username })
- 
+
 def getMatchmackingJoinJson(username, game):
 	players = playersTicTacToe.getPlayersUsername()
 	return json.dumps({ 'matchmaking': 'waitlist joined',
 						'username': username,
 						'game': game,
 	  					'players': players })
- 
+
 def getMatchmackingLeaveJson(username, game):
 	players = playersTicTacToe.getPlayersUsername()
 	return json.dumps({ 'matchmaking': 'waitlist leaved',
@@ -124,7 +124,7 @@ def register(socket, message):
 	newPlayer = Player(message['username'], 0, socket)
 	playersConnected.append(newPlayer)
 	return getRegisterJson(newPlayer.username)
- 
+
 def unregister(message):
 	playersConnected.remove(message['username'])
 	playersPong.remove(message['username'])

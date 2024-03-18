@@ -15,16 +15,16 @@
 			{% for tournament in tournaments %}
 				<tr>
 					<td>{{ tournament.name }}</td>
-					<td>{{ tournament.users_count }}/{{tournament.nb_player_to_start}}</td>
+					<td class="player-count" id="player-count-{{ tournament.id }}">{{ tournament.users_count }}/{{tournament.nb_player_to_start}}</td>
 					<td>{% if tournament.users_count == tournament.nb_player_to_start %}
 						Full
 					{% else %}
 						{{tournament.status}}
 					{% endif %} </td>
 					{% if current_tournament != tournament.id %}
-						<td><a class="blue-btn join-tournament-btn" data-tournamnet-id="{{tournament.id}}" >Join</a></td>
+						<td><a class="blue-btn join-tournament-btn" data-tournament-id="{{tournament.id}}" >Join</a></td>
 					{% else %}
-						<td><a class="blue-btn leave-tournament-btn" data-tournamnet-id="{{tournament.id}}">Leave</a></td>
+						<td><a class="blue-btn leave-tournament-btn" data-tournament-id="{{tournament.id}}">Leave</a></td>
 					{% endif %}
 				</tr>
 			{% endfor %}
