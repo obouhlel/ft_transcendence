@@ -23,6 +23,9 @@ window.addEventListener("hashchange", function () {
 });
 
 window.addEventListener("load", function () {
+  // Remove all event listeners
+  window.clean.forEach((func) => func());
+  window.clean = [];
   let [page, params] = hashChangeHandler();
   window.searchFunction = searchFunction;
   showPage(page, params);
