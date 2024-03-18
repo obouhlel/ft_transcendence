@@ -17,6 +17,11 @@
     display: flex;
     gap: 161px;
   }
+
+  .navbar .logo  a{
+    text-decoration: none;
+  }
+
   .navbar .logo h1 {
     font-size: 22px;
     font-weight: 500;

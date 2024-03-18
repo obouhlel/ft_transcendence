@@ -58,6 +58,7 @@
     background: transparent;
     font-size: 16px;
     color: #21194a;
+    text-align: center;
   }
   
   .find-friends-header .search::placeholder{

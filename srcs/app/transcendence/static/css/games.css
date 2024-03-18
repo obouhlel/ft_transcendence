@@ -45,6 +45,7 @@
   }
   .game-1-header {
     text-align: center;
+    margin-bottom: 35px;
   }
   .game-rules {
     max-width: 80%;
@@ -52,6 +53,23 @@
   }
   .game-rules li {
     padding-top: 10px;
+  }
+
+  .game-tour-wrapper input {
+    background: transparent;
+    border: none;
+    outline: none;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 40px;
+    font-size: 16px;
+    color: #ffffffeb;
+    padding: 10px 45px 10px 20px;
+  }
+
+  .game-tour-wrapper form {
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
   }
   
   .game-tour-wrapper .table {
@@ -87,6 +105,11 @@
     position: relative;
     left: 10px;
   }
+
+  .tournament-create-form {
+    max-width: 50%;
+    margin: 40px auto;
+  }
   
   .tournament-create-form input {
     width: 100%;
@@ -99,14 +122,18 @@
     font-size: 16px;
     color: #fff;
     padding: 20px 45px 20px 20px;
+    margin-bottom: 15px;
   }
-  .tournament-create-form {
-    max-width: 50%;
-    margin: 40px auto;
-  }
+  
   .tournament-create-form label {
     position: relative;
     top: 20px;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .tournament-create-form .blue-btn {
+    margin-top: 30px;
   }
 
 /****LOBBY*****/
@@ -299,7 +326,7 @@
 }
 
 @media screen and (max-width: 840px) {
-  .game-tour-wrapper .join-btn {
+  .game-tour-wrapper .blue-btn {
     font-size: 0.9rem;
     padding: 8px 30px;
     font-weight: 500;
@@ -402,6 +429,50 @@
   }
 
   #aliasForm {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+/****Tournament tables responsive*****/
+@media screen and (max-width: 780px)
+{
+
+  .game-tour-wrapper .lobby-btn{
+    width: 120px;
+  }
+
+}
+
+@media screen and (max-width: 430px)
+{ 
+  .game-tour-wrapper{
+    margin: 10px 5px 80px 5px;
+  }
+
+  .game-tour-wrapper h1 {
+    font-size: 35px;
+    margin-bottom: 12px;
+  }
+
+  .game-tour-wrapper input {
+    width: 285px;
+  }
+
+  .lobby-btn {
+    margin-top: 15px;
+  }
+
+  .game-tour-wrapper .lobby-btn{
+    width: 285px;
+    margin-left: 0px;
+  }
+
+  #alias-forms {
     margin-bottom: 10px;
     display: flex;
     flex-direction: column;
