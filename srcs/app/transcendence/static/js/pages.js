@@ -1,5 +1,6 @@
 import { handleLoginFormSubmit } from "./form/login.js";
 import { handleRegisterFormSubmit } from "./form/register.js";
+import { handleRegister42FormSubmit } from "./form/register_42.js";
 import { handleEditProfileFormSubmit } from "./form/edit_profile.js";
 import {
   show_dynamic_friends,
@@ -32,6 +33,7 @@ export const pageHandlers = {
   400: [message],
   login: [handleLoginFormSubmit],
   register: [handleRegisterFormSubmit, changeAvatar],
+  "register-42": [handleRegister42FormSubmit, changeAvatar],
   dashboard: [
     setupTabEventListeners,
     fetchUserDataAndRenderChart,

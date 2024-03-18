@@ -6,6 +6,7 @@ urlpatterns = [
     # FORMS
 	path('login/', login_user, name='login'),
 	path('login_42/', login_42, name='login42'),
+    path('register_42/', register_42, name='register42'),
 	path('logout/', logout_user, name='logout'),
 	path('register/', register_user, name='register'),
 	path('edit_profile/', edit_profile, name='edit_profile'),

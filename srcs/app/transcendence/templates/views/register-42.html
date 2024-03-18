@@ -1,0 +1,54 @@
+{% load static %}
+<main class="main-content">
+	<section class="wrapper wrapper-register">
+		<h1>Register</h1>
+		<p id="message"></p>
+		<form method="post" id="register-form">
+			{% csrf_token %}
+			<div class="avatar-upload-container">
+				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
+					alt="user" />
+				<input type="file" id="avatar" name="avatar" accept="image/*" style="display: none" />
+				<div class="image-upload-area">
+					<label for="avatar" id="avatar" name="avatar">
+						<img src="{% static 'img/camera-2.png' %}" class="avatar-upload-icon" width="40" height="40"
+							alt="user" />
+					</label>
+				</div>
+			</div>
+			<div class="input-box-group">
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="First Name" id="firstname" value="{{data.first_name}}" required />
+				</div>
+				<div class="input-box input-box-reg">
+					<input type="text" placeholder="Last Name" id="lastname" value="{{data.last_name}}" required />
+				</div>
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="text" placeholder="Username" id="username" value="{{data.username}}" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="email" placeholder="Email" id="email" value="{{data.email}}" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Password" id="password" required />
+			</div>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Confirm Password" id="password_confirm" required />
+			</div>
+			<label class="birthdate-label">Date of birth:</label>
+			<div class="input-box input-box-reg date-input-box">
+				<input type="date" placeholder="Date of Birth" id="birthdate" required />
+			</div>
+			<label class="sex-label">Sex:</label>
+			<div class="select-wrapper">
+				<select id="sexe" name="sexe" class="input-box input-box-reg input-select">
+					<option value="F" title="Female">Female</option>
+					<option value="M" title="Male">Male</option>
+					<option value="N" title="Other">Other</option>
+				</select>
+			</div>
+			<button type="submit" class="btn">Login</button>
+		</form>
+	</section>
+</main>
