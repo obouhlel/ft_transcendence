@@ -2,12 +2,7 @@
 	<h1 class="game-1-header">{{ game.name }}</h1>
 	<p id="message"></p>
 	<form id="alias-forms">
-		<input
-			type="text"
-			id="alias"
-			name="alias"
-			placeholder="Select your alias (optional)"
-			value="{{user.alias}}" />
+		<input type="text" id="alias" name="alias" placeholder="Select your alias (optional)" value="{{user.alias}}" />
 		<button class="blue-btn lobby-btn">Submit</button>
 	</form>
 	<table class="table">
@@ -24,27 +19,21 @@
 			{% for tournament in tournaments %}
 			<tr>
 				<td>{{ tournament.name }}</td>
-				<td>
-					{{ tournament.users_count }}/{{ tournament.nb_player_to_start }}
+				<td class="player-count" id="player-count-{{ tournament.id }}">
+					{{ tournament.users_count}}/{{tournament.nb_player_to_start}}
 				</td>
-				<td>
-					{% if tournament.users_count == tournament.nb_player_to_start %}
-						Full
+				<td>{% if tournament.users_count == tournament.nb_player_to_start %}
+					Full
 					{% else %}
-						{{ tournament.status }}
-					{% endif %}
-				</td>
+					{{tournament.status}}
+					{% endif %} </td>
 				{% if current_tournament != tournament.id %}
 				<td>
-					<a	class="blue-btn"
-						id="join-tournament-btn-{{tournament.id}}"
-						>Join</a>
+					<a class="blue-btn" id="join-tournament-btn-{{tournament.id}}">Join</a>
 				</td>
 				{% else %}
 				<td>
-					<a	class="blue-btn"
-						id="leave-tournament-btn-{{tournament.id}}"
-						>Leave</a>
+					<a class="blue-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
 				</td>
 				{% endif %}
 			</tr>
@@ -52,9 +41,7 @@
 		</tbody>
 	</table>
 	<div class="button-container">
-		<a	href="#create-tournament?id={{game.id}}"
-			type="button"
-			class="white-btn">
+		<a href="#create-tournament?id={{game.id}}" type="button" class="white-btn">
 			Create new tournament
 		</a>
 	</div>

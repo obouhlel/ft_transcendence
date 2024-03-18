@@ -1,6 +1,44 @@
-import { doRequest } from "../utils/fetch.js";
+import { doRequest } from '../utils/fetch.js';
 
-export function tournamentHandler() {
+export async function tournamentHandler() {
+
+	let socket = new WebSocket(
+		"wss://" + window.location.host + "/ws/tournament/" + window.location.hash.split('=')[1],
+	);
+
+	socket.onopen = function(event) {
+		console.log('###### WebSocket tournament connection opened #####');
+	}
+
+	socket.onclose = function(event) {
+		console.log('###### WebSocket tournament connection closed ######');
+	}
+
+	socket.onmessage = function(event) {
+		let data = JSON.parse(event.data);
+		let message = data.message;
+
+		console.log('###### WebSocket tournament message received:', message);
+
+		// If the message is the current player count, update the display
+		if (message.action === 'Update Player Count') {
+			console.log('###### Update Player Count ######');
+			let playerCount = message.playerCount;
+			let maxPlayerCount = message.maxPlayerCount;
+			let tournamentId = message.tournamentId;
+
+			// Update the player count display
+			let playerCountElement = document.getElementById(`player-count-${tournamentId}`);
+			if (playerCountElement) {
+				playerCountElement.textContent = `${playerCount}/${maxPlayerCount}`;
+			}
+		}
+		else
+		{
+			console.log('###### Other message ###### :', message);
+		}
+	};
+
 	const handleClick = (event) => {
 		const leaveButtons = document.querySelectorAll('[id^="leave-tournament-btn-"]');
 		if (event.target.matches('[id^="join-tournament-btn-"]')) {
@@ -139,7 +177,7 @@ export async function tournamentLobbyHandler() {
 			doRequest.post(`/api/leave_tournament/`, data);
 		}
 	};
-	
+
 	const handleLoad = (event) => {
 		const currentHash = window.location.hash.split("?")[0];
 		if (currentHash === "#lobby-tournament") {
