@@ -41,8 +41,18 @@
     box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
     border-radius: 10px;
     padding: 40px;
-    margin: 10px 60px 80px 60px;
+    margin: 10px 80px 80px 80px;
   }
+
+  .create-tour-wrapper{
+    margin: 10px 160px 80px 160px;
+    text-align: center;
+  }
+
+  .matchmaking-btn{
+    margin-right: 10px;
+  }
+
   .game-1-header {
     text-align: center;
     margin-bottom: 35px;
@@ -99,7 +109,7 @@
   
   .button-container {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
   }
   .button-container a {
     position: relative;
@@ -121,7 +131,7 @@
     border-radius: 40px;
     font-size: 16px;
     color: #fff;
-    padding: 20px 45px 20px 20px;
+    padding: 18px 45px 18px 20px;
     margin-bottom: 15px;
   }
   
@@ -130,6 +140,13 @@
     top: 20px;
     font-size: 18px;
     font-weight: 500;
+  }
+
+  .tournament-create-form select {
+    position: relative;
+    top: 20px;
+    margin-left: 8px;
+    font-size: 15px;
   }
 
   .tournament-create-form .blue-btn {
@@ -331,6 +348,10 @@
     padding: 8px 30px;
     font-weight: 500;
   }
+
+  .create-tour-wrapper{
+    margin: 10px 100px 80px 100px;
+  }
 }
 
 @media screen and (max-width: 430px) {
@@ -352,7 +373,7 @@
   }
 
   .tournament-table tbody td {
-    padding: 4px;
+    padding: 3px 6px 3px 6px;
   }
 
   .tournament-table thead th {
@@ -386,7 +407,7 @@
   }
 
   .tournament-table tbody td {
-    padding: 3px;
+    padding: 3px 7px 3px 7px;
   }
 }
 
@@ -396,6 +417,10 @@
 
   .lobby-container .lobby-btn{
     width: 120px;
+  }
+
+  .matchmaking-btn{
+    margin-right: 0px;
   }
 
 }
@@ -439,11 +464,12 @@
 
 
 /****Tournament tables responsive*****/
-@media screen and (max-width: 780px)
+@media screen and (max-width: 860px)
 {
 
   .game-tour-wrapper .lobby-btn{
     width: 120px;
+    margin-top: 15px;
   }
 
 }
