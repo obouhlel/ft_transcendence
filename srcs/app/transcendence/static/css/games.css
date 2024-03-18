@@ -44,6 +44,11 @@
     margin: 10px 80px 80px 80px;
   }
 
+  .game-tour-wrapper p{
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
   .create-tour-wrapper{
     margin: 10px 160px 80px 160px;
     text-align: center;
