@@ -1,7 +1,9 @@
+import { getCookie } from './fetch.js';
+
 export function dataForm(fields)
 {
 	let data = new FormData();
-	const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+	const csrftoken = getCookie('csrftoken');
 	
 	fields.forEach(field => {
 		let element = document.getElementById(field);
