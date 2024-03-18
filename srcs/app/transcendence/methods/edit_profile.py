@@ -64,6 +64,8 @@ def change_password(request):
 	new_password = data.get('new_password')
 	if not new_password:
 		return JsonResponse({'status': 'error', 'message': 'New password is required.'}, status=400)
+	elif len(new_password) < 8:
+		return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
 	
 	confirm_password = data.get('confirm_password')
 	if new_password != confirm_password:

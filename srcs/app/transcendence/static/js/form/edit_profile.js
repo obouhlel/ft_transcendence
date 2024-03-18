@@ -53,14 +53,7 @@ export function handleChangePassword() {
 		doRequest.post(`/api/change_password/`, data, (data) => {
 			if (data.status === 'ok')
 			{
-				const messageElement = document.getElementById('message');
-				if (messageElement) {
-					messageElement.innerHTML = data.message;
-					messageElement.style.color = 'green';
-				}
-				setInterval(() => {
-					window.location.hash = '#profile';
-				}, 3000);
+				window.location.hash = '#profile';
 			}
 			else if (data.status === 'error')
 			{
