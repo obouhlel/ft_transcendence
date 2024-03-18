@@ -57,10 +57,9 @@ async function showPage(page, params) {
   const header_content = document.getElementById("header");
   header_content.innerHTML = data_header.html;
 
-  const data_page = await doRequest.get(
-    `/pages/${page}${params ? "?" + params : ""}`
-  );
+  const data_page = await doRequest.get(`/pages/${page}${params ? "?" + params : ""}`);
   const page_content = document.getElementById("page");
+  console.log(data_page);
   page_content.innerHTML = data_page.html;
   const isLogged = is_logged_in();
   if (!isLogged && page === "home") handleLoginFormSubmit();

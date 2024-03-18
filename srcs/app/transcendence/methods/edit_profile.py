@@ -1,10 +1,8 @@
 from django.http import JsonResponse
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import check_password
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login as django_login
-from django.utils import timezone
 from transcendence.models  import CustomUser
-import pytz
 
 @require_http_methods(['POST'])
 def edit_profile(request):
@@ -13,6 +11,10 @@ def edit_profile(request):
 		user = CustomUser.objects.get(username=request.user.username)
 	except CustomUser.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'User not found.'}, status=404)
+
+	password = data.get('password')
+	if not check_password(password, request.user.password):
+		return JsonResponse({'status': 'error', 'message': 'Incorrect password.'}, status=400)
 
 	username = data.get('username')
 	if username and username != user.username:
@@ -29,22 +31,10 @@ def edit_profile(request):
 	first_name = data.get('firstname', user.first_name)
 	if first_name:
 		user.first_name = first_name
+
 	last_name = data.get('lastname', user.last_name)
 	if last_name:
 		user.last_name = last_name
-	sexe = data.get('sexe', user.sexe)
-	if sexe:
-		user.sexe = data.get('sexe', user.sexe)
-
-	birthdate = data.get('birthdate')
-	if birthdate:
-		try:
-			birthdate = timezone.datetime.strptime(birthdate, '%Y-%m-%d').replace(tzinfo=pytz.UTC)
-			if birthdate > timezone.now():
-				return JsonResponse({'status': 'error', 'message': 'The birthdate is in the future.'}, status=400)
-			user.birthdate = birthdate
-		except ValueError:
-			return JsonResponse({'status': 'error', 'message': 'Invalid birthdate.'}, status=400)
 
 	if 'avatar' in request.FILES:
 		avatar_file = request.FILES['avatar']
@@ -53,19 +43,34 @@ def edit_profile(request):
 		if user.avatar:
 			user.avatar.delete()
 		user.avatar = avatar_file
-
-	password = data.get('password')
-	password_confirm = data.get('password_confirm')
-	if password is None and password_confirm is not None:
-		return JsonResponse({'status': 'error', 'message': 'Password is required.'}, status=400)
-	if len(password) < 8:
-		return JsonResponse({'status': 'error', 'message': 'Password must be at least 8 characters long.'}, status=400)
-	if password != password_confirm:
-		return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
 	
-	user.password = make_password(password)  # Fix: Use user.password instead of reassigning user
-
 	user.save()
 	authenticate(request, username=user.username, password=password)
 	django_login(request, user)
 	return JsonResponse({'status': 'ok', 'message': 'Your profile has been successfully updated!'})
+
+@require_http_methods(['POST'])
+def change_password(request):
+	data = request.POST
+	try:
+		user = CustomUser.objects.get(username=request.user.username)
+	except CustomUser.DoesNotExist:
+		return JsonResponse({'status': 'error', 'message': 'User not found.'}, status=404)
+
+	password = data.get('old_password')
+	if not check_password(password, request.user.password):
+		return JsonResponse({'status': 'error', 'message': 'Incorrect password.'}, status=400)
+
+	new_password = data.get('new_password')
+	if not new_password:
+		return JsonResponse({'status': 'error', 'message': 'New password is required.'}, status=400)
+	
+	confirm_password = data.get('confirm_password')
+	if new_password != confirm_password:
+		return JsonResponse({'status': 'error', 'message': 'Passwords do not match.'}, status=400)
+
+	user.set_password(new_password)
+	user.save()
+	authenticate(request, username=user.username, password=new_password)
+	django_login(request, user)
+	return JsonResponse({'status': 'ok', 'message': 'Your password has been successfully updated!'}, status=200)

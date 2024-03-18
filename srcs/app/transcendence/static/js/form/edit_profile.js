@@ -21,19 +21,54 @@ export function handleEditProfileFormSubmit() {
 		event.preventDefault();
 
 		const fields = [
+			'avatar',
 			'username',
 			'firstname',
 			'lastname',
 			'email',
 			'password',
-			'password_confirm',
-			'avatar',
-			'birthdate',
-			'sexe'
 		];
 
 		const data = dataForm(fields);
 
 		doRequest.post(`/api/edit_profile/`, data, callback.editProfile);
 	});
-};
+}
+
+export function handleChangePassword() {
+	const form = document.getElementById('password-form');
+	if ( !form ) { return; }
+
+	form.addEventListener('submit', function(event) {
+		event.preventDefault();
+
+		const fields = [
+			'old_password',
+			'new_password',
+			'confirm_password',
+		];
+
+		const data = dataForm(fields);
+
+		doRequest.post(`/api/change_password/`, data, (data) => {
+			if (data.status === 'ok')
+			{
+				const messageElement = document.getElementById('message');
+				if (messageElement) {
+					messageElement.innerHTML = data.message;
+					messageElement.style.color = 'green';
+				}
+				setInterval(() => {
+					window.location.hash = '#profile';
+				}, 3000);
+			}
+			else if (data.status === 'error')
+			{
+				const messageElement = document.getElementById('message');
+				if (messageElement) {
+					messageElement.innerHTML = data.message;
+				}
+			}
+		});
+	});
+}

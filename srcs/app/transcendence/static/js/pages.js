@@ -1,7 +1,7 @@
 import { handleLoginFormSubmit } from "./form/login.js";
 import { handleRegisterFormSubmit } from "./form/register.js";
 import { handleRegister42FormSubmit } from "./form/register_42.js";
-import { handleEditProfileFormSubmit } from "./form/edit_profile.js";
+import { handleEditProfileFormSubmit, handleChangePassword } from "./form/edit_profile.js";
 import {
   show_dynamic_friends,
   deleteFriend,
@@ -52,6 +52,7 @@ export const pageHandlers = {
     deleteFriend,
   ],
   edit_profile: [handleEditProfileFormSubmit, changeAvatar],
+  "change-password": [handleChangePassword],
   game: [GameHandler], // Added 'game' page handler
   pong: [pong3D],
   tictactoe: [ticTacToe3D],

@@ -9,7 +9,7 @@ from logging import getLogger
 logger = getLogger(__name__)
 
 error_pages = ['400', '401', '403', '404', '405']
-allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile',
+allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
 				'create-tournament', 'lobby-tournament', 'dashboard']
 games_pages = ['pong', 'tictactoe']
@@ -26,6 +26,7 @@ def page(request, page):
 	context = {
 		'games': games,
 	}
+	logger.debug('page: ' + page)
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
