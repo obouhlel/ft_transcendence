@@ -4,6 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.http import JsonResponse
 from .Party import Party, PartyInTournament
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 class Tournament(models.Model):
@@ -66,7 +68,7 @@ class Tournament(models.Model):
 			self.winner_tournament = last_party.party.winner_party
 		self.save()
 		return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
-	
+
 	def make_party_of_round(self, round_nb, list_players):
 		if len(list_players) != 2**round_nb:
 			return JsonResponse({'status': 'error', 'message': _('The number of players is not correct.')}, status=400)

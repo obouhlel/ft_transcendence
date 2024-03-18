@@ -21,16 +21,16 @@ def getMatchFoundJson(game, url):
 	return json.dumps({ 'matchmaking': 'match found',
 						'game': game.lower(),
 						'url': url })
- 
+
 def getRegisterJson(username):
 	return json.dumps({ 'register': 'connected'})
- 
+
 def getUnregisterJson(username):
 	return json.dumps({ 'register': 'disconnected',})
- 
+
 def getMatchmackingJoinJson(username, game):
 	return json.dumps({ 'matchmaking': 'waitlist joined'})
- 
+
 def getMatchmackingLeaveJson(username, game):
 	return json.dumps({ 'matchmaking': 'waitlist leaved'})
 
