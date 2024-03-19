@@ -10,7 +10,7 @@ def postAlias(request):
         alias = data['alias']
         if alias is None:
             return JsonResponse({'status': 'error', 'message': 'Alias is required.'}, status=400)
-        if CustomUser.objects.filter(alias=alias).exists():
+        if alias != '' and CustomUser.objects.filter(alias=alias).exists():
             return JsonResponse({'status': 'error', 'message': 'Alias already exists.'}, status=400)
         user = CustomUser.objects.get(username=request.user.username)
         user.alias = alias
