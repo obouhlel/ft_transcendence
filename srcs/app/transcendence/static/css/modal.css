@@ -226,12 +226,12 @@
 .loading-container p{
   font-size: 30px;
   font-weight: 500;
-  color: #3a3efd;
+  color: #4245df;
   margin-bottom: 30px;
 }
 
 .loading-container .cancel-button{
-  background-color: #4e51ff;
+  background-color: #4245df;
     color: #fff;
     border: 0;
     font-size: 0.9rem;
@@ -262,10 +262,10 @@
   width: 64px;
   height: 64px;
   margin: 8px;
-  border: 8px solid #3a3efd;
+  border: 8px solid #4245df;
   border-radius: 50%;
   animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-  border-color: #3a3efd transparent transparent transparent;
+  border-color: #4245df transparent transparent transparent;
 }
 .lds-ring div:nth-child(1) {
   animation-delay: -0.45s;
