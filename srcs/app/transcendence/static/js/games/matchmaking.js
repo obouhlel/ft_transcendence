@@ -45,15 +45,20 @@ function setupMatchmakingButton(socket) {
   });
 }
 
-function setupCancelButton() {
+function setupCancelButton(socket) {
   const cancelButton = document.querySelector('.loading-modal .cancel-button');
-  const button = document.querySelector(".matchmaking-btn");
   cancelButton.addEventListener('click', function() {
     hideModal();
+
+    const gameId = document.querySelector('.matchmaking-btn').getAttribute('data-game-id');
+    const infos = { gameId: gameId };
+
+    const button = document.querySelector(".matchmaking-btn");
     button.innerHTML = "Matchmaking";
-    sendMatchmakingLeave(window.socketMatchmaking, infos);
+    sendMatchmakingLeave(socket, infos);
   });
 }
+
 
 function parseMessage(message, infos) {
   const button = document.querySelector(".matchmaking-btn");
@@ -118,7 +123,7 @@ export async function connectWebsocketMatchmacking() {
 
   socketMatchmaking.onopen = function() {
     setupMatchmakingButton(socketMatchmaking);
-    setupCancelButton();
+    setupCancelButton(socketMatchmaking);
   };
 
   socketListener(socketMatchmaking);
