@@ -6,27 +6,27 @@ from transcendence.models import *
 from django.conf import settings
 from logging import getLogger
 
-logger = getLogger(__name__)
-
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
 				'create-tournament', 'lobby-tournament', 'dashboard']
 games_pages = ['pong', 'tictactoe']
 
+logger = getLogger(__name__)
+
 @ensure_csrf_cookie
 def index(request):
 	games = Game.objects.all()
 	return render(request, 'index.html', {'games': games})
 
-import logging
-logger = logging.getLogger(__name__)
 def page(request, page):
 	games = Game.objects.all()
 	context = {
 		'games': games,
 	}
 	logger.debug('page: ' + page)
+	if request.user.is_authenticated:
+		request.user.update_status('Online')
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
@@ -90,16 +90,18 @@ def page(request, page):
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'html': html_content})
 	elif page in games_pages:
+		if request.user.is_authenticated:
+			request.user.update_status('In Game')
 		html_content = ''
 		return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:
 		try:
-			data = request.session.get('data')  # Get data from session
-			context = {'data': data}  # Create context dictionary
+			data = request.session.get('data')
+			context = { 'data': data }
 			token = data.get('token')
 			html_content = render_to_string('views/register-42.html', context, request=request)
-			request.session.pop('data')  # Remove data from session
-			request.session['token'] = token  # Save token in session
+			request.session.pop('data')
+			request.session['token'] = token
 			return JsonResponse({'html': html_content})
 		except:
 			html_content = render_to_string('error/404.html', request=request)

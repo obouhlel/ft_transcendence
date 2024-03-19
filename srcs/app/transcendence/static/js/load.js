@@ -8,13 +8,12 @@ import {
   handleNotificationVisual,
   handlerNotificationAction,
 } from "./notifs.js";
-import { doRequest } from "./utils/fetch.js";
+import { doRequest, getCookie } from "./utils/fetch.js";
 
 let isNotificationHandled = false;
 window.clean = [];
 
 window.addEventListener("hashchange", function () {
-  // Remove all event listeners
   window.clean.forEach((func) => func());
   window.clean = [];
   let [page, params] = hashChangeHandler();
@@ -23,7 +22,6 @@ window.addEventListener("hashchange", function () {
 });
 
 window.addEventListener("load", function () {
-  // Remove all event listeners
   window.clean.forEach((func) => func());
   window.clean = [];
   let [page, params] = hashChangeHandler();
@@ -61,7 +59,6 @@ async function showPage(page, params) {
   header_content.innerHTML = data_header.html;
 
   const data_page = await doRequest.get(`/pages/${page}${params ? "?" + params : ""}`);
-  if (data_page == undefined) return;
   const page_content = document.getElementById("page");
   page_content.innerHTML = data_page.html;
   const isLogged = is_logged_in();

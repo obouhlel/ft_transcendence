@@ -2,9 +2,8 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import FriendRequest
-from django.db.models.signals import m2m_changed
-from .models import Tournament
+from .models import FriendRequest, Tournament
+from django.db.models.signals import m2m_changed, pre_delete
 import logging
 logger = logging.getLogger(__name__)
 
