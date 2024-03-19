@@ -175,3 +175,144 @@
   
     }
   }
+
+  /*loading Modal*/
+
+.loading-modal{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 560px;
+  height: auto;
+  background-color: #f5f5ff;
+  border-radius: 13px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  overflow: auto;
+  z-index: 1000;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; 
+  margin: 0 auto;
+  padding: 50px 40px 55px 40px;
+  margin-bottom: 90px;
+}
+
+.loading-hidden {
+  display: none;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 100;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 35px;
+}
+
+.loading-container p{
+  font-size: 30px;
+  font-weight: 500;
+  color: #3a3efd;
+  margin-bottom: 30px;
+}
+
+.loading-container .cancel-button{
+  background-color: #4e51ff;
+    color: #fff;
+    border: 0;
+    font-size: 0.9rem;
+    padding: 10px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cancel-button:active{
+  transform: scale(0.98);
+  }
+
+/*loader*/
+
+.lds-ring {
+  display: block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 8px solid #3a3efd;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: #3a3efd transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (max-width: 840px)
+{
+
+  .loading-modal p{
+    font-size: 26px;
+    margin-bottom: 30px;
+  }
+}
+
+@media screen and (max-width: 420px)
+{
+
+  .loading-modal{
+    max-width: 90%;
+  }
+
+  .loading-modal p{
+    font-size: 23px;
+    margin-bottom: 25px;
+  }
+}
+
+@media screen and (max-width: 380px)
+{
+
+
+  .loading-modal p{
+    font-size: 19px;
+    margin-bottom: 25px;
+  }
+}
