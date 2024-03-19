@@ -2,15 +2,21 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from transcendence.models import CustomUser
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 @require_http_methods(['POST'])
 def postAlias(request):
-    data = json.loads(request.body)
     try:
+        data = json.loads(request.body)
         alias = data['alias']
-        if alias is None:
-            return JsonResponse({'status': 'error', 'message': 'Alias is required.'}, status=400)
-        if alias != '' and CustomUser.objects.filter(alias=alias).exists():
+        if not alias or alias == '':
+            user = CustomUser.objects.get(username=request.user.username)
+            user.alias = ''
+            user.save()
+            return JsonResponse({'status': 'ok', 'message': 'Alias removed.'})
+        if CustomUser.objects.filter(alias=alias).exists():
             return JsonResponse({'status': 'error', 'message': 'Alias already exists.'}, status=400)
         user = CustomUser.objects.get(username=request.user.username)
         user.alias = alias
@@ -19,4 +25,5 @@ def postAlias(request):
     except CustomUser.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'User does not exist.'}, status=404)
     except Exception as e:
+        logger.error(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
