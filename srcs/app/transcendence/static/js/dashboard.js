@@ -176,16 +176,19 @@ async function fetchLeaderboardData(gameId) {
   }
 }
 
-
 function processAndAssociateData(leaderboardData) {
   const leaderboard = leaderboardData.users.map(entry => {
       const { user, stat } = entry;
+      let ratio = 0;
+      if (stat.nb_win + stat.nb_lose > 0) {
+          ratio = (stat.nb_win / (stat.nb_win + stat.nb_lose)) * 100;
+      }
 
       return {
           username: user.username,
           avatar: user.avatar || defaultAvatarUrl,
           nbPlayed: stat.nb_played,
-          ratio: stat.ratio * 100,
+          ratio: ratio,
       };
   });
 
@@ -195,22 +198,23 @@ function processAndAssociateData(leaderboardData) {
   return leaderboard;
 }
 
+
 function displayLeaderboard(leaderboard) {
   const tbody = document.getElementById('leaderboardBody');
   tbody.innerHTML = '';
 
   leaderboard.forEach((entry, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td class="lead-user-td">
-        <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
-        <span class="name-leaderboard">${entry.username}</span>
-      </td>
-      <td>${entry.nbPlayed}</td>
-      <td>${entry.ratio.toFixed(2)}%</td>
-    `;
-    tbody.appendChild(tr);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="lead-user-td">
+              <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
+              <span class="name-leaderboard">${entry.username}</span>
+          </td>
+          <td>${entry.nbPlayed}</td>
+          <td>${entry.ratio.toFixed(2)}%</td> <!-- Formatted as a percentage -->
+      `;
+      tbody.appendChild(tr);
   });
 }
 
