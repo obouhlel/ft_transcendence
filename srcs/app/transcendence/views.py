@@ -9,8 +9,8 @@ from logging import getLogger
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
-				'create-tournament', 'lobby-tournament', 'dashboard']
-games_pages = ['pong', 'tictactoe']
+				'create-tournament', 'lobby-tournament', 'dashboard', 'loading']
+games_pages = ['pong', 'TicTacToe']
 
 logger = getLogger(__name__)
 
@@ -92,7 +92,7 @@ def page(request, page):
 	elif page in games_pages:
 		if request.user.is_authenticated:
 			request.user.update_status('In Game')
-		html_content = ''
+		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:
 		try:

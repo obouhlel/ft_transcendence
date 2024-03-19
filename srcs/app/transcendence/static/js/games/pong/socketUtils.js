@@ -55,6 +55,7 @@ function parseMessage(message, game) {
       }
       // if (message["score"])
       //   UTILS.updateScore(game.scene, message["score"], game);
+      // pop up win/lose
       setTimeout(() => {
         window.location.hash = "home";
       }, 5000);

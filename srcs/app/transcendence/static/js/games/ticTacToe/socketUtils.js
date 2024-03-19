@@ -65,7 +65,7 @@ function parseMessage(data, game) {
       }
       game.socket.close();
       game.isMyTurn = false;
-      // here we can update the database
+      // pop up de win/lose
       setTimeout(() => {
         window.location.hash = "home";
       }, 5000);
