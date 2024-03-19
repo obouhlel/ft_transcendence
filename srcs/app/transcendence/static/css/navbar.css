@@ -159,7 +159,8 @@
     height: 210px;
     z-index: 11;
     opacity: 0;
-    transition: all ease-in 0.3s;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in, visibility 0s linear 0.3s;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -168,7 +169,8 @@
     box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
   }
   .show-list {
-    opacity: 111;
+    opacity: 1;
+    visibility: visible;
     transition: all ease-in 0.3s;
   }
 
