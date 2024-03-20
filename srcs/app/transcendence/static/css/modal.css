@@ -427,3 +427,63 @@
  .winner-hidden{
   display: none;
  }
+
+ @media screen and (max-width: 1100px)
+{
+
+.winner-modal{
+  width: 90%;
+}
+
+  .winner-heading{
+    font-size: 50px;
+  
+   }
+}
+
+@media screen and (max-width: 430px)
+{
+
+  .winner-modal{
+    padding: 45px 45px;
+  }
+
+
+  .winner-heading{
+    font-size: 30px;
+  
+   }
+
+   .winner-img img{
+    width: 90px;
+    height: 90px;
+   }
+  
+   .winner-name{
+    font-size: 22px;
+    font-weight: 500;
+   }
+}
+
+@media screen and (max-width: 360px)
+{
+
+  .winner-modal{
+    padding: 35px 35px;
+  }
+
+
+  .winner-heading{
+    font-size: 28px;
+  
+   }
+
+   .winner-img img{
+    width: 80px;
+    height: 80px;
+   }
+  
+   .winner-name{
+    font-size: 20px;
+   }
+}
