@@ -4,6 +4,10 @@
   padding-top: 0px !important;
 }
 
+.leaderboard-header{
+  margin-bottom: 10px;
+}
+
 .leaderboard-wrapper{
     margin: 20px 10px;
     padding: 30px;
@@ -14,7 +18,7 @@
     align-items: center;
   }
 
-  .leaderboard-table tbody {
+  .table-scroll {
     max-height: 465px;
     overflow-y: auto;
   }  
@@ -109,7 +113,6 @@
     color: white;
     text-align: center;
   }
-
 
   #user-inactive-dashboard{
     position: relative;
