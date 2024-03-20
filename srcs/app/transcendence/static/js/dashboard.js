@@ -178,45 +178,64 @@ async function fetchLeaderboardData(gameId) {
 
 function processAndAssociateData(leaderboardData) {
   const leaderboard = leaderboardData.users.map(entry => {
-      const { user, stat } = entry;
-      let ratio = 0;
-      if (stat.nb_win + stat.nb_lose > 0) {
-          ratio = (stat.nb_win / (stat.nb_win + stat.nb_lose)) * 100;
-      }
+    const { user, stat } = entry;
+    let ratio = 0;
+    if (stat.nb_win + stat.nb_lose > 0) {
+        ratio = (stat.nb_win / (stat.nb_win + stat.nb_lose)) * 100;
+    }
 
-      return {
-          username: user.username,
-          avatar: user.avatar || defaultAvatarUrl,
-          nbPlayed: stat.nb_played,
-          ratio: ratio,
-      };
+    return {
+        username: user.username,
+        avatar: user.avatar || defaultAvatarUrl,
+        nbPlayed: stat.nb_played,
+        ratio: ratio,
+    };
   });
 
   // Sort by ratio, descending
   leaderboard.sort((a, b) => b.ratio - a.ratio);
 
+  // Assign ranks, taking ties into account
+  let lastRatio = null;
+  let lastRank = 0;
+  let tiesCount = 0;
+
+  leaderboard.forEach((item, index) => {
+    if (item.ratio === lastRatio) {
+      item.rank = lastRank;
+      tiesCount++;
+    } else {
+      lastRank += 1 + tiesCount;
+      item.rank = lastRank;
+      lastRatio = item.ratio;
+      tiesCount = 0;
+    }
+  });
+
   return leaderboard;
 }
+
 
 
 function displayLeaderboard(leaderboard) {
   const tbody = document.getElementById('leaderboardBody');
   tbody.innerHTML = '';
 
-  leaderboard.forEach((entry, index) => {
+  leaderboard.forEach(entry => {
       const tr = document.createElement('tr');
       tr.innerHTML = `
-          <td>${index + 1}</td>
+          <td>${entry.rank}</td>
           <td class="lead-user-td">
               <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
               <span class="name-leaderboard">${entry.username}</span>
           </td>
           <td>${entry.nbPlayed}</td>
-          <td>${entry.ratio.toFixed(2)}%</td> <!-- Formatted as a percentage -->
+          <td>${entry.ratio.toFixed(2)}%</td>
       `;
       tbody.appendChild(tr);
   });
 }
+
 
 async function fetchCurrentUserName() {
   const response = await fetch('/api/get_user_name/');
@@ -226,17 +245,18 @@ async function fetchCurrentUserName() {
 
 async function updateDashboardStats(leaderboard) {
   const currentUser = await fetchCurrentUserName();
-  const currentUserIndex = leaderboard.findIndex(player => player.username === currentUser);
-  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N/A';
+  const currentUserEntry = leaderboard.find(player => player.username === currentUser);
+  const currentUserRank = currentUserEntry ? currentUserEntry.rank : 'N/A';
 
   const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
-  const totalPlayers = leaderboard.length; 
+  const totalPlayers = leaderboard.length;
 
   document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
   document.querySelector('.best-player-name').innerText = bestPlayer ? bestPlayer.username : 'N/A';
-  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Fallback to default avatar
-  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
+  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Ensure defaultAvatarUrl is correctly defined
+  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers.toString();
 }
+
 
 export async function updateDashboardDisplay(gameId) {
   const { leaderboardData, usersData } = await fetchLeaderboardData(gameId);
