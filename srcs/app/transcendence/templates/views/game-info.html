@@ -1,0 +1,62 @@
+{% load static %}
+<main class="modals-content-page">
+	<div class="overlay display-hidden"></div>
+	<div class="versus-modal display-hidden">
+		<div class="versus-container">
+            <div class="player-container player-one-container">
+                <div class="player-img">
+                    {% if user.avatar %}
+                    <img
+                        src="{{ user.avatar.url }}"
+                        alt="Avatar"
+                        width="100"
+                        height="100" />
+                    {% else %}
+                    <img
+                        src="{% static 'img/user-image.png' %}"
+                        alt="Avatar" />
+                    {% endif %}
+                </div>
+                <p class="player-name">{{ user.username }}</p>
+            </div>
+            <p class="versus-text">VS</p>
+            <div class="player-container player-two-container">
+                <div class="player-img">
+                    {% if user.avatar %}
+                    <img
+                        src="{{ user.avatar.url }}"
+                        alt="Avatar"
+                        width="100"
+                        height="100" />
+                    {% else %}
+                    <img
+                        src="{% static 'img/user-image.png' %}"
+                        alt="Avatar" />
+                    {% endif %}
+                </div>
+                <p class="player-name">{{ user.username }}</p>
+            </div>
+		</div>
+	</div>
+    <div class="winner-modal winner-hidden">
+		<div class="winner-container ">
+            <h1 class="winner-heading">🏆 Winner 🏆</h1>
+            <div class="winner-container">
+                <div class="winner-img">
+                    {% if user.avatar %}
+                    <img
+                        src="{{ user.avatar.url }}"
+                        alt="Avatar"
+                        width="100"
+                        height="100" />
+                    {% else %}
+                    <img
+                        src="{% static 'img/user-image.png' %}"
+                        alt="Avatar" />
+                    {% endif %}
+                </div>
+                <p class="winner-name">{{ user.username }}</p>
+            </div>
+		</div>
+	</div>
+</main>
