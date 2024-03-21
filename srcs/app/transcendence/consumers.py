@@ -1,4 +1,5 @@
 import json
+import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 
@@ -88,6 +89,7 @@ def makeParty(lobby):
 				
 @sync_to_async
 def findAndStartPartiesForTournament():
+	
 	# for tournament in Tournament.objects.filter(status="Start"):
 	for tournament in Tournament.objects.filter(status="waiting"):
 		if tournament.users.count() >= tournament.nb_player_to_start:
@@ -117,33 +119,38 @@ def findAndStartPartiesForTournament():
 @sync_to_async
 def getNextRound():
 	for tournament in Tournament.objects.filter(status="playing"):
-		for i in range(1, tournament.nb_round):
-			if tournament.partyintournament_set.filter(round_nb=i, party__status='finished').count() == tournament.partyintournament_set.filter(round_nb=i).count():
-				list_players = [party.party.winner_party for party in tournament.partyintournament_set.filter(round_nb=i)]
-				parties = tournament.make_party_of_round(i+1, list_players)
-				if parties == None:
-					logger.info("Tournament endedAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-					tournament.end_tournament()
-					tournament.save()
-					return
-				logger.info(parties)
-				for party in parties:
-					url = createUrlPattern(tournament.game.name.lower())
-					channel_layer = get_channel_layer()
-					async_to_sync(channel_layer.group_send)(
-						"game__uid_" + str(party.party.player1.id),
-						{
-							"type": "startParty",
-							"message": getMatchFoundJson(tournament.game.name, url)
-						}
-					)
-					async_to_sync(channel_layer.group_send)(
-						"game__uid_" + str(party.party.player2.id),
-						{
-							"type": "startParty",
-							"message": getMatchFoundJson(tournament.game.name, url)
-						}
-					)
+		logger.info("CURRENT ROUND")
+		logger.info(tournament.current_round)
+		logger.info("PARTIES")
+		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round).count())
+		logger.info("FINISHED PARTIES")
+		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
+   
+		if tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count() == tournament.partyintournament_set.filter(round_nb=tournament.current_round).count():
+			list_players = [party.party.winner_party for party in tournament.partyintournament_set.filter(round_nb=tournament.current_round).order_by('index')]
+			parties = tournament.make_party_of_round(tournament.current_round+1, list_players)
+			if parties == None:
+				tournament.end_tournament()
+				tournament.save()
+				return
+			logger.info(parties)
+			for party in parties:
+				url = createUrlPattern(tournament.game.name.lower())
+				channel_layer = get_channel_layer()
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.party.player1.id),
+					{
+						"type": "startParty",
+						"message": getMatchFoundJson(tournament.game.name, url)
+					}
+				)
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.party.player2.id),
+					{
+						"type": "startParty",
+						"message": getMatchFoundJson(tournament.game.name, url)
+					}
+				)
 
 		
 

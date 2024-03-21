@@ -5,6 +5,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from .Party import Party, PartyInTournament
 
+import logging
+logger = logging.getLogger(__name__)
 
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -14,6 +16,7 @@ class Tournament(models.Model):
 	status = models.CharField(max_length=30, default='waiting')
 	nb_player_to_start = models.IntegerField(default=4)
 	nb_round = models.IntegerField(default=2)
+	current_round = models.IntegerField(default=0)
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(null=True, blank=True)
 	users = models.ManyToManyField('CustomUser', related_name='tournaments')
@@ -22,7 +25,7 @@ class Tournament(models.Model):
 	@property
 	def users_count(self):
 		return self.users.count()
-
+	
 	def __str__(self):
 		return f"{self.name} tournament {self.id} for {self.game.name} game by {self.creator}"
 
@@ -71,8 +74,20 @@ class Tournament(models.Model):
 		if len(list_players) == 1:
 			self.winner_tournament = list_players[0]
 			return None
+		logger.info("LENNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+		logger.info(len(list_players))
 		for i in range(0, len(list_players), 2):
+			logger.info("LEEEEEEEEEEEEEEEEEEEE")
+			logger.info(i)
+			logger.info(list_players[i])
+			logger.info(list_players[i+1])
 			party = Party.startParty(list_players[i], list_players[i+1], self.game, "tournament")
-			PartyInTournament.objects.create(party=party, tournament=self, round_nb=round_nb, index=i//2)
+			self.current_round = round_nb
+			self.save()
+			logger.info("ROUNDDDDDDDDD")
+			logger.info(round_nb)
+			PartyInTournament.objects.create(party=party, tournament=self, round_nb=self.current_round, index=i//2)
+		logger.info("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
+		logger.info(PartyInTournament.objects.filter(tournament=self, round_nb=round_nb))
 		return PartyInTournament.objects.filter(tournament=self, round_nb=round_nb)
 

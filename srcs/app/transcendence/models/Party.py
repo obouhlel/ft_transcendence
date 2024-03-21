@@ -21,7 +21,6 @@ class Party(models.Model):
 	winner_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='winner_party')
 	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='loser_party')
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
-	round_nb = models.IntegerField(default=0)
 	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
