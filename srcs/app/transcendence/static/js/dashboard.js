@@ -189,6 +189,8 @@ function processAndAssociateData(leaderboardData) {
         avatar: user.avatar || defaultAvatarUrl,
         nbPlayed: stat.nb_played,
         ratio: ratio,
+        nb_win: stat.nb_win,
+        nb_lose: stat.nb_lose,
     };
   });
 
@@ -257,15 +259,74 @@ async function updateDashboardStats(leaderboard) {
   document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers.toString();
 }
 
+async function updateWinLossChart(leaderboard) {
+  const currentUser = await fetchCurrentUserName();
+  const currentUserData = leaderboard.find(entry => entry.username === currentUser);
+  const messageElement = document.getElementById('chartMessage');
+  const chartElement = document.getElementById('winLossChart');
+  
+  let totalWins = 0;
+  let totalLosses = 0;
+
+  if (currentUserData && currentUserData.nbPlayed > 0) {
+      totalWins = currentUserData.nb_win;
+      totalLosses = currentUserData.nb_lose;
+      
+      messageElement.style.display = 'none';
+      chartElement.style.display = 'block';
+
+  
+      if (window.winLossChartInstance) {
+          window.winLossChartInstance.destroy();
+      }
+
+      window.winLossChartInstance = new Chart(chartElement.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Wins', 'Losses'],
+              datasets: [{
+                  data: [totalWins, totalLosses],
+                  backgroundColor: [
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(255, 99, 132, 1)'
+                  ],
+                  borderColor: [
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(255, 99, 132, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              responsive: true,
+              plugins: {
+                  legend: {
+                      position: 'top',
+                      labels: {
+                        color: 'white',
+                      }
+                  }
+              }
+          }
+      });
+  } else {
+
+      messageElement.textContent = 'You have not played any games yet.';
+      messageElement.style.display = 'block';
+      chartElement.style.display = 'none';
+  }
+}
+
 
 export async function updateDashboardDisplay(gameId) {
   const { leaderboardData, usersData } = await fetchLeaderboardData(gameId);
   if (leaderboardData.status === "ok" && usersData.status === "ok") {
-    const leaderboard = processAndAssociateData(leaderboardData);
-    displayLeaderboard(leaderboard);
-    updateDashboardStats(leaderboard);
+      const leaderboard = processAndAssociateData(leaderboardData);
+      displayLeaderboard(leaderboard);
+      updateDashboardStats(leaderboard);
+      updateWinLossChart(leaderboard);
   } else {
-    console.error("Failed to fetch data");
+      console.error("Failed to fetch data");
   }
 }
 
@@ -280,3 +341,4 @@ export function setupTabEventListeners() {
     });
   });
 }
+
