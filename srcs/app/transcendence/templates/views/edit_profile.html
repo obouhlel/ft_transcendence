@@ -1,4 +1,3 @@
-{% load templatetags %}
 {% load static %}
 <main class="main-content">
 	<div class="wrapper wrapper-register">
@@ -30,27 +29,17 @@
 				<input type="text" placeholder="Username" id="username" value="{{ user.username }}" required />
 			</div>
 			<div class="input-box input-box-reg">
-				<input type="password" placeholder="New password" id="password" required />
-			</div>
-			<div class="input-box input-box-reg">
-				<input type="password" placeholder="Confirm new password" id="password_confirm" required />
-			</div>
-			<div class="input-box input-box-reg">
 				<input type="email" placeholder="Email" id="email" value="{{ user.email }}" required />
 			</div>
-			<label class="birthdate-label">Date of birth:</label>
-			<div class="input-box input-box-reg date-input-box">
-				<input type="date" placeholder="Date of Birth" id="birthdate" required />
-			</div>
-			<label class="sex-label">Sex:</label>
-			<div class="select-wrapper">
-				<select id="sexe" name="sexe" class="input-box input-box-reg input-select">
-					<option value="F" title="Female">Female</option>
-					<option value="M" title="Male">Male</option>
-					<option value="N" title="Other">Other</option>
-				</select>
+			<div class="input-box input-box-reg">
+				<input type="password" placeholder="Password" id="password" required />
 			</div>
 			<button type="submit" class="btn">Save changes</button>
+			<div class="register-link">
+				<p>You want to change your password? <a href="#change-password">
+					Change
+				</a></p>
+			</div>
 		</form>
 	</div>
 </main>

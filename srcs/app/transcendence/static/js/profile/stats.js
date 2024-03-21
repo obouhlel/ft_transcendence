@@ -76,13 +76,9 @@ export async function show_dynamic_history(gameID) {
         );
         const userConnected = data_userConnected.user;
         const date = new Date(party.ended_at).toLocaleDateString();
-        const color =
-          party_status === "Win"
-            ? "rgba(0, 255, 0, 0.2)"
-            : "rgba(255, 0, 0, 0.2)";
 
         html += `
-					<div class="tr" style="background-color: ${color}">
+					<div class="tr">
 						<div class="td data-one">${adversary ? adversary.username : "Unknown"}</div>
 						<div class="td data-two">${score}</div>
 						<div class="td data-three">${date}</div>
@@ -98,3 +94,4 @@ export async function show_dynamic_history(gameID) {
     console.error("Can't fetch history, because not logged in");
   }
 }
+

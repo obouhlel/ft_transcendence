@@ -17,16 +17,63 @@ export function sendMatchmakingLeave(socket, infos) {
   JS_UTILS.sendMessageToSocket(socket, message);
 }
 
+function showModal() {
+  const modal = document.querySelector('.loading-modal');
+  const overlay = document.querySelector('.loading-overlay');
+  modal.classList.remove('loading-hidden');
+  overlay.classList.remove('loading-hidden');
+}
+
+function hideModal() {
+  const modal = document.querySelector('.loading-modal');
+  const overlay = document.querySelector('.loading-overlay');
+  modal.classList.add('loading-hidden');
+  overlay.classList.add('loading-hidden');
+}
+
+function setupMatchmakingButton(socket) {
+  const matchmakingButton = document.querySelector(".matchmaking-btn");
+  matchmakingButton.addEventListener("click", function() {
+    const gameId = this.getAttribute('data-game-id');
+    const infos = { gameId: gameId };
+    
+    if (matchmakingButton.innerHTML.includes("Cancel")) {
+      sendMatchmakingLeave(socket, infos);
+    } else {
+      sendMatchmakingJoin(socket, infos);
+    }
+  });
+}
+
+function setupCancelButton() {
+  const cancelButton = document.querySelector('.loading-modal .cancel-button');
+  const button = document.querySelector(".matchmaking-btn");
+  cancelButton.addEventListener('click', function() {
+    hideModal();
+    button.innerHTML = "Matchmaking";
+    sendMatchmakingLeave(window.socketMatchmaking, infos);
+  });
+}
+
 function parseMessage(message, infos) {
+  const button = document.querySelector(".matchmaking-btn");
   if ("matchmaking" in message) {
-    const button = document.querySelector(".matchmaking-btn");
-    if (message["matchmaking"] == "waitlist joined") {
-      button.innerHTML = "Cancel matchmaking";
-    } else if (message["matchmaking"] == "waitlist leaved") {
-      button.innerHTML = "Matchmaking";
-    } else if (message["matchmaking"] == "match found") {
-      JS_UTILS.createCookie("url", message["url"], 1);
-      window.location.hash = message["game"];
+    switch (message["matchmaking"]) {
+      case "waitlist joined":
+        button.innerHTML = "Cancel matchmaking";
+        showModal();
+        break;
+      case "waitlist leaved":
+      case "match found":
+        button.innerHTML = "Matchmaking";
+        hideModal();
+        if (message["matchmaking"] === "match found") {
+          JS_UTILS.createCookie("url", message["url"], 1);
+          window.location.hash = message["game"];
+        }
+        break;
+      default:
+        console.error("Unhandled matchmaking status:", message["matchmaking"]);
     }
   }
 }
@@ -68,6 +115,13 @@ function windowListener(socket, infos, btn) {
 export async function connectWebsocketMatchmacking() {
   const url = `wss://${window.location.host}/ws/matchmaking/`;
   window.socketMatchmaking = new WebSocket(url);
+
+  socketMatchmaking.onopen = function() {
+    setupMatchmakingButton(socketMatchmaking);
+    setupCancelButton();
+  };
+
   socketListener(socketMatchmaking);
   // windowListener(socketMatchmaking);
 }
+

@@ -2,8 +2,8 @@ import { doRequest } from '../utils/fetch.js';
 import { callback } from '../utils/callback.js';
 import { dataForm } from '../utils/data.js';
 
-export function handleEditProfileFormSubmit() {
-	const form = document.getElementById('profile-form');
+export function handleRegister42FormSubmit() {
+	const form = document.getElementById('register-form');
 	const uploadField = document.getElementById("avatar");
 	if ( !form || !uploadField ) { return; }
 
@@ -17,43 +17,27 @@ export function handleEditProfileFormSubmit() {
 		}
 	};
 
-	form.addEventListener('submit', function(event) {
-		event.preventDefault();
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-		const fields = [
-			'avatar',
+		console.log('register form submitted');
+        const fields = [
 			'username',
 			'firstname',
 			'lastname',
 			'email',
 			'password',
+			'password_confirm',
+			'avatar',
+			'birthdate',
+			'sexe'
 		];
 
-		const data = dataForm(fields);
-
-		doRequest.post(`/api/edit_profile/`, data, callback.editProfile);
-	});
-}
-
-export function handleChangePassword() {
-	const form = document.getElementById('password-form');
-	if ( !form ) { return; }
-
-	form.addEventListener('submit', function(event) {
-		event.preventDefault();
-
-		const fields = [
-			'old_password',
-			'new_password',
-			'confirm_password',
-		];
-
-		const data = dataForm(fields);
-
-		doRequest.post(`/api/change_password/`, data, (data) => {
+		let data = dataForm(fields);
+        doRequest.post(`/api/register_42/`, data, (data) => {
 			if (data.status === 'ok')
 			{
-				window.location.hash = '#profile';
+				window.location.hash = 'home';
 			}
 			else if (data.status === 'error')
 			{
@@ -63,5 +47,5 @@ export function handleChangePassword() {
 				}
 			}
 		});
-	});
-}
+    });
+};

@@ -1,12 +1,13 @@
 from django.http import JsonResponse
 from django.contrib.auth.hashers import make_password
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import authenticate, login as django_login
 from django.utils import timezone
 from transcendence.models import CustomUser, Stat_User_by_Game, Game
 import pytz
 
 @require_http_methods(['POST'])
-def register_user(request):
+def register_42(request):
 	data = request.POST
 	username = data.get('username')
 	password = data.get('password')
@@ -45,7 +46,6 @@ def register_user(request):
 	avatar = None
 	if 'avatar' in request.FILES:
 		avatar = request.FILES['avatar']
-		
 
 	user = CustomUser.objects.create(
 		username=username,
@@ -57,8 +57,12 @@ def register_user(request):
 		birthdate=birthdate,
 		avatar=avatar,
 		date_joined=timezone.now(),
+		token=request.session.get('token')
 	)
 	for game in Game.objects.all():
 		Stat_User_by_Game.objects.create(user=user, game=game)
+	request.session.pop('token')
 	user.save()
+	authenticate(request, username=username, password=password)
+	django_login(request, user)
 	return JsonResponse({'status': 'ok', 'message': 'Your account has been successfully created.'})

@@ -1,6 +1,7 @@
 import { handleLoginFormSubmit } from "./form/login.js";
 import { handleRegisterFormSubmit } from "./form/register.js";
-import { handleEditProfileFormSubmit } from "./form/edit_profile.js";
+import { handleRegister42FormSubmit } from "./form/register_42.js";
+import { handleEditProfileFormSubmit, handleChangePassword } from "./form/edit_profile.js";
 import {
   show_dynamic_friends,
   deleteFriend,
@@ -24,6 +25,7 @@ import {
   tournamentHandler,
   createTournamentHandler,
   aliasFormsHandler,
+  tournamentLobbyHandler,
 } from "./games/tournament.js";
 import { GameHandler } from "./games/game.js";
 
@@ -31,6 +33,7 @@ export const pageHandlers = {
   400: [message],
   login: [handleLoginFormSubmit],
   register: [handleRegisterFormSubmit, changeAvatar],
+  "register-42": [handleRegister42FormSubmit, changeAvatar],
   dashboard: [
     setupTabEventListeners,
     fetchUserDataAndRenderChart,
@@ -49,9 +52,11 @@ export const pageHandlers = {
     deleteFriend,
   ],
   edit_profile: [handleEditProfileFormSubmit, changeAvatar],
+  "change-password": [handleChangePassword],
   game: [GameHandler], // Added 'game' page handler
   pong: [pong3D],
   tictactoe: [ticTacToe3D],
   tournament: [tournamentHandler, aliasFormsHandler],
   "create-tournament": [createTournamentHandler],
+  "lobby-tournament": [tournamentLobbyHandler],
 };

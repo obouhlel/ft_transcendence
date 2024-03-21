@@ -3,10 +3,11 @@
     <div class="lobby-wrapper game-tour-wrapper">
         <h1>Lobby</h1>
         <h2>{{ tournament.name }}</h2>
+        <p id="message" style="text-align: center;"></p>
         <h3 class="players-heading">Players:</h3>
         <div class="players-list">
             {% for player in tournament.users %}
-                <div class="player">
+                <div class="player" id="player-{{ player.id }}">
                     {% if player.avatar %}
                         <img src="{{ player.avatar }}" alt="{{ player.username }} Avatar">
                     {% else %}
@@ -19,6 +20,10 @@
                     {% endif %}
                 </div>
             {% endfor %}
+        </div>
+        <div class="button-container games-btns">
+            <a class="blue-btn lobby-btn" id="leave-tournament">Leave</a>
+            <a class="blue-btn lobby-btn" id="start-tournament">Start</a>
         </div>
     </div>
 </main>

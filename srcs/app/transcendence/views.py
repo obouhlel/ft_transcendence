@@ -4,25 +4,29 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
 from django.conf import settings
+from logging import getLogger
 
 error_pages = ['400', '401', '403', '404', '405']
-allowed_pages = ['login', 'register', 'profile', 'edit_profile',
+allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
-				'create-tournament', 'lobby-tournament', 'dashboard']
-games_pages = ['pong', 'tictactoe']
+				'create-tournament', 'lobby-tournament', 'dashboard', 'loading']
+games_pages = ['pong', 'TicTacToe']
+
+logger = getLogger(__name__)
 
 @ensure_csrf_cookie
 def index(request):
 	games = Game.objects.all()
 	return render(request, 'index.html', {'games': games})
 
-import logging
-logger = logging.getLogger(__name__)
 def page(request, page):
 	games = Game.objects.all()
 	context = {
 		'games': games,
 	}
+	logger.debug('page: ' + page)
+	if request.user.is_authenticated:
+		request.user.update_status('Online')
 	if page == 'home':
 		html_content = render_to_string('home.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
@@ -49,35 +53,10 @@ def page(request, page):
 				current_tournament = user.tournaments.filter(game=game, status='waiting').first()
 			else:
 				current_tournament = None
-
-
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
 			return JsonResponse({'html': html_content})
 		except game.DoesNotExist:
 			logger.error(e)
-			html_content = render_to_string('error/404.html', request=request)
-			return JsonResponse({'html': html_content})
-		
-	if page == 'join-tournament' and request.user.is_authenticated:
-		try:
-			id = request.GET.get('id')
-			if not id:
-				raise Exception
-			tournament = Tournament.objects.get(id = id)
-			html_content = render_to_string('views/join-tournament.html', request=request, context={'tournament': tournament, "is_creator": request.user == tournament.creator})
-			return JsonResponse({'html': html_content})
-		except:
-			html_content = render_to_string('error/404.html', request=request)
-			return JsonResponse({'html': html_content})
-	if page == 'leave-tournament' and request.user.is_authenticated:
-		try:
-			id = request.GET.get('id')
-			if not id:
-				raise Exception
-			tournament = Tournament.objects.get(id = id)
-			html_content = render_to_string('views/leave-tournament.html', request=request, context={'tournament': tournament})
-			return JsonResponse({'html': html_content})
-		except:
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})
 	if page == 'lobby-tournament' and request.user.is_authenticated:
@@ -104,15 +83,29 @@ def page(request, page):
 		except:
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})	
-	elif (page == 'login' or page == 'register') and request.user.is_authenticated and page in allowed_pages:
+	elif (page == 'login' or page == 'register' or page == 'register-42') and request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/403.html', request=request)
 		return JsonResponse({'html': html_content})
-	elif (page != 'login' and page != 'register') and not request.user.is_authenticated and page in allowed_pages:
+	elif (page != 'login' and page != 'register' and page != 'register-42') and not request.user.is_authenticated and page in allowed_pages:
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'html': html_content})
 	elif page in games_pages:
-		html_content = ''
+		if request.user.is_authenticated:
+			request.user.update_status('In Game')
+		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
+	elif page == 'register-42' and not request.user.is_authenticated:
+		try:
+			data = request.session.get('data')
+			context = { 'data': data }
+			token = data.get('token')
+			html_content = render_to_string('views/register-42.html', context, request=request)
+			request.session.pop('data')
+			request.session['token'] = token
+			return JsonResponse({'html': html_content})
+		except:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
 	elif page in allowed_pages:
 		html_content = render_to_string('views/' + page + '.html', request=request, context=context)
 		return JsonResponse({'html': html_content})

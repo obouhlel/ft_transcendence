@@ -17,6 +17,11 @@
     display: flex;
     gap: 161px;
   }
+
+  .navbar .logo  a{
+    text-decoration: none;
+  }
+
   .navbar .logo h1 {
     font-size: 22px;
     font-weight: 500;
@@ -26,11 +31,11 @@
   }
   .nav-btns {
     background-color: #37358c;
-    width: 152px;
+    width: 175px;
     height: 67px;
     display: flex;
     justify-content: center;
-    gap: 28px;
+    gap: 29px;
     align-items: center;
     border-radius: 17px;
     position: relative;
@@ -40,14 +45,21 @@
     background-color: transparent;
     border: none;
   }
+
+  .nav-btns .btn-dashboard{
+    width: 28px;
+    height: 24px;
+    position: relative;
+  }
+
   .nav-btns .btn-user {
-    width: 48px;
-    height: 48px;
+    width: 30px;
+    height: 42px;
     position: relative;
     top: 10px;
   }
   .nav-btns .btn-gamepad {
-    width: 32px;
+    width: 29px;
     height: 24px;
     position: relative;
     right: 20px;
@@ -147,7 +159,8 @@
     height: 210px;
     z-index: 11;
     opacity: 0;
-    transition: all ease-in 0.3s;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in, visibility 0s linear 0.3s;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -156,7 +169,8 @@
     box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
   }
   .show-list {
-    opacity: 111;
+    opacity: 1;
+    visibility: visible;
     transition: all ease-in 0.3s;
   }
 

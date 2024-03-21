@@ -6,9 +6,11 @@ urlpatterns = [
     # FORMS
 	path('login/', login_user, name='login'),
 	path('login_42/', login_42, name='login42'),
+    path('register_42/', register_42, name='register42'),
 	path('logout/', logout_user, name='logout'),
 	path('register/', register_user, name='register'),
 	path('edit_profile/', edit_profile, name='edit_profile'),
+    path('change_password/', change_password, name='change_password'),
 
 	# GETERS
     # USERS
@@ -53,7 +55,6 @@ urlpatterns = [
 	path('join_tournament/', joinTournament, name='joinTournament'),
 	path('create_tournament/', createTournament, name='createTournament'),
 	path('leave_tournament/', leaveTournament, name='quitTournament'),
-
 
 	path('get_all_friends/<int:id_user>', getAllFriendsofUser, name='getAllFriendsofUser'),
 	path('add_friend/', sendFriendRequest, name='addFriend'),

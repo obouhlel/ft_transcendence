@@ -1,6 +1,7 @@
 #import all the methods in the package
 from .login_user import *
 from .login_42 import *
+from .register_42 import *
 from .register_user import *
 from .logout_user import *
 from .edit_profile import *
