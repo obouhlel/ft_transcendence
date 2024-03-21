@@ -35,6 +35,18 @@ class Command(BaseCommand):
 		)
 		user2.save()
 
+		user3 , _created = CustomUser.objects.get_or_create(
+			username='user3',
+			email='user3@email.com',
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', # adminadmin
+			first_name='User',
+			last_name='Two',
+			sexe='F',
+			birthdate="1990-01-01",
+			is_superuser=False,
+			is_staff=False
+		)
+
 		description_pong = """
 		Pong is a classic arcade game where players control paddles to hit a ball back and forth.\n
 		Test your reflexes in this timeless battle of speed and skill.
@@ -85,6 +97,8 @@ class Command(BaseCommand):
 		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game1)
 		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user1, game=game2)
 		user2_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game2)
+		user3_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user3, game=game1)
+		user3_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user3, game=game2)
 
 		# Créer des parties
 		party1, _created = Party.objects.get_or_create(

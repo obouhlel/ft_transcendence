@@ -21,8 +21,7 @@ class Party(models.Model):
 	winner_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='winner_party')
 	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='loser_party')
 	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
-	round_nb = models.IntegerField(default=0)
-	id_tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
+	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
 	def __str__(self):
@@ -44,6 +43,9 @@ class Party(models.Model):
 		self.player2.updateStat(self.game.id, self.time_played, self.winner_party == self.player2, draw)
 		self.game.update_stat(self.time_played)
 		self.save()
+		if self.tournament:
+			party_in_tournament = PartyInTournament.objects.get(party=self)
+			party_in_tournament.update_end()
 	def party_data(self):
 		return {
 			'id': self.id,

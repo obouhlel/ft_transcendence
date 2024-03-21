@@ -1,4 +1,5 @@
 import json
+import time
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 
@@ -7,7 +8,7 @@ import uuid
 from . import routing
 from . import consumersForPong
 from . import consumersForTicTacToe
-from transcendence.models import Game, UserInLobby, Party, Lobby
+from transcendence.models import Game, UserInLobby, Party, Lobby, Tournament
 from django.utils import timezone
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -85,34 +86,104 @@ def makeParty(lobby):
 					lobby.users.remove(user)
 					lobby.users.remove(compatible)
 					return party
+				
 @sync_to_async
-def  xxx():
-	for game in Game.objects.all():
-			if  game.lobby.users.count() >= 2:
-				party =  makeParty(game.lobby)
-				url = createUrlPattern(game.name.lower())
+def findAndStartPartiesForTournament():
+	
+	# for tournament in Tournament.objects.filter(status="Start"):
+	for tournament in Tournament.objects.filter(status="waiting"):
+		if tournament.users.count() >= tournament.nb_player_to_start:
+			list_players = tournament.users.all()
+			parties = tournament.make_party_of_round(1, list_players)
+			tournament.status = "playing"
+			tournament.save()
+			for party in parties:
+				url = createUrlPattern(tournament.game.name.lower())
 				channel_layer = get_channel_layer()
 				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.player1.id),
+					"game__uid_" + str(party.party.player1.id),
 					{
 						"type": "startParty",
-						"message":getMatchFoundJson(game.name, url)
+						"message": getMatchFoundJson(tournament.game.name, url)
 					}
 				)
 				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.player2.id),
+					"game__uid_" + str(party.party.player2.id),
 					{
 						"type": "startParty",
-						"message":getMatchFoundJson(game.name, url)
+						"message": getMatchFoundJson(tournament.game.name, url)
 					}
 				)
+
+
+@sync_to_async
+def getNextRound():
+	for tournament in Tournament.objects.filter(status="playing"):
+		logger.info("CURRENT ROUND")
+		logger.info(tournament.current_round)
+		logger.info("PARTIES")
+		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round).count())
+		logger.info("FINISHED PARTIES")
+		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
+   
+		if tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count() == tournament.partyintournament_set.filter(round_nb=tournament.current_round).count():
+			list_players = [party.party.winner_party for party in tournament.partyintournament_set.filter(round_nb=tournament.current_round).order_by('index')]
+			parties = tournament.make_party_of_round(tournament.current_round+1, list_players)
+			if parties == None:
+				tournament.end_tournament()
+				tournament.save()
+				return
+			logger.info(parties)
+			for party in parties:
+				url = createUrlPattern(tournament.game.name.lower())
+				channel_layer = get_channel_layer()
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.party.player1.id),
+					{
+						"type": "startParty",
+						"message": getMatchFoundJson(tournament.game.name, url)
+					}
+				)
+				async_to_sync(channel_layer.group_send)(
+					"game__uid_" + str(party.party.player2.id),
+					{
+						"type": "startParty",
+						"message": getMatchFoundJson(tournament.game.name, url)
+					}
+				)
+
+		
+
+@sync_to_async
+def findAndStartParties():
+	for game in Game.objects.all():
+		if game.lobby.users.count() >= 2:
+			party = makeParty(game.lobby)
+			url = createUrlPattern(game.name.lower())
+			channel_layer = get_channel_layer()
+			async_to_sync(channel_layer.group_send)(
+				"game__uid_" + str(party.player1.id),
+				{
+					"type": "startParty",
+					"message": getMatchFoundJson(game.name, url)
+				}
+			)
+			async_to_sync(channel_layer.group_send)(
+				"game__uid_" + str(party.player2.id),
+				{
+					"type": "startParty",
+					"message": getMatchFoundJson(game.name, url)
+				}
+			)
 
 async def matchmaking():
 	while True:
-		await xxx()
+		await findAndStartParties()
+		await findAndStartPartiesForTournament()
+		await getNextRound()
 		await asyncio.sleep(1)
 
-# -----------------------------Parser--------------------------------
+
 @sync_to_async
 def matchmakingJoined(socket,message):
 	gameId = message.get('gameId')
@@ -175,4 +246,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
 	async def startParty(self, event):
 		await self.send(text_data=event['message'])
+
+
+# -----------------------------Tournament--------------------------------
 

@@ -122,6 +122,6 @@ export async function connectWebsocketMatchmacking() {
   };
 
   socketListener(socketMatchmaking);
-  windowListener(socketMatchmaking);
+  // windowListener(socketMatchmaking);
 }
 

@@ -90,14 +90,12 @@ def createTournament(request):
 	nb_player = data['nb_players'] if 'nb_players' in data else 4
 	user = request.user
 	name = data['name'] if 'name' in data else None
-	if name and Tournament.objects.filter(name=name).exists():
-		return JsonResponse({'status': 'error', 'message': 'This tournament name already exists.'}, status=400)
 	if not is_power_of_two(nb_player):
 		return JsonResponse({'status': 'error', 'message': 'The number of players must be a power of 2(2,4,8,16...).'}, status=400)
 	if 'id_game' not in data:
 		return JsonResponse({'status': 'error', 'message': 'You must provide a game id.'}, status=400)
-	if user.tournaments.count() > 0:
-		return JsonResponse({'status': 'error', 'message': 'You are already in another tournament.'}, status=400)
+	# if user.tournaments.filter(status = "waiting").count() > 0:
+	# 	return JsonResponse({'status': 'error', 'message': 'You are already in another tournament.'}, status=400)
 	try:
 		game = Game.objects.get(id=data['id_game'])
 		tournament = Tournament.objects.create(game=game, nb_player_to_start=nb_player, creator = user)
@@ -121,10 +119,10 @@ def joinTournament(request):
 	try:
 		tournament = Tournament.objects.get(id=id_tournament)
 		user = request.user
-		if user.tournaments.count() > 1:
+		if user.tournaments.filter(status = "waiting").count() > 0:
 			return JsonResponse({'status': 'error', 'message': 'ERROR: CAN NOT BE IN MULTIPLE TOURNAMENT AT THE SAME TIME'}, status=400)
-		if (user.tournaments.filter(id=id_tournament)):
-			return JsonResponse({'status': 'error', 'message': 'You are already in this tournament.'}, status=400)
+		# if (user.tournaments.filter(id=id_tournament)):
+		# 	return JsonResponse({'status': 'error', 'message': 'You are already in this tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
 			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
 		tournament.users.add(user)
@@ -203,10 +201,12 @@ def leaveTournament(request):
 		tournament = Tournament.objects.get(id=id)
 		if (request.user not in tournament.users.all()):
 			return JsonResponse({'status': 'error', 'message': 'You are not in the tournament.'}, status=400)
-		if (tournament.status != 'waiting'):
-			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
+		# if (tournament.status != 'waiting'):
+		# 	return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
 		tournament.users.remove(request.user)
 		tournament.save()
+		if (tournament.users.count() == 0):
+			tournament.delete()
 		return JsonResponse({'status': 'ok', 'message': 'You quit the tournament.'})
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
