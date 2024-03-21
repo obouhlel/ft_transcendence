@@ -106,10 +106,14 @@
   .table tbody tr td:nth-child(1) {
     border-top-left-radius: 50px;
     border-bottom-left-radius: 50px;
+    -moz-border-radius-topleft: 50px; 
+    -moz-border-radius-bottomleft: 50px;
   }
   .table tbody tr td:nth-child(4) {
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
+    -moz-border-radius-topright: 50px;
+    -moz-border-radius-bottomright: 50px;
   }
   
   .button-container {
