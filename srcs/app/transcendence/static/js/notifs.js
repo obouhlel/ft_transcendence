@@ -48,7 +48,7 @@ export async function handlerNotification() {
 async function updateHeader() {
 	const header = document.getElementById("header");
 	const pages = hashChangeHandler();
-	const data = await doRequest.get(`/update_header/`);
+	const data = await doRequest.get(`/update_header/${pages[0]}/`);
 	header.innerHTML = data.html;
 	handleNotificationVisual();
 	handlerNotificationAction();
