@@ -1,6 +1,7 @@
 import * as JS_UTILS from "../jsUtils.js";
 import * as UTILS from "./pongUtils.js";
 import * as PONG from "./pongUtils.js";
+import { openVersusModal } from "../game-info.js";
 
 function sendStartingGame(game) {
   let message = {
@@ -33,6 +34,7 @@ export function sendPlayerPosition(player, game) {
 function parseMessage(message, game) {
   if ("game" in message) {
     if (message["game"] == "starting") {
+      openVersusModal();
       game.side = message["side"];
     }
     if (message["game"] == "positions") {
