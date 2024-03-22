@@ -293,12 +293,12 @@
     overflow-x: auto;
     table-layout: fixed;
   }
-
+  /*
   .blue-btn {
     width: 60%;
     font-weight: 400;
     padding: 10px 20px;
-  }
+  }*/
 
   .button-container a {
     left: 0px;

@@ -29,18 +29,14 @@
 					{% endif %} </td>
 				{% if current_tournament != tournament.id %}
 				<td>
-					<a class="blue-btn" id="join-tournament-btn-{{tournament.id}}">Join</a>
-				</td>
+					<a class="blue-btn tour-btn" id="join-tournament-btn-{{tournament.id}}">Join</a>
 				{% else %}
-				<td>
-					<a class="blue-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
-				</td>
+					<a class="blue-btn tour-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
 				{% endif %}
 				{% if tournament.creator.id ==  user.id %}
-				<td>
-					<a class="red-btn" id="delete-tournament-btn-{{tournament.id}}">Delete</a>
-				</td>
+					<a class="red-btn tour-btn" id="delete-tournament-btn-{{tournament.id}}">Delete</a>
 				{% endif %}
+				</td>
 			</tr>
 			{% endfor %}
 		</tbody>

@@ -81,24 +81,22 @@ export async function socketTournamentHandler() {
 
 				const tdAction = document.createElement('td');
 				const aAction = document.createElement('a');
-				aAction.className = 'blue-btn';
-				aAction.id = `join-tournament-btn-${tournament.id}`;
-				aAction.textContent = 'Join';
+				aAction.className = 'blue-btn tour-btn'; 
+				aAction.id = `${current_tournament != tournament.id ? 'join' : 'leave'}-tournament-btn-${tournament.id}`;
+				aAction.textContent = current_tournament != tournament.id ? 'Join' : 'Leave';
 				tdAction.appendChild(aAction);
-				tr.appendChild(tdAction);
 
 				doRequest.get('/api/get_user_connected').then(userConnected => {
 					console.log('userConnected :', userConnected);
 
 					if (tournament.creator_id === userConnected.user.id) {
-						const tdDelete = document.createElement('td');
 						const aDelete = document.createElement('a');
-						aDelete.className = 'red-btn';
+						aDelete.className = 'red-btn tour-btn';
 						aDelete.id = `delete-tournament-btn-${tournament.id}`;
 						aDelete.textContent = 'Delete';
-						tdDelete.appendChild(aDelete);
-						tr.appendChild(tdDelete);
+						tdAction.appendChild(aDelete);
 					}
+					tr.appendChild(tdAction);
 				}).catch(error => {
 					console.error('Error:', error);
 				});
