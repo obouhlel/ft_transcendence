@@ -13,7 +13,7 @@ urlpatterns = [
 
 	# API VIEWS (SHOW PAGES)
 	path('pages/<str:page>/', views.page),
-    path('update_header/', views.update_header),
+    path('update_header/<str:page>/', views.update_header),
 
 	path('config.js', views.config),
 

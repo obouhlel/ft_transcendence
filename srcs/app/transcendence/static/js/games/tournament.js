@@ -1,7 +1,6 @@
 import { doRequest } from '../utils/fetch.js';
 
-export async function tournamentHandler() {
-
+export async function socketTournamentHandler() {
 	let socket = new WebSocket(
 		"wss://" + window.location.host + "/ws/tournament/" + window.location.hash.split('=')[1],
 	);
@@ -15,14 +14,10 @@ export async function tournamentHandler() {
 	}
 
 	socket.onmessage = function(event) {
-		let data = JSON.parse(event.data);
-		let message = data.message;
-
-		console.log('###### WebSocket tournament message received:', message);
+		let message = JSON.parse(event.data);
 
 		// If the message is the current player count, update the display
 		if (message.action === 'Update Player Count') {
-			console.log('###### Update Player Count ######');
 			let playerCount = message.playerCount;
 			let maxPlayerCount = message.maxPlayerCount;
 			let tournamentId = message.tournamentId;
@@ -32,13 +27,90 @@ export async function tournamentHandler() {
 			if (playerCountElement) {
 				playerCountElement.textContent = `${playerCount}/${maxPlayerCount}`;
 			}
+
+			// update the list of player if we are in the lobby
+			if (window.location.hash === `#lobby-tournament?id=${tournamentId}`) {
+				let playerListElement = document.querySelector(`.players-list`);
+
+				if (playerListElement) {
+					playerListElement.innerHTML = '';
+					message.users.forEach((user) => {
+						let playerElement = document.createElement('div');
+						playerElement.className = 'player';
+						playerElement.id = `player-${user.id}`;
+
+						let imgElement = document.createElement('img');
+						imgElement.src = user.avatar ? `${user.avatar}` : '/static/img/user-image.png';
+						imgElement.alt = `${user.username} Avatar`;
+
+						let pElement = document.createElement('p');
+						pElement.textContent = `${user.username}`;
+
+						playerElement.appendChild(imgElement);
+						playerElement.appendChild(pElement);
+
+						playerListElement.appendChild(playerElement);
+					});
+				}
+			}
 		}
-		else
-		{
-			console.log('###### Other message ###### :', message);
+		else if (message.action === 'Update Tournament List') {
+			const tbody = document.querySelector('tbody');
+			if (tbody !== null)
+    			tbody.innerHTML = '';
+			message.tournaments.forEach(tournament => {
+				const tr = document.createElement('tr');
+
+				const tdName = document.createElement('td');
+				tdName.textContent = tournament.name;
+				tr.appendChild(tdName);
+
+				const tdPlayerCount = document.createElement('td');
+				tdPlayerCount.className = 'player-count';
+				tdPlayerCount.id = `player-count-${tournament.id}`;
+				tdPlayerCount.textContent = `${tournament.users.length}/${tournament.nb_player_to_start}`;
+				tr.appendChild(tdPlayerCount);
+
+				const tdStatus = document.createElement('td');
+				if (tournament.users.length === tournament.nb_player_to_start) {
+					tdStatus.textContent = 'Full';
+				} else {
+					tdStatus.textContent = tournament.status;
+				}
+				tr.appendChild(tdStatus);
+
+				const tdAction = document.createElement('td');
+				const aAction = document.createElement('a');
+				aAction.className = 'blue-btn';
+				aAction.id = `join-tournament-btn-${tournament.id}`;
+				aAction.textContent = 'Join';
+				tdAction.appendChild(aAction);
+				tr.appendChild(tdAction);
+
+				doRequest.get('/api/get_user_connected').then(userConnected => {
+					console.log('userConnected :', userConnected);
+
+					if (tournament.creator_id === userConnected.user.id) {
+						const tdDelete = document.createElement('td');
+						const aDelete = document.createElement('a');
+						aDelete.className = 'red-btn';
+						aDelete.id = `delete-tournament-btn-${tournament.id}`;
+						aDelete.textContent = 'Delete';
+						tdDelete.appendChild(aDelete);
+						tr.appendChild(tdDelete);
+					}
+				}).catch(error => {
+					console.error('Error:', error);
+				});
+
+				if (tbody !== null)
+					tbody.appendChild(tr);
+			});
 		}
 	};
+}
 
+export async function tournamentHandler() {
 	const handleClick = (event) => {
 		const leaveButtons = document.querySelectorAll('[id^="leave-tournament-btn-"]');
 		if (event.target.matches('[id^="join-tournament-btn-"]')) {
@@ -69,6 +141,12 @@ export async function tournamentHandler() {
 			let tournamentId = event.target.id.split("-")[3];
 			let data = { id_tournament: tournamentId };
 			doRequest.post(`/api/leave_tournament/`, data, (response_data) => {
+				console.log(response_data);
+			});
+		}
+		else if (event.target.matches('[id^="delete-tournament-btn-"]')) {
+			let tournamentId = event.target.id.split("-")[3];
+			doRequest.delete(`/api/delete_tournament/${tournamentId}/`, {}, (response_data) => {
 				console.log(response_data);
 			});
 		}
@@ -172,9 +250,12 @@ export async function tournamentLobbyHandler() {
 	}
 	const handleHashChange = (event) => {
 		const newHash = window.location.hash.split("?")[0];
-		if (newHash !== "#lobby-tournament") {
+		if (newHash !== "#lobby-tournament" && newHash !== "#tournament" && newHash !== "#create-tournament") {
 			const data = { id_tournament: tournamentId };
-			doRequest.post(`/api/leave_tournament/`, data);
+				console.log("------------------ Leaving tournament on hash change + data: ", data);
+				doRequest.post(`/api/leave_tournament/`, data, (response) => {
+					console.log("------------------ response: ", response);
+				});
 		}
 	};
 

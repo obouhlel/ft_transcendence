@@ -9,8 +9,8 @@ from logging import getLogger
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
-				'create-tournament', 'lobby-tournament', 'dashboard', 'loading']
-games_pages = ['pong', 'TicTacToe']
+				'create-tournament', 'lobby-tournament', 'dashboard', 'game-info']
+games_pages = ['pong', 'tictactoe']
 
 logger = getLogger(__name__)
 
@@ -92,6 +92,20 @@ def page(request, page):
 	elif page in games_pages:
 		if request.user.is_authenticated:
 			request.user.update_status('In Game')
+		user_id = request.user.id
+		party = Party.objects.filter(player1=user_id, status='Waiting').first()
+		if not party:
+			party = Party.objects.filter(player2=user_id, status='Waiting').first()
+		if party:
+			player1 = CustomUser.objects.get(id=party.player1.id)
+			player2 = CustomUser.objects.get(id=party.player2.id)
+			context = {
+				'party': party,
+				'player1': player1,
+				'player2': player2,
+				'game': page
+			}
+		logger.info('###### context: ' + context['player1'].username + ' vs ' + context['player2'].username)
 		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:
@@ -116,14 +130,15 @@ def page(request, page):
 		html_content = render_to_string('error/404.html', request=request)
 		return JsonResponse({'html': html_content})
 	
-def update_header(request):
+def update_header(request, page):
 	notifications = []
 	if request.user.is_authenticated:
 		pending = FriendRequest.objects.filter(receiver=request.user)
 		for p in pending:
 			notifications.append(p.friend_request_data())
 	context = {
-		'notifications': notifications
+		'notifications': notifications,
+		'page': page
 	}
 	html_content = render_to_string('header.html', request=request, context=context)
 	return JsonResponse({'html': html_content})

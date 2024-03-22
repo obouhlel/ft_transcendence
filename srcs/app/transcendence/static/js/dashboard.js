@@ -176,43 +176,68 @@ async function fetchLeaderboardData(gameId) {
   }
 }
 
-
 function processAndAssociateData(leaderboardData) {
   const leaderboard = leaderboardData.users.map(entry => {
-      const { user, stat } = entry;
+    const { user, stat } = entry;
+    let ratio = 0;
+    if (stat.nb_win + stat.nb_lose > 0) {
+        ratio = (stat.nb_win / (stat.nb_win + stat.nb_lose)) * 100;
+    }
 
-      return {
-          username: user.username,
-          avatar: user.avatar || defaultAvatarUrl,
-          nbPlayed: stat.nb_played,
-          ratio: stat.ratio * 100,
-      };
+    return {
+        username: user.username,
+        avatar: user.avatar || defaultAvatarUrl,
+        nbPlayed: stat.nb_played,
+        ratio: ratio,
+        nb_win: stat.nb_win,
+        nb_lose: stat.nb_lose,
+    };
   });
 
   // Sort by ratio, descending
   leaderboard.sort((a, b) => b.ratio - a.ratio);
 
+  // Assign ranks, taking ties into account
+  let lastRatio = null;
+  let lastRank = 0;
+  let tiesCount = 0;
+
+  leaderboard.forEach((item, index) => {
+    if (item.ratio === lastRatio) {
+      item.rank = lastRank;
+      tiesCount++;
+    } else {
+      lastRank += 1 + tiesCount;
+      item.rank = lastRank;
+      lastRatio = item.ratio;
+      tiesCount = 0;
+    }
+  });
+
   return leaderboard;
 }
+
+
 
 function displayLeaderboard(leaderboard) {
   const tbody = document.getElementById('leaderboardBody');
   tbody.innerHTML = '';
 
-  leaderboard.forEach((entry, index) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${index + 1}</td>
-      <td class="lead-user-td">
-        <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
-        <span class="name-leaderboard">${entry.username}</span>
-      </td>
-      <td>${entry.nbPlayed}</td>
-      <td>${entry.ratio.toFixed(2)}%</td>
-    `;
-    tbody.appendChild(tr);
+  leaderboard.forEach(entry => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+          <td>${entry.rank}</td>
+          <td class="lead-user-td">
+              <img src="${entry.avatar}" class="img-leaderboard" alt="user">&nbsp;
+              <span class="name-leaderboard">${entry.username}</span>
+          </td>
+          <td>${entry.nbPlayed}</td>
+          <td>${entry.ratio.toFixed(2)}%</td>
+      `;
+      tbody.appendChild(tr);
   });
 }
+
 
 async function fetchCurrentUserName() {
   const response = await fetch('/api/get_user_name/');
@@ -222,26 +247,86 @@ async function fetchCurrentUserName() {
 
 async function updateDashboardStats(leaderboard) {
   const currentUser = await fetchCurrentUserName();
-  const currentUserIndex = leaderboard.findIndex(player => player.username === currentUser);
-  const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : 'N/A';
+  const currentUserEntry = leaderboard.find(player => player.username === currentUser);
+  const currentUserRank = currentUserEntry ? currentUserEntry.rank : 'N/A';
 
   const bestPlayer = leaderboard.length > 0 ? leaderboard[0] : null;
-  const totalPlayers = leaderboard.length; 
+  const totalPlayers = leaderboard.length;
 
   document.querySelector('.dashboard-card h1').innerText = `#${currentUserRank}`;
   document.querySelector('.best-player-name').innerText = bestPlayer ? bestPlayer.username : 'N/A';
-  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Fallback to default avatar
-  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers;
+  document.querySelector('.best-player img').src = bestPlayer && bestPlayer.avatar ? bestPlayer.avatar : defaultAvatarUrl; // Ensure defaultAvatarUrl is correctly defined
+  document.querySelectorAll('.dashboard-card')[2].querySelector('h1').innerText = totalPlayers.toString();
 }
+
+async function updateWinLossChart(leaderboard) {
+  const currentUser = await fetchCurrentUserName();
+  const currentUserData = leaderboard.find(entry => entry.username === currentUser);
+  const messageElement = document.getElementById('chartMessage');
+  const chartElement = document.getElementById('winLossChart');
+  
+  let totalWins = 0;
+  let totalLosses = 0;
+
+  if (currentUserData && currentUserData.nbPlayed > 0) {
+      totalWins = currentUserData.nb_win;
+      totalLosses = currentUserData.nb_lose;
+      
+      messageElement.style.display = 'none';
+      chartElement.style.display = 'block';
+
+  
+      if (window.winLossChartInstance) {
+          window.winLossChartInstance.destroy();
+      }
+
+      window.winLossChartInstance = new Chart(chartElement.getContext('2d'), {
+          type: 'doughnut',
+          data: {
+              labels: ['Wins', 'Losses'],
+              datasets: [{
+                  data: [totalWins, totalLosses],
+                  backgroundColor: [
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(255, 99, 132, 1)'
+                  ],
+                  borderColor: [
+                      'rgba(75, 192, 192, 1)',
+                      'rgba(255, 99, 132, 1)'
+                  ],
+                  borderWidth: 1
+              }]
+          },
+          options: {
+              responsive: true,
+              plugins: {
+                  legend: {
+                      position: 'top',
+                      labels: {
+                        color: 'white',
+                      }
+                  }
+              }
+          }
+      });
+  } else {
+
+      messageElement.textContent = 'You have not played any games yet.';
+      messageElement.style.display = 'block';
+      chartElement.style.display = 'none';
+  }
+}
+
 
 export async function updateDashboardDisplay(gameId) {
   const { leaderboardData, usersData } = await fetchLeaderboardData(gameId);
   if (leaderboardData.status === "ok" && usersData.status === "ok") {
-    const leaderboard = processAndAssociateData(leaderboardData);
-    displayLeaderboard(leaderboard);
-    updateDashboardStats(leaderboard);
+      const leaderboard = processAndAssociateData(leaderboardData);
+      displayLeaderboard(leaderboard);
+      updateDashboardStats(leaderboard);
+      updateWinLossChart(leaderboard);
   } else {
-    console.error("Failed to fetch data");
+      console.error("Failed to fetch data");
   }
 }
 
@@ -256,3 +341,4 @@ export function setupTabEventListeners() {
     });
   });
 }
+

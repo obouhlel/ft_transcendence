@@ -54,7 +54,7 @@ async function executeHandlers(page) {
 }
 
 async function showPage(page, params) {
-  const data_header = await doRequest.get(`/update_header/`);
+  const data_header = await doRequest.get(`/update_header/${page}/`);
   const header_content = document.getElementById("header");
   header_content.innerHTML = data_header.html;
 

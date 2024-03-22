@@ -5,7 +5,7 @@
   }
   
   .overlay {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -315,4 +315,245 @@
     font-size: 19px;
     margin-bottom: 25px;
   }
+}
+
+ /*Versus Modal*/
+
+ .versus-modal{
+  max-width: 80%;
+  min-height: 300px;
+  padding: 45px 65px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f5f5ff;
+  border-radius: 13px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  overflow: auto;
+  z-index: 1000;
+  border: none;
+ }
+
+.versus-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 80px;
+
+ }
+
+ .versus-modal .versus-container .player-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+ }
+
+ .versus-text{
+  font-family: "Audiowide", sans-serif;
+  font-size: 50px;
+  color: #04075f;
+ }
+
+ .player-container .player-img img {
+  border-radius: 50%;
+  width: 90px;
+  height: 90px;
+  margin-right: 5px;
+}
+
+
+ .player-container .player-name {
+  font-size: 25px;
+  font-weight: 500;
+ }
+
+ .display-hidden {
+  display: none;
+}
+
+/*responsive*/
+
+@media screen and (max-width: 850px)
+{ 
+
+  .versus-modal{
+    max-width: 90%;
+    min-height: 300px;
+    padding: 45px 65px;
+   }
+
+   .versus-container{
+    gap: 70px;
+  
+   }
+  
+   .versus-text{
+    font-size: 40px;
+   }
+  
+   .player-container .player-img img {
+    width: 75px;
+    height: 75px;
+    margin-right: 4px;
+  }
+  
+  
+   .player-container .player-name {
+    font-size: 22px;
+   }
+  
+}
+
+@media screen and (max-width: 430px)
+{ 
+
+  .versus-modal{
+    max-width: 90%;
+    padding: 35px;
+    min-height: 200px;
+   }
+
+   .versus-container{
+    gap: 15px;
+  
+   }
+  
+   .versus-text{
+    font-size: 20px;
+   }
+  
+   .player-container .player-img img {
+    width: 50px;
+    height: 50px;
+    margin-right: 3px;
+  }
+  
+  
+   .player-container .player-name {
+    font-size: 13px;
+   }
+
+   .player-container{
+    gap: 3px;
+   }
+  
+}
+
+/*Winner Modal*/
+.winner-modal{
+  max-width: 80%;
+  min-height: 300px;
+  padding: 55px 75px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #f5f5ff;
+  border-radius: 13px;
+  box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+  overflow: auto;
+  z-index: 1000;
+  border: none;
+ }
+
+ .winner-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+ }
+
+ .winner-heading{
+  font-size: 75px;
+  color: #04075f;
+  margin-bottom: 20px;
+
+ }
+
+ .winner-img img{
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+ }
+
+ .winner-name{
+  font-size: 32px;
+  font-weight: 600;
+  color: #0a10b2;
+ }
+
+ .winner-hidden{
+  display: none;
+ }
+
+/*responsive*/
+
+ @media screen and (max-width: 1100px)
+{
+
+.winner-modal{
+  width: 90%;
+}
+
+  .winner-heading{
+    font-size: 50px;
+  
+   }
+}
+
+@media screen and (max-width: 430px)
+{
+
+  .winner-modal{
+    padding: 45px 45px;
+  }
+
+
+  .winner-heading{
+    font-size: 30px;
+  
+   }
+
+   .winner-img img{
+    width: 90px;
+    height: 90px;
+   }
+  
+   .winner-name{
+    font-size: 22px;
+    font-weight: 500;
+   }
+}
+
+@media screen and (max-width: 360px)
+{
+
+  .winner-modal{
+    padding: 35px 35px;
+  }
+
+
+  .winner-heading{
+    font-size: 28px;
+  
+   }
+
+   .winner-img img{
+    width: 80px;
+    height: 80px;
+   }
+  
+   .winner-name{
+    font-size: 20px;
+   }
 }

@@ -123,11 +123,15 @@ export async function addFriendHandler()
         doRequest.post(`/api/add_friend/`, dataSend, data => {
             if (data.status === 'ok') {
 				message.innerHTML = data.message;
+				message.style.textAlign = 'center';
+				message.style.padding = '10px';
 				message.style.color = 'green';
             }
 			else {
 				message.innerHTML = data.message;
 				message.style.color = 'red';
+				message.style.textAlign = 'center';
+				message.style.padding = '10px';
                 console.error(data.message);
             }
         });
