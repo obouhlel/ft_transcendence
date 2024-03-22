@@ -6,13 +6,10 @@ export const callback = {
 			return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
-			console.log('CONNEXION REUSSIE');
 			window.location.hash = 'games';
 		}
 		else if (data.status === 'error')
 		{
-			console.log('ERREUR DE CONNEXION');
-			window.location.hash = 'login';
 			messageElement.textContent = data.message;
 		}
 	},
@@ -21,12 +18,7 @@ export const callback = {
 	{
 		if (data.status === 'ok')
 		{
-			console.log('DECONNEXION REUSSIE');
 			window.location.hash = 'login';
-		}
-		else if (data.status === 'error')
-		{
-			console.log('ERREUR DE DECONNEXION');
 		}
 	},
 
@@ -37,12 +29,10 @@ export const callback = {
 			return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
-			console.log('INSCRIPTION REUSSIE');
 			window.location.hash = 'login';
 		}
 		else if (data.status === 'error')
 		{
-			console.log('ERREUR D\'INSCRIPTION');
 			messageElement.textContent = data.message;
 		}
 	},
@@ -54,12 +44,10 @@ export const callback = {
 			return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
-			console.log('MODIFICATION REUSSIE');
 			window.location.hash = 'profile';
 		}
 		else if (data.status === 'error')
 		{
-			console.log('ERREUR DE MODIFICATION');
 			messageElement.textContent = data.message;
 		}
 	},

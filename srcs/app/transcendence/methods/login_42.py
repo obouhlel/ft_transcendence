@@ -38,6 +38,8 @@ def get_user_data(access_token, token_type):
         return None
 
 def authenticate_user(request, user):
+    if user.status == 'Online':
+        return redirect_with_message('/#400', 'User is already logged in.')
     django_login(request, user)
     return redirect('/')
 
