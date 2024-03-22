@@ -2,43 +2,43 @@
 <div class="nav-btns">
     {% if page == 'games' or page == 'home' %}
     <a href="#profile" class="btn-user">
-        <img src="{% static 'img/Group 3.svg' %}" alt="" data-src="{% static 'img/Group 2.svg' %}"/>
+        <i class="fa-solid fa-user"></i>
     </a>
-    <a href="#games" class="btn-gamepad">
-        <img src="{% static 'img/game-high.png' %}" alt="" data-src="{% static 'img/Group 1.svg' %}" />
+    <a href="#games" class="btn-gamepad game-active">
+        <i class="fa-solid fa-gamepad" style="color: #7289fd;"></i>
     </a>
     <a href="#dashboard" class="btn-dashboard">
-        <img src="{% static 'img/dash-icon.png' %}" alt="" data-src="{% static 'img/dash-active.png' %}" />
+        <i class="fa-solid fa-chart-line"></i>
     </a>
     {% elif page == 'profile' %}
-    <a href="#profile" class="btn-user">
-        <img src="{% static 'img/profile.png' %}" alt="" data-src="{% static 'img/Group 2.svg' %}"/>
+    <a href="#profile" class="btn-user user-active">
+        <i class="fa-solid fa-user" style="color: #7289fd;"></i>
     </a>
     <a href="#games" class="btn-gamepad">
-        <img src="{% static 'img/game.png' %}" alt="" data-src="{% static 'img/Group 1.svg' %}" />
+        <i class="fa-solid fa-gamepad"></i>
     </a>
     <a href="#dashboard" class="btn-dashboard">
-        <img src="{% static 'img/dash-icon.png' %}" alt="" data-src="{% static 'img/dash-active.png' %}" />
+        <i class="fa-solid fa-chart-line"></i>
     </a>
     {% elif page == 'dashboard' %}
     <a href="#profile" class="btn-user">
-        <img src="{% static 'img/Group 3.svg' %}" alt="" data-src="{% static 'img/Group 2.svg' %}"/>
+        <i class="fa-solid fa-user"></i>
     </a>
     <a href="#games" class="btn-gamepad">
-        <img src="{% static 'img/game.png' %}" alt="" data-src="{% static 'img/Group 1.svg' %}" />
+        <i class="fa-solid fa-gamepad"></i>
     </a>
-    <a href="#dashboard" class="btn-dashboard">
-        <img src="{% static 'img/dash-active.png' %}" alt="" data-src="{% static 'img/dash-active.png' %}" />
+    <a href="#dashboard" class="btn-dashboard dash-active">
+        <i class="fa-solid fa-chart-line" style="color: #7289fd;"></i>
     </a>
     {% else %}
     <a href="#profile" class="btn-user">
-        <img src="{% static 'img/Group 3.svg' %}" alt="" data-src="{% static 'img/Group 2.svg' %}"/>
+        <i class="fa-solid fa-user"></i>
     </a>
     <a href="#games" class="btn-gamepad">
-        <img src="{% static 'img/game.png' %}" alt="" data-src="{% static 'img/Group 1.svg' %}" />
+        <i class="fa-solid fa-gamepad"></i>
     </a>
     <a href="#dashboard" class="btn-dashboard">
-        <img src="{% static 'img/dash-icon.png' %}" alt="" data-src="{% static 'img/dash-active.png' %}" />
+        <i class="fa-solid fa-chart-line"></i>
     </a>
     {% endif %}
 </div>

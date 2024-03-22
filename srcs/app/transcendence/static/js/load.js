@@ -11,42 +11,7 @@ import {
 import { doRequest, getCookie } from "./utils/fetch.js";
 
 let isNotificationHandled = false;
-let dashboardButtonSetup = false;
 window.clean = [];
-
-function setupDashboardButton() {
-  if (dashboardButtonSetup) return;
-
-  const navBtns = document.querySelector('.nav-btns');
-  if (!navBtns) {
-    console.error('Navigation buttons container not found.');
-    return;
-  }
-
-  console.log('Setting up dashboard button...');
-  console.log('Nav buttons container:', navBtns);
-
-  navBtns.addEventListener('click', function(event) {
-    const target = event.target;
-    console.log('Clicked element:', target);
-    if (target.classList.contains('btn-dashboard')) {
-      event.preventDefault();
-      const btnGamepad = document.querySelector('.btn-gamepad');
-      if (!btnGamepad) {
-        console.error('Gamepad button not found.');
-        return;
-      }
-      const btnDashboard = target;
-      console.log('Dashboard button:', btnDashboard);
-      console.log('Gamepad button:', btnGamepad);
-      btnGamepad.querySelector('img').src = btnGamepad.querySelector('img').getAttribute('data-src');
-      btnDashboard.querySelector('img').src = btnDashboard.querySelector('img').getAttribute('data-src');
-    }
-  });
-
-  dashboardButtonSetup = true;
-}
-
 
 window.addEventListener("hashchange", function () {
   window.clean.forEach((func) => func());
@@ -54,10 +19,6 @@ window.addEventListener("hashchange", function () {
   let [page, params] = hashChangeHandler();
   window.searchFunction = searchFunction;
   showPage(page, params);
-
-  if (page === 'dashboard') {
-    setupDashboardButton();
-  }
 });
 
 window.addEventListener("load", function () {
@@ -66,10 +27,6 @@ window.addEventListener("load", function () {
   let [page, params] = hashChangeHandler();
   window.searchFunction = searchFunction;
   showPage(page, params);
-
-  if (page === 'dashboard') {
-    setupDashboardButton();
-  }
 });
 
 export function hashChangeHandler() {
