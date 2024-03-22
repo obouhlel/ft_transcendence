@@ -62,7 +62,7 @@ class Party(models.Model):
 			'winner_party': self.winner_party.id if self.winner_party else None,
 			'loser_party': self.loser_party.id if self.loser_party else None,
 			'type': self.type,
-			'id_tournament': self.id_tournament.id if self.id_tournament else None
+			'id_tournament': self.id_tournament.id if self.tournament else None
 	}
 	def startParty(player1, player2, game, type):
 		party = Party.objects.create(game=game, player1=player1, player2=player2)
