@@ -67,12 +67,12 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
 class TournamentConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.game_id = self.scope['url_route']['kwargs']['game_id']
-		await self.accept()
 		data = { 'message': 'Connection etablished !' }
 		await self.channel_layer.group_add(
 			"tournament_" + str(self.game_id),
 			self.channel_name
 		)
+		await self.accept()
 		await self.send(text_data=json.dumps(data))
 
 	async def disconnect(self, close_code):

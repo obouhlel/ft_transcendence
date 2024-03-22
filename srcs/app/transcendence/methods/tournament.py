@@ -214,7 +214,7 @@ def leaveTournament(request):
 #---------------------------------DELETE TOURNAMENT---------------------------------#
 @login_required
 @require_http_methods(['DELETE'])
-def deleteTournament(request, id_tournament):
+def deleteTournament(request):
 	try:
 		tournament = Tournament.objects.get(id=id_tournament)
 		if (tournament.creator != request.user):

@@ -12,8 +12,8 @@ function sendStartingGame(game) {
   };
   openVersusModal();
   setTimeout(() => {
-      JS_UTILS.sendMessageToSocket(game.socket, message);
-    }, 5000);
+    JS_UTILS.sendMessageToSocket(game.socket, message);
+  }, 5000);
 }
 
 export function sendLeaveGame(game) {
@@ -52,15 +52,17 @@ function parseMessage(message, game) {
     }
     if (message["game"] == "end") {
       game.needStop = true;
-      if (message["winner"] == game.username) {
+      if (message["winner"] == message["username"]) {
         UTILS.updateScore(game.scene, "You win", game);
       } else {
         UTILS.updateScore(game.scene, "You lose", game);
       }
       setTimeout(() => {
         openWinnerModal(message["winner"]);
+      }, 3000);
+      setTimeout(() => {
         window.location.hash = "home";
-      }, 5000);
+      }, 3000);
     }
   }
 }

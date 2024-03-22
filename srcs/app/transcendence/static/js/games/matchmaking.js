@@ -72,7 +72,7 @@ function parseMessage(message, infos) {
       case "waitlist leaved":
       case "match found":
         // if in matchmaking, reset button to "Matchmaking"
-        if (button.innerHTML.includes("Cancel")) {
+        if (button && button.innerHTML.includes("Cancel")) {
           button.innerHTML = "Matchmaking";
           hideModal();
         }
