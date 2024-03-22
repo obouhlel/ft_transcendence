@@ -5,8 +5,14 @@ from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
 import logging
 import asyncio
 import random
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+def datetime_handler(x):
+    if isinstance(x, datetime):
+        return x.isoformat()
+    raise TypeError("Unknown type")
 
 class Player():
 	def __init__(self, number: int, username, mmr, websocket):
@@ -82,5 +88,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 			'playerCount': message['playerCount'],
 			'maxPlayerCount': message['maxPlayerCount'],
 			'tournamentId': message['tournamentId'],
+			'users': message['users']
 		}
-		await self.send(text_data=json.dumps(data))
+		await self.send(text_data=json.dumps(data, default=datetime_handler))
+
+	async def tournament_created_or_deleted(self, event):
+		message = event['message']
+		logger.info(f"##### Message tournois cree/supp reçu : , {message}")
+		data = {
+			'action': message['action'],
+			'tournaments': message['tournaments']
+		}
+		await self.send(text_data=json.dumps(data, default=datetime_handler))
