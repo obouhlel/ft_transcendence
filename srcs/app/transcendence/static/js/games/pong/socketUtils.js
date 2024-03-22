@@ -53,15 +53,12 @@ function parseMessage(message, game) {
     if (message["game"] == "end") {
       game.needStop = true;
       if (message["winner"] == game.username) {
-        // UTILS.updateScore(game.scene, message["score"], game);
         UTILS.updateScore(game.scene, "You win", game);
       } else {
         UTILS.updateScore(game.scene, "You lose", game);
       }
-      // if (message["score"])
-      //   UTILS.updateScore(game.scene, message["score"], game);
-      openWinnerModal(message["winner"]);
       setTimeout(() => {
+        openWinnerModal(message["winner"]);
         window.location.hash = "home";
       }, 5000);
     }
