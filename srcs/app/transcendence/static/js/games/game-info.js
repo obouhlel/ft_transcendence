@@ -20,7 +20,7 @@ export function openVersusModal()
 
 }
 
-export function openWinnerModal() {
+export function openWinnerModal(winnerName) {
 	const winnerModal = document.querySelector('.winner-modal');
 	const overlay = document.querySelector('.overlay');
 

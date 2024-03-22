@@ -10,7 +10,7 @@ error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
 				'games', 'game-1', 'game-2', 'join-tournament',
 				'create-tournament', 'lobby-tournament', 'dashboard', 'game-info']
-games_pages = ['pong', 'TicTacToe']
+games_pages = ['pong', 'tictactoe']
 
 logger = getLogger(__name__)
 
