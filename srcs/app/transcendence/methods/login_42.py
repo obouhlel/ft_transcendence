@@ -38,6 +38,8 @@ def get_user_data(access_token, token_type):
         return None
 
 def authenticate_user(request, user):
+    if user.status == 'Online':
+        return redirect_with_message('/#400', 'User is already logged in.')
     django_login(request, user)
     return redirect('/')
 
@@ -49,7 +51,7 @@ def save_user_data(user_data, access_token):
     data = {
         'username': user_data['login'],
         'email': user_data['email'],
-        'first_name': user_data['first_name'],
+        'first_name': user_data['usual_first_name'] if user_data['usual_first_name'] else user_data['first_name'],
         'last_name': user_data['last_name'],
         'token': access_token,
     }

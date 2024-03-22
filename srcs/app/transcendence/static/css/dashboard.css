@@ -4,6 +4,10 @@
   padding-top: 0px !important;
 }
 
+.leaderboard-header{
+  margin-bottom: 10px;
+}
+
 .leaderboard-wrapper{
     margin: 20px 10px;
     padding: 30px;
@@ -13,6 +17,11 @@
     align-content: center;
     align-items: center;
   }
+
+  .table-scroll {
+    max-height: 465px;
+    overflow-y: auto;
+  }  
 
   .leaderboard-table tbody td{
     padding: 10px;
@@ -96,15 +105,42 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    max-height: 290px;
   }
-  .graph{
-    background-color: #37358C;
-    padding: 20px 20px 20px 20px;
-    border-radius: 12px;
-    color: white;
-    text-align: center;
+ 
+  .age-charts canvas{
+    margin-bottom: 5px;
+    padding-bottom: 5px;
   }
 
+  .performance-chart canvas{
+    margin-bottom: 9px;
+    padding-bottom: 5px;
+    margin-top: 5px;
+  }
+
+  .performance-chart h4{
+    margin-bottom: 5px;
+  }
+
+  .chart-container {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.chart-message {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: white;
+    display: none; 
+    margin-bottom: 10px;
+}
 
   #user-inactive-dashboard{
     position: relative;

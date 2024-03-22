@@ -217,7 +217,7 @@ def leaveTournament(request):
 def deleteTournament(request, id_tournament):
 	try:
 		tournament = Tournament.objects.get(id=id_tournament)
-		if (tournament.user != request.user):
+		if (tournament.creator != request.user):
 			return JsonResponse({'status': 'error', 'message': 'You are not the owner of the tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
 			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)

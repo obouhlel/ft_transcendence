@@ -10,8 +10,8 @@
                     </div>
 
                     <main class="game-tour-wrapper leaderboard-wrapper">
-                        <h1 class="game-1-header">Leaderboard</h1>
-
+                        <h1 class="game-1-header leaderboard-header">Leaderboard</h1>
+                        <div class="table-scroll">
                         <table class="table leaderboard-table">
                             <thead>
                             <tr>
@@ -21,10 +21,12 @@
                                 <th>Win %</th>
                             </tr>
                             </thead>
-                            <tbody id="leaderboardBody">
+                            
+                            <tbody class="leaderboardBody" id="leaderboardBody">
                                 <!-- Dynamic rows will be inserted here -->
                             </tbody>
                         </table>
+                        </div>
                     </main>
 
                     <div id="tab1" class="tab-content active-tab">
@@ -65,7 +67,13 @@
                         <canvas id="ageDemographicsChart" width="230" height="230"></canvas>
                     </div>
                     <br>
-                    
+                    <div class="performance-chart charts">
+                        <h4>User Performance</h4>
+                        <div class="chart-container">
+                            <canvas id="winLossChart" width="230" height="230"></canvas>
+                            <div id="chartMessage" class="chart-message"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
