@@ -260,6 +260,10 @@
   .dropdown-content {
     top: 60px;
   }
+
+  .end-nav-btns .fa-user{
+    font-size: 20px;
+  }
 }
 @media screen and (max-width: 576px) {
   .navbar .logo {
@@ -290,7 +294,18 @@
   .navbar .bar {
     font-size: 30px;
   }
+
+  .end-nav-btns .fa-user{
+    font-size: 18px;
+  }
 }
+
+@media screen and (max-width: 430px){
+  .end-nav-btns .fa-user{
+    font-size: 14px;
+  }
+}
+
 @media screen and (max-width: 360px) {
   .navbar .logo h1 {
     font-size: 16px;
@@ -309,5 +324,9 @@
   .dropdown-content .user-btn {
     width: 60px;
     height: 60px;
+  }
+
+  .end-nav-btns .fa-user{
+    font-size: 14px;
   }
 }
