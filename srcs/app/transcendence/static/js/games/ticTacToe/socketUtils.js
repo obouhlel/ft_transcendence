@@ -5,13 +5,18 @@ import { getPawn } from "./ticTacToeUtils.js";
 
 import { PawnCross, PawnCircle } from "./class/Pawn.js";
 
+import { openVersusModal, openWinnerModal } from "../game-info.js";
+
 function sendStartingGame(game) {
   let message = {
     game: "starting",
     id: game.secretId,
     username: game.username,
   };
-  JS_UTILS.sendMessageToSocket(game.socket, message);
+  openVersusModal();
+  setTimeout(() => {
+      JS_UTILS.sendMessageToSocket(game.socket, message);
+    }, 5000);
 }
 
 export function sendLeaveGame(game) {
@@ -56,7 +61,7 @@ function parseMessage(data, game) {
       game.arena[data["x"]][data["z"]].pawnOnThis = pawn;
     }
     if (data["game"] == "end") {
-      if (data["winner"] == data["username"]) {
+      if (data["winner"] == game.username) {
         TIK_TAK_TOE.updateTurn(game.scene, "You Win", game);
       } else if (data["winner"] == "draw") {
         TIK_TAK_TOE.updateTurn(game.scene, "  Draw  ", game);
@@ -66,6 +71,7 @@ function parseMessage(data, game) {
       game.socket.close();
       game.isMyTurn = false;
       // pop up de win/lose
+      openWinnerModal(data["winner"]);
       setTimeout(() => {
         window.location.hash = "home";
       }, 5000);
