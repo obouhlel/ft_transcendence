@@ -1,7 +1,8 @@
 import * as JS_UTILS from "../jsUtils.js";
 import * as UTILS from "./pongUtils.js";
 import * as PONG from "./pongUtils.js";
-import { openVersusModal } from "../game-info.js";
+
+import { openVersusModal, openWinnerModal } from "../game-info.js";
 
 function sendStartingGame(game) {
   let message = {
@@ -9,7 +10,10 @@ function sendStartingGame(game) {
     id: game.secretId,
     username: game.username,
   };
-  JS_UTILS.sendMessageToSocket(game.socket, message);
+  openVersusModal();
+  setTimeout(() => {
+      JS_UTILS.sendMessageToSocket(game.socket, message);
+    }, 5000);
 }
 
 export function sendLeaveGame(game) {
@@ -34,7 +38,6 @@ export function sendPlayerPosition(player, game) {
 function parseMessage(message, game) {
   if ("game" in message) {
     if (message["game"] == "starting") {
-      openVersusModal();
       game.side = message["side"];
     }
     if (message["game"] == "positions") {
@@ -49,7 +52,7 @@ function parseMessage(message, game) {
     }
     if (message["game"] == "end") {
       game.needStop = true;
-      if (message["winner"] == message["username"]) {
+      if (message["winner"] == game.username) {
         // UTILS.updateScore(game.scene, message["score"], game);
         UTILS.updateScore(game.scene, "You win", game);
       } else {
@@ -57,7 +60,7 @@ function parseMessage(message, game) {
       }
       // if (message["score"])
       //   UTILS.updateScore(game.scene, message["score"], game);
-      //openWinneModal();
+      openWinnerModal(message["winner"]);
       setTimeout(() => {
         window.location.hash = "home";
       }, 5000);
