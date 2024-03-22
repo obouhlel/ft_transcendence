@@ -8,7 +8,7 @@
     outline: 0;
     text-decoration: none;
     font-weight: 500;
-  } 
+  }
   .blue-btn{
     background-color: #4e51ff;
     color: #fff;
@@ -21,14 +21,38 @@
     text-decoration: none;
   }
 
+
   .blue-btn:hover {
     background: #fff;
     color: #4e51ff;
     transition: ease-in, 0.3s;
   }
-  
+
   .blue-btn:active{
   transform: scale(0.98);
+  }
+
+  .red-btn {
+    cursor: pointer;
+    background-color: #ff4e4e;
+    color: #fff;
+    border: 0;
+    font-size: 0.9rem;
+    padding: 10px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .red-btn:hover {
+    background: #fff;
+    color: #ff4e4e;
+    transition: ease-in, 0.3s;
+  }
+
+  .red-btn:active{
+    transform: scale(0.98);
   }
 
   .white-btn:active{
@@ -44,7 +68,7 @@
 /*SCROLLBAR*/
 
 ::-webkit-scrollbar-track {
-  background: #37358c; 
+  background: #37358c;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -56,7 +80,7 @@
 
 ::-webkit-scrollbar {
   width: 3px;
-  height: 3px; 
+  height: 3px;
 }
 
 *::-webkit-scrollbar-thumb:hover {

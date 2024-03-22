@@ -32,10 +32,6 @@ def notification_deleted(sender, instance, **kwargs):
 
 @receiver(m2m_changed, sender=Tournament.users.through)
 def tournament_players_changed(sender, instance, action, **kwargs):
-    logger.info(f"###### Signal m2m_changed reçu, action : , {action}")
-    logger.info(f"###### Instance.game : , {instance.game}")
-    logger.info(f"###### Instance.game.id : , {instance.game.id}")
-    # logger.info("Sender :", sender)
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         "tournament_" + str(instance.game.id),
@@ -46,9 +42,27 @@ def tournament_players_changed(sender, instance, action, **kwargs):
                 "playerCount": instance.users.count(),
                 "maxPlayerCount": instance.nb_player_to_start,
                 "tournamentId": instance.id,
+                "users": list(instance.users.values('id', 'avatar', 'username'))
             },
         }
     )
+
+@receiver(post_save, sender=Tournament)
+@receiver(post_delete, sender=Tournament)
+def tournament_created_or_deleted(sender, instance, **kwargs):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "tournament_" + str(instance.game.id),
+        {
+            "type": "tournament_created_or_deleted",
+            "message": {
+                "action": "Update Tournament List",
+                "tournaments": [tournament.tournament_data() for tournament in Tournament.objects.filter(game_id=instance.game.id)]
+            },
+        }
+    )
+
+
 
 
 

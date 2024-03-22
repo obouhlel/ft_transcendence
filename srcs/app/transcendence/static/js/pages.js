@@ -22,6 +22,7 @@ import {
   setupTabEventListeners,
 } from "./dashboard.js";
 import {
+  socketTournamentHandler,
   tournamentHandler,
   createTournamentHandler,
   aliasFormsHandler,
@@ -56,7 +57,7 @@ export const pageHandlers = {
   game: [GameHandler], // Added 'game' page handler
   pong: [pong3D],
   tictactoe: [ticTacToe3D],
-  tournament: [tournamentHandler, aliasFormsHandler],
-  "create-tournament": [createTournamentHandler],
-  "lobby-tournament": [tournamentLobbyHandler],
+  tournament: [socketTournamentHandler, tournamentHandler, aliasFormsHandler],
+  "create-tournament": [socketTournamentHandler, createTournamentHandler],
+  "lobby-tournament": [socketTournamentHandler, tournamentLobbyHandler],
 };

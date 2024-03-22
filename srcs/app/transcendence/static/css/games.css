@@ -21,7 +21,7 @@
     text-decoration: none;
     color: white;
   }
-  
+
   .game-wrapper{
     border-radius: 10px;
     padding: 40px 40px 50px 40px;
@@ -32,7 +32,7 @@
     backdrop-filter:blur(20px);
     box-shadow: 0 0 10px rgba(0 , 0 , 0 , .2);
   }
-  
+
   .game-tour-wrapper{
     color: white;
     background: transparent;
@@ -109,13 +109,13 @@
     -moz-border-radius-topleft: 50px; 
     -moz-border-radius-bottomleft: 50px;
   }
-  .table tbody tr td:nth-child(4) {
+  .table tbody tr td:last-child {
     border-top-right-radius: 50px;
     border-bottom-right-radius: 50px;
     -moz-border-radius-topright: 50px;
     -moz-border-radius-bottomright: 50px;
   }
-  
+
   .button-container {
     text-align: center;
     margin-top: 40px;
@@ -222,14 +222,14 @@
   flex-direction: column;
   flex-wrap: wrap;
   justify-content: start;
-  gap: 10px; 
+  gap: 10px;
   max-height: 380px;
 }
 
 .player {
   display: flex;
-  align-items: center; 
-  gap: 13px; 
+  align-items: center;
+  gap: 13px;
   margin-bottom: 23px;
   margin-right: 50px;
 }
@@ -435,7 +435,7 @@
 }
 
 @media screen and (max-width: 430px)
-{ 
+{
   .lobby-container .game-tour-wrapper{
     margin: 10px 5px 80px 5px;
   }
@@ -470,7 +470,6 @@
     justify-content: center;
   }
 }
-
 
 /****Tournament tables responsive*****/
 @media screen and (max-width: 860px)

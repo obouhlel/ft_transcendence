@@ -36,6 +36,11 @@
 					<a class="blue-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
 				</td>
 				{% endif %}
+				{% if tournament.creator.id ==  user.id %}
+					<td>
+						<a class="red-btn" id="delete-tournament-btn-{{tournament.id}}">delete</a>
+					</td>
+				{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>
