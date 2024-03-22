@@ -5,7 +5,7 @@
 		<div class="versus-container">
             <div class="player-container player-one-container">
                 <div class="player-img">
-                    {% if user.avatar %}
+                    {% if player1.avatar %}
                     <img
                         src="{{ user.avatar.url }}"
                         alt="Avatar"
@@ -17,12 +17,12 @@
                         alt="Avatar" />
                     {% endif %}
                 </div>
-                <p class="player-name">{{ user.username }}</p>
+                <p class="player-name">{{ player1.username }}</p>
             </div>
             <p class="versus-text">VS</p>
             <div class="player-container player-two-container">
                 <div class="player-img">
-                    {% if user.avatar %}
+                    {% if player2.avatar %}
                     <img
                         src="{{ user.avatar.url }}"
                         alt="Avatar"
@@ -34,7 +34,7 @@
                         alt="Avatar" />
                     {% endif %}
                 </div>
-                <p class="player-name">{{ user.username }}</p>
+                <p class="player-name">{{ player2.username }}</p>
             </div>
 		</div>
 	</div>

@@ -92,6 +92,20 @@ def page(request, page):
 	elif page in games_pages:
 		if request.user.is_authenticated:
 			request.user.update_status('In Game')
+		user_id = request.user.id
+		party = Party.objects.filter(player1=user_id, status='Waiting').first()
+		if not party:
+			party = Party.objects.filter(player2=user_id, status='Waiting').first()
+		if party:
+			player1 = CustomUser.objects.get(id=party.player1.id)
+			player2 = CustomUser.objects.get(id=party.player2.id)
+			context = {
+				'party': party,
+				'player1': player1,
+				'player2': player2,
+				'game': page
+			}
+		logger.info('###### context: ' + context['player1'].username + ' vs ' + context['player2'].username)
 		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:
