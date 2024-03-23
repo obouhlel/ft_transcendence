@@ -76,7 +76,6 @@ def getUsersInTournament(request, id_tournament):
 #when user clic on create tournament, he must provide the game id
 #the server will create a tournament with the game id and the user id,
 #defaut name is  "game_name tournament by user_name"
-import logging
 def is_power_of_two(n):
 	if n < 2:
 		return False
@@ -211,17 +210,3 @@ def leaveTournament(request):
 	except Tournament.DoesNotExist:
 		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)
 
-#---------------------------------DELETE TOURNAMENT---------------------------------#
-@login_required
-@require_http_methods(['DELETE'])
-def deleteTournament(request):
-	try:
-		tournament = Tournament.objects.get(id=id_tournament)
-		if (tournament.creator != request.user):
-			return JsonResponse({'status': 'error', 'message': 'You are not the owner of the tournament.'}, status=400)
-		if (tournament.status != 'waiting'):
-			return JsonResponse({'status': 'error', 'message': 'Tournament is already started or finished.'}, status=400)
-		tournament.delete()
-		return JsonResponse({'status': 'ok', 'message': 'Tournament deleted.'})
-	except Tournament.DoesNotExist:
-		return JsonResponse({'status': 'error', 'message': 'This tournament does not exist.'}, status=404)

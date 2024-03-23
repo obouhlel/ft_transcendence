@@ -9,11 +9,8 @@ from asgiref.sync import sync_to_async
 import asyncio
 import random
 
-import logging
-logger = logging.getLogger(__name__)
 @sync_to_async
 def updateParty(player1, player2):
-    logger.info(f"updateParty: {player1.username} vs {player2.username}")
     game = GameModel.objects.get(name='Pong')
     user1 = CustomUser.objects.get(username=player1.username)
     user2 = CustomUser.objects.get(username=player2.username)
@@ -211,7 +208,6 @@ class Duo():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
-                logger.info(f"end: {playerLeft.username} vs {playerRight.username}")
                 await updateParty(playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
                                        'winner': playerLeft.username if playerLeft.score == 10 else playerRight.username, 

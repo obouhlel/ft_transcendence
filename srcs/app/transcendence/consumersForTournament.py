@@ -1,13 +1,9 @@
 from typing import List
 
 import json
-from channels.generic.websocket import WebsocketConsumer, AsyncWebsocketConsumer
-import logging
+from channels.generic.websocket import AsyncWebsocketConsumer
 import asyncio
-import random
 from datetime import datetime
-
-logger = logging.getLogger(__name__)
 
 def datetime_handler(x):
     if isinstance(x, datetime):
@@ -63,7 +59,7 @@ class TicTacToeConsumer(AsyncWebsocketConsumer):
         if response:
             await self.send(json.dumps(response))
 
-# IGNORE CA MATHIEU IL VA ETRE DEPLACER
+# Tournamement Dynamic Consumer
 class TournamentConsumer(AsyncWebsocketConsumer):
 	async def connect(self):
 		self.game_id = self.scope['url_route']['kwargs']['game_id']
@@ -83,7 +79,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def tournament_players_changed(self, event):
 		message = event['message']
-		logger.info(f"##### Message reçu : , {message}")
 		data = {
 			'action': message['action'],
 			'playerCount': message['playerCount'],
@@ -95,7 +90,6 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
 	async def tournament_created_or_deleted(self, event):
 		message = event['message']
-		logger.info(f"##### Message tournois cree/supp reçu : , {message}")
 		data = {
 			'action': message['action'],
 			'tournaments': message['tournaments']
