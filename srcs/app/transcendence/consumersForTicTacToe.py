@@ -32,6 +32,7 @@ def updateParty(winner, loser, isDraw=False):
         party.score1 = 0
         party.score2 = 2
     party.update_end()
+    return party.type
     
 
 

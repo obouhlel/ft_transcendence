@@ -83,7 +83,7 @@ class Tournament(models.Model):
 			logger.info(i)
 			logger.info(list_players[i])
 			logger.info(list_players[i+1])
-			party = Party.startParty(list_players[i], list_players[i+1], self.game, "tournament")
+			party = Party.startParty(list_players[i], list_players[i+1], self.game, "Tournament")
 			self.current_round = round_nb
 			self.save()
 			logger.info("ROUNDDDDDDDDD")

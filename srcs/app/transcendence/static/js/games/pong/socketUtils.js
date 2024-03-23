@@ -58,8 +58,9 @@ function parseMessage(message, game) {
         UTILS.updateScore(game.scene, "You lose", game);
       }
       game.socket.close();
-      openWinnerModal(message["username"]);
-      if (message["type"] == "matchmaking") {
+      openWinnerModal(message["winner"]);
+      console.log(message);
+      if (message["type"] == "Matchmaking") {
         setTimeout(() => {
           window.location.hash = "home";
         }, 3000);
