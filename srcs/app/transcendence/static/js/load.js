@@ -44,7 +44,7 @@ function is_logged_in() {
   return false;
 }
 
-async function executeHandlers(page) {
+export async function executeHandlers(page) {
   for (const func of pageHandlers[page]) {
     const res = await func();
     if (typeof res === "function") {
@@ -58,7 +58,9 @@ async function showPage(page, params) {
   const header_content = document.getElementById("header");
   header_content.innerHTML = data_header.html;
 
-  const data_page = await doRequest.get(`/pages/${page}${params ? "?" + params : ""}`);
+  const data_page = await doRequest.get(
+    `/pages/${page}${params ? "?" + params : ""}`
+  );
   const page_content = document.getElementById("page");
   page_content.innerHTML = data_page.html;
   const isLogged = is_logged_in();

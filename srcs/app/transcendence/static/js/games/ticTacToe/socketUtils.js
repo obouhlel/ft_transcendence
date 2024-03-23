@@ -15,8 +15,8 @@ function sendStartingGame(game) {
   };
   openVersusModal();
   setTimeout(() => {
-      JS_UTILS.sendMessageToSocket(game.socket, message);
-    }, 5000);
+    JS_UTILS.sendMessageToSocket(game.socket, message);
+  }, 5000);
 }
 
 export function sendLeaveGame(game) {
@@ -61,7 +61,7 @@ function parseMessage(data, game) {
       game.arena[data["x"]][data["z"]].pawnOnThis = pawn;
     }
     if (data["game"] == "end") {
-      if (data["winner"] == game.username) {
+      if (data["winner"] == data["username"]) {
         TIK_TAK_TOE.updateTurn(game.scene, "You Win", game);
       } else if (data["winner"] == "draw") {
         TIK_TAK_TOE.updateTurn(game.scene, "  Draw  ", game);
@@ -72,8 +72,10 @@ function parseMessage(data, game) {
       game.isMyTurn = false;
       setTimeout(() => {
         openWinnerModal(data["winner"]);
+      }, 3000);
+      setTimeout(() => {
         window.location.hash = "home";
-      }, 5000);
+      }, 3000);
     }
   }
 }

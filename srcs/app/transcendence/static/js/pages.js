@@ -1,7 +1,10 @@
 import { handleLoginFormSubmit } from "./form/login.js";
 import { handleRegisterFormSubmit } from "./form/register.js";
 import { handleRegister42FormSubmit } from "./form/register_42.js";
-import { handleEditProfileFormSubmit, handleChangePassword } from "./form/edit_profile.js";
+import {
+  handleEditProfileFormSubmit,
+  handleChangePassword,
+} from "./form/edit_profile.js";
 import {
   show_dynamic_friends,
   deleteFriend,
@@ -58,6 +61,6 @@ export const pageHandlers = {
   pong: [pong3D],
   tictactoe: [ticTacToe3D],
   tournament: [socketTournamentHandler, tournamentHandler, aliasFormsHandler],
-  "create-tournament": [socketTournamentHandler, createTournamentHandler],
+  "create-tournament": [createTournamentHandler],
   "lobby-tournament": [socketTournamentHandler, tournamentLobbyHandler],
 };
