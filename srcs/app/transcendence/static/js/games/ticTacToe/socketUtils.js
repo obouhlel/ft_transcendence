@@ -70,9 +70,7 @@ function parseMessage(data, game) {
       }
       game.socket.close();
       game.isMyTurn = false;
-      setTimeout(() => {
-        openWinnerModal(data["winner"]);
-      }, 3000);
+      openWinnerModal(data["username"]);
       setTimeout(() => {
         window.location.hash = "home";
       }, 3000);
@@ -82,22 +80,18 @@ function parseMessage(data, game) {
 
 export function socketListener(game) {
   game.socket.onopen = function () {
-    console.log("Connection established");
     sendStartingGame(game);
   };
 
   game.socket.onmessage = function (e) {
     let data = JSON.parse(e.data);
-    console.log("Received message: " + e.data);
     parseMessage(data, game);
   };
 
   game.socket.onclose = function () {
-    console.log("Connection closed");
   };
 
   game.socket.onerror = function (error) {
-    console.log(`socket error: ${error}`);
     console.error(error);
   };
 }

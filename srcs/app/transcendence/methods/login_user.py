@@ -2,12 +2,9 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login as django_login
 from django.views.decorators.http import require_http_methods
 import json
-import logging
-logging = logging.getLogger(__name__)
 
 @require_http_methods(['POST'])
 def login_user(request):
-	logging.debug(vars(request))
 	data = json.loads(request.body)
 	username = data['username']
 	if not username:

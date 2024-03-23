@@ -20,7 +20,6 @@ export function handleRegister42FormSubmit() {
     form.addEventListener('submit', function(event) {
         event.preventDefault();
 
-		console.log('register form submitted');
         const fields = [
 			'username',
 			'firstname',

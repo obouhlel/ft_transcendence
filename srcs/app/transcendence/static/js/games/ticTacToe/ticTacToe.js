@@ -35,7 +35,6 @@ function windowListener(game) {
   });
 
   window.addEventListener("resize", function () {
-    console.log("window size: " + window.innerWidth + "x" + window.innerHeight);
     UTILS.resizeRenderer(game.renderer, game.display.camera);
   });
 

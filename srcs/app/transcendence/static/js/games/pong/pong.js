@@ -34,7 +34,6 @@ function windowListener(game) {
     });
 
     window.addEventListener('resize', function () {
-        console.log('window size: ' + window.innerWidth + 'x' + window.innerHeight);
         UTILS.resizeRenderer(game.renderer, game.display.camera);
     });
 
@@ -45,7 +44,6 @@ function windowListener(game) {
 function sideDefinedPromise(game) {
     return new Promise((resolve) => {
         let checkInterval = setInterval(() => {
-            console.log('waiting for side');
             if (game.side != null) {
                 clearInterval(checkInterval);
                 resolve();

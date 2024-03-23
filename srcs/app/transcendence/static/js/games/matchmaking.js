@@ -91,16 +91,13 @@ function parseMessage(message, infos) {
 function socketListener(socket) {
   socket.onmessage = function (e) {
     let data = JSON.parse(e.data);
-    console.log("Received message: " + e.data);
     parseMessage(data);
   };
 
   socket.onclose = function () {
-    console.log("Connection closed");
   };
 
   socket.onerror = function (error) {
-    console.log(`socketMatchmaking error: ${error}`);
     console.error(error);
   };
 }

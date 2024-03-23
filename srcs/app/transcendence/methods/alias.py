@@ -3,7 +3,6 @@ from django.views.decorators.http import require_http_methods
 from transcendence.models import CustomUser
 import json
 import logging
-
 logger = logging.getLogger(__name__)
 
 @require_http_methods(['POST'])

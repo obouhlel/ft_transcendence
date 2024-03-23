@@ -3,9 +3,7 @@ from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import FriendRequest, Tournament
-from django.db.models.signals import m2m_changed, pre_delete
-import logging
-logger = logging.getLogger(__name__)
+from django.db.models.signals import m2m_changed
 
 @receiver(post_save, sender=FriendRequest)
 def notification_created(sender, instance, created, **kwargs):

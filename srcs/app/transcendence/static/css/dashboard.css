@@ -142,35 +142,26 @@
     margin-bottom: 10px;
 }
 
-  #user-inactive-dashboard{
-    position: relative;
-    left: -11px;
-    top: 9px;
-  }
-  #das-inactive-tournament{
-    position: relative;
-    left: 7px;
-  }
-  #das-inactive-edit{
-    position: relative;
-    left: 10px;
-  }
-  #user-active-edit{
-    position: relative;
-    top: -10px;
-  }
-  #game-inactive-edit{
-    position: relative;
-    top: 7px;
-  }
+#winLossChart{
+  max-width: 230px;
+  max-height: 230px;
+}
+
+ 
 
   /***Responsive***/
 
   @media screen and (max-width: 992px) {
     .charts {
-      max-height: 420px;
+      max-height: 370px;
+    }
+
+    #winLossChart{
+      max-width: 230px;
+      max-height: 230px;
     }
   }
+
   
   @media screen and (max-width: 430px) {
     .leaderboard-table thead th {
