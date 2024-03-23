@@ -22,25 +22,20 @@
 				<td class="player-count" id="player-count-{{ tournament.id }}">
 					{{ tournament.users_count}}/{{tournament.nb_player_to_start}}
 				</td>
-				<td>{% if tournament.users_count == tournament.nb_player_to_start %}
-					Full
+				<td>
+					{% if tournament.users_count == tournament.nb_player_to_start %}
+						Full
 					{% else %}
-					{{tournament.status}}
-					{% endif %} </td>
+						{{tournament.status}}
+					{% endif %}
+				</td>
+				<td>
 				{% if current_tournament != tournament.id %}
-				<td>
-					<a class="blue-btn" id="join-tournament-btn-{{tournament.id}}">Join</a>
-				</td>
+					<a class="blue-btn tour-btn" id="join-tournament-btn-{{tournament.id}}">Join</a>
 				{% else %}
-				<td>
-					<a class="blue-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
-				</td>
+					<a class="blue-btn tour-btn" id="leave-tournament-btn-{{tournament.id}}">Leave</a>
 				{% endif %}
-				{% if tournament.creator.id ==  user.id %}
-				<td>
-					<a class="red-btn" id="delete-tournament-btn-{{tournament.id}}">delete</a>
 				</td>
-				{% endif %}
 			</tr>
 			{% endfor %}
 		</tbody>

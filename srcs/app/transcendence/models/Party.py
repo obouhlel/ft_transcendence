@@ -13,14 +13,14 @@ class Party(models.Model):
 	started_at = models.DateTimeField(auto_now_add=True)
 	ended_at = models.DateTimeField(null=True, blank=True)
 	time_played = models.IntegerField(default=0)
-	status = models.CharField(max_length=30, default='Waiting')
+	status = models.CharField(max_length=30, default='waiting')
 	player1 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player1')
 	player2 = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='player2')
 	score1 = models.IntegerField(default=0)
 	score2 = models.IntegerField(default=0)
 	winner_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='winner_party')
 	loser_party = models.ForeignKey('CustomUser', on_delete=models.CASCADE, null=True, related_name='loser_party')
-	type = models.CharField(max_length=30, default='Public') #sinon Tournoir
+	type = models.CharField(max_length=30, default='Matchmaking') #sinon Tournament
 	tournament = models.ForeignKey('Tournament', on_delete=models.CASCADE, null=True, blank=True)
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
@@ -62,8 +62,7 @@ class Party(models.Model):
 			'winner_party': self.winner_party.id if self.winner_party else None,
 			'loser_party': self.loser_party.id if self.loser_party else None,
 			'type': self.type,
-			'round_nb': self.round_nb,
-			'id_tournament': self.id_tournament.id if self.id_tournament else None
+			'id_tournament': self.id_tournament.id if self.tournament else None
 	}
 	def startParty(player1, player2, game, type):
 		party = Party.objects.create(game=game, player1=player1, player2=player2)

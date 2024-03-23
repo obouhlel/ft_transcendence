@@ -49,7 +49,7 @@ def deleteFriend(request, id_user):
 @login_required
 @require_http_methods(['GET'])
 def getFriendRequest(request):
-    data = [friend_request.friend_request_data() for friend_request in request.user.receiver.filter(status='Waiting')]
+    data = [friend_request.friend_request_data() for friend_request in request.user.receiver.filter(status='waiting')]
     return JsonResponse({'status': 'ok', 'friend_requests': data})
 
 #---------------------------------SEND FRIEND REQUEST---------------------------------#

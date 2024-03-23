@@ -38,7 +38,7 @@ def edit_profile(request):
 
 	if 'avatar' in request.FILES:
 		avatar_file = request.FILES['avatar']
-		if avatar_file.size > 1024 * 1024:
+		if avatar_file.size > 24 * 1024:
 			return JsonResponse({'status': 'error', 'message': 'Image is too large. (Max 1MB)'}, status=400)
 		if user.avatar:
 			user.avatar.delete()

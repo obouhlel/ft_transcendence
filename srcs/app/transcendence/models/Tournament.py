@@ -45,7 +45,19 @@ class Tournament(models.Model):
 		list_party = self.party_set.all()
 		return [party.id for party in list_party]
 
-	def tournament_data(self):
+	def tournament_data(self, minimal=False):
+		if (minimal):
+			return {
+				'id': self.id,
+				'id_game': self.game.id,
+				'name': self.name,
+				'creator_id': self.creator.id,
+				'nb_player_to_start': self.nb_player_to_start,
+				'status': self.status,
+				'nb_round': self.nb_round,
+				'users': self.getAllUser(),
+				'winner_id': self.winner.id if self.winner else None
+			}
 		return {
 			'id': self.id,
 			'id_game': self.game.id,
@@ -60,20 +72,21 @@ class Tournament(models.Model):
 			'users': self.getAllUser(),
 			'winner_id': self.winner.id if self.winner else None
 	}
-
+	def last_party(self):
+		return self.partyintournament_set.filter(round_nb=self.nb_round).get()
 	def end_tournament(self):
-		self.ended_at = timezone.now()
-		self.status = 'Finished'
-		last_party = self.partyintournament_set.filter(round_nb=self.nb_round)
-		if last_party.count() > 1:
-			return JsonResponse({'status': 'error', 'message': _('Something went wrong. Contact admin')}, status=500)
-		elif last_party.count() == 1:
+		try:
+			last_party = self.last_party()
+			self.ended_at = timezone.now()
+			self.status = 'finished'
 			self.winner_tournament = last_party.party.winner_party
-		self.save()
-		return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
+			self.save()
+			return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
+		except PartyInTournament.DoesNotExist:
+			return JsonResponse({'status': 'error', 'message': ('No last party found.')}, status=404)
 
 	def make_party_of_round(self, round_nb, list_players):
-		if len(list_players) == 1:
+		if len(list_players) <= 1:
 			self.winner_tournament = list_players[0]
 			return None
 		logger.info("LENNNNNNNNNNNNNNNNNNNNNNNNNNNN")
@@ -83,7 +96,9 @@ class Tournament(models.Model):
 			logger.info(i)
 			logger.info(list_players[i])
 			logger.info(list_players[i+1])
-			party = Party.startParty(list_players[i], list_players[i+1], self.game, "tournament")
+			party = Party.startParty(list_players[i], list_players[i+1], self.game, "Tournament")
+			party.tournament = self
+			party.save()
 			self.current_round = round_nb
 			self.save()
 			logger.info("ROUNDDDDDDDDD")

@@ -85,47 +85,59 @@ def makeParty(lobby):
 					party = Party.objects.create(game=lobby.game, player1=user, player2=compatible, started_at=timezone.now())
 					lobby.users.remove(user)
 					lobby.users.remove(compatible)
+					party.type = "Matchmaking"
+					party.save()
 					return party
-				
+
+def startParty(party, game):
+					url = createUrlPattern(game.name.lower())
+					channel_layer = get_channel_layer()
+					async_to_sync(channel_layer.group_send)(
+						"game__uid_" + str(party.party.player1.id),
+						{
+							"type": "startParty",
+							"message": getMatchFoundJson(game.name, url)
+						}
+					)
+					async_to_sync(channel_layer.group_send)(
+						"game__uid_" + str(party.party.player2.id),
+						{
+							"type": "startParty",
+							"message": getMatchFoundJson(game.name, url)
+						}
+					)
+
 @sync_to_async
 def findAndStartPartiesForTournament():
 	
 	# for tournament in Tournament.objects.filter(status="Start"):
 	for tournament in Tournament.objects.filter(status="waiting"):
 		if tournament.users.count() >= tournament.nb_player_to_start:
+			logger.info("START TOURNAMENTTTTTTTTTTTTTTTTTT")
 			list_players = tournament.users.all()
 			parties = tournament.make_party_of_round(1, list_players)
 			tournament.status = "playing"
 			tournament.save()
 			for party in parties:
-				url = createUrlPattern(tournament.game.name.lower())
-				channel_layer = get_channel_layer()
-				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.party.player1.id),
-					{
-						"type": "startParty",
-						"message": getMatchFoundJson(tournament.game.name, url)
-					}
-				)
-				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.party.player2.id),
-					{
-						"type": "startParty",
-						"message": getMatchFoundJson(tournament.game.name, url)
-					}
-				)
-
+				startParty(party, tournament.game)
+				
 
 @sync_to_async
 def getNextRound():
 	for tournament in Tournament.objects.filter(status="playing"):
-		logger.info("CURRENT ROUND")
-		logger.info(tournament.current_round)
-		logger.info("PARTIES")
-		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round).count())
-		logger.info("FINISHED PARTIES")
-		logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
-   
+		# logger.info("CURRENT ROUND")
+		# logger.info(tournament.current_round)
+		# logger.info("PARTIES")
+		# logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round).count())
+		# logger.info("FINISHED PARTIES")
+		# logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
+		# if this is the last players && party(current_round).len == 1
+		# end tournament
+		if tournament.partyintournament_set.filter(round_nb=tournament.nb_round, party__status = "finished").count() == 1:
+			logger.info("END TOURNAMENTTTTTTTTTTTTTTTTTT")
+			tournament.end_tournament()
+			tournament.save()
+			return
 		if tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count() == tournament.partyintournament_set.filter(round_nb=tournament.current_round).count():
 			list_players = [party.party.winner_party for party in tournament.partyintournament_set.filter(round_nb=tournament.current_round).order_by('index')]
 			parties = tournament.make_party_of_round(tournament.current_round+1, list_players)
@@ -151,8 +163,6 @@ def getNextRound():
 						"message": getMatchFoundJson(tournament.game.name, url)
 					}
 				)
-
-		
 
 @sync_to_async
 def findAndStartParties():
@@ -245,6 +255,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		await self.send(response)
 
 	async def startParty(self, event):
+		logger.info("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH %s", {'id':self.scope['user'].id, 'event':event})
 		await self.send(text_data=event['message'])
 
 

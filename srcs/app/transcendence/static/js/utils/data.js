@@ -12,7 +12,7 @@ export function dataForm(fields)
 			data.append(field, value);
 		}
 		else {
-			console.log(`Element with ID ${field} not found`);
+			console.error(`Element with ID ${field} not found`);
 		}
 	});
 	

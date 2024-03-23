@@ -21,7 +21,6 @@
     text-decoration: none;
   }
 
-
   .blue-btn:hover {
     background: #fff;
     color: #4e51ff;
@@ -38,11 +37,12 @@
     color: #fff;
     border: 0;
     font-size: 0.9rem;
-    padding: 10px 40px;
+    padding: 10px 30px;
     border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
+    margin-left: 2px;
   }
 
   .red-btn:hover {
@@ -63,6 +63,12 @@
     background: #4e51ff;
     color: #fff;
     transition: ease-in, 0.3s;
+  }
+
+  .tour-btn{
+    width: 110px;
+    display: inline-block;
+    text-align: center;
   }
 
 /*SCROLLBAR*/
@@ -96,4 +102,34 @@
   color: rgba(255, 255, 255, 0.713);
   width: 100%;
   height: 57px;
+}
+
+/*Responsive*/
+
+@media screen and (max-width: 1500px) {
+  .red-btn {
+    margin-top: 3px;
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .red-btn {
+    margin-top: 3px;
+    font-weight: 500;
+  }
+
+  .tour-btn{
+    width: 90px;
+  }
+
+  .red-btn {
+    padding: 10px 23px;
+  }
+}
+
+@media screen and (max-width: 770px) {
+  .matchmaking-btn{
+    width: 171px;
+    padding: 10px 30px;
+  }
 }

@@ -106,11 +106,11 @@ class Command(BaseCommand):
 			name='Party 1',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=10),
-			status='Finished',
+			status='finished',
 			player1=user1,
 			player2=user2,
-			score1=10,
-			score2=5,
+			score1=5,
+			score2=2,
 			winner_party=user1,
 			loser_party=user2
 		)
@@ -120,11 +120,11 @@ class Command(BaseCommand):
 			name='Party 2',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=15),
-			status='Finished',
+			status='finished',
 			player1=user1,
 			player2=user2,
-			score1=7,
-			score2=10,
+			score1=3,
+			score2=5,
 			winner_party=user2,
 			loser_party=user1
 		)
@@ -134,7 +134,7 @@ class Command(BaseCommand):
 			name='Party 3',
 			started_at=timezone.now(),
 			ended_at=timezone.now() + timezone.timedelta(minutes=20),
-			status='Finished',
+			status='finished',
 			player1=user1,
 			player2=user2,
 			score1=3,

@@ -45,9 +45,6 @@ export async function show_dynamic_history(gameID) {
       }
       let html = "";
       for (const party of data.parties) {
-        console.log("player1", party.player1);
-        console.log("player2", party.player2);
-        console.log("myId", myId);
         var data_adversary;
         let score = 0;
         let party_status = 0;

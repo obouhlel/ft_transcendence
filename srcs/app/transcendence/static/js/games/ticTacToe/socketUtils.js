@@ -15,8 +15,8 @@ function sendStartingGame(game) {
   };
   openVersusModal();
   setTimeout(() => {
-      JS_UTILS.sendMessageToSocket(game.socket, message);
-    }, 5000);
+    JS_UTILS.sendMessageToSocket(game.socket, message);
+  }, 3000);
 }
 
 export function sendLeaveGame(game) {
@@ -70,33 +70,29 @@ function parseMessage(data, game) {
       }
       game.socket.close();
       game.isMyTurn = false;
-      // pop up de win/lose
+      console.log(data);
       openWinnerModal(data["winner"]);
       setTimeout(() => {
         window.location.hash = "home";
-      }, 5000);
+      }, 3000);
     }
   }
 }
 
 export function socketListener(game) {
   game.socket.onopen = function () {
-    console.log("Connection established");
     sendStartingGame(game);
   };
 
   game.socket.onmessage = function (e) {
     let data = JSON.parse(e.data);
-    console.log("Received message: " + e.data);
     parseMessage(data, game);
   };
 
   game.socket.onclose = function () {
-    console.log("Connection closed");
   };
 
   game.socket.onerror = function (error) {
-    console.log(`socket error: ${error}`);
     console.error(error);
   };
 }

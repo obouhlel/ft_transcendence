@@ -80,8 +80,6 @@ def getLobbyofGamebyType(request, id_game, type):
 	
 # -------------------------------POST LOBBY-----------------------------#
 
-import logging
-logger = logging.getLogger(__name__)
 # @login_required
 # @require_http_methods(['POST'])
 # def joinLobby(request):

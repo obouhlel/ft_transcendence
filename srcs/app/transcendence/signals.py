@@ -3,7 +3,8 @@ from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import FriendRequest, Tournament
-from django.db.models.signals import m2m_changed, pre_delete
+from django.db.models.signals import m2m_changed
+import datetime
 import logging
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def tournament_players_changed(sender, instance, action, **kwargs):
                 "playerCount": instance.users.count(),
                 "maxPlayerCount": instance.nb_player_to_start,
                 "tournamentId": instance.id,
-                "users": list(instance.users.values('id', 'avatar', 'username'))
+                "users": list(instance.users.values('id', 'avatar', 'username', 'alias'))
             },
         }
     )
@@ -57,7 +58,7 @@ def tournament_created_or_deleted(sender, instance, **kwargs):
             "type": "tournament_created_or_deleted",
             "message": {
                 "action": "Update Tournament List",
-                "tournaments": [tournament.tournament_data() for tournament in Tournament.objects.filter(game_id=instance.game.id)]
+                "tournaments": [tournament.tournament_data(minimal=True) for tournament in Tournament.objects.filter(game_id=instance.game.id)]
             },
         }
     )
