@@ -85,6 +85,8 @@ def makeParty(lobby):
 					party = Party.objects.create(game=lobby.game, player1=user, player2=compatible, started_at=timezone.now())
 					lobby.users.remove(user)
 					lobby.users.remove(compatible)
+					party.type = "Matchmaking"
+					party.save()
 					return party
 				
 @sync_to_async
