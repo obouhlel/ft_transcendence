@@ -62,21 +62,21 @@ export function searchFunction()
 {
 	let searchInput = document.getElementById('search');
 	if (!searchInput)
-		return;
-	searchInput = searchInput.value;
-	if (searchInput.trim() === '')
-		return;
-	if (searchInput != '')
-	{
-		fetch(`/api/search_user/${searchInput}`)
-		.then(response => response.json())
-		.then(async data => {
-			if (data.status === 'ok') {
-				const resultContainer = document.querySelector('.find-friends-result');
-				const friendCards = [];
+	return;
+searchInput = searchInput.value;
+if (searchInput.trim() === '')
+return;
+if (searchInput != '')
+{
+	fetch(`/api/search_user/${searchInput}`)
+	.then(response => response.json())
+	.then(async data => {
+		if (data.status === 'ok') {
+				const	userConnected = await doRequest.get('/api/get_user_connected');
+				const	userConnectedID = userConnected.id;
+				const	resultContainer = document.querySelector('.find-friends-result');
+				const	friendCards = [];
 				for (const user of data.users) {
-					const	userConnected = await doRequest.get('/api/get_user_connected');
-					const	userConnectedID = userConnected.id;
 					if (user.id === userConnectedID)
 						continue;
 					const friendCard = document.createElement('div');
@@ -115,8 +115,7 @@ export async function addFriendHandler()
 		const target = event.target;
 		if (!target.classList.contains('modal-add-btn'))
 			return;
-		const friendID = document.querySelector('.user-row').id;
-		const messageElement = document.getElementById("message");
+		const friendID = target.closest('.user-row').id;
 		const dataSend = {
 			"id_user": friendID,
 		}
