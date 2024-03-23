@@ -57,16 +57,16 @@ export async function tournamentLobbyHandler() {
 		}
 	};
 
-	const handleLoad = (event) => {
-		const currentHash = window.location.hash.split("?")[0];
-		if (currentHash === "#lobby-tournament") {
-			const data = { id_tournament: tournamentId };
-			doRequest.post(`/api/join_tournament/`, data);
-		}
-	};
+	// const handleLoad = (event) => {
+	// 	const currentHash = window.location.hash.split("?")[0];
+	// 	if (currentHash === "#lobby-tournament") {
+	// 		const data = { id_tournament: tournamentId };
+	// 		doRequest.post(`/api/join_tournament/`, data);
+	// 	}
+	// };
 
 	window.addEventListener("hashchange", handleHashChange);
-	window.addEventListener("load", handleLoad);
+	// window.addEventListener("load", handleLoad);
 
 	const startButton = document.getElementById("start-tournament");
 	if (startButton) startButton.addEventListener("click", handleClickStart);

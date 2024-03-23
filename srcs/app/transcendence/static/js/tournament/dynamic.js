@@ -8,11 +8,9 @@ export async function socketTournamentHandler() {
 			window.location.hash.split("=")[1],
 	);
 
-	socketDynamiqueTournament.onopen = function (event) {
-	};
+	socketDynamiqueTournament.onopen = function (event) {};
 
-	socketDynamiqueTournament.onclose = function (event) {
-	};
+	socketDynamiqueTournament.onclose = function (event) {};
 
 	socketDynamiqueTournament.onmessage = async function (event) {
 		let message = JSON.parse(event.data);
@@ -24,17 +22,13 @@ export async function socketTournamentHandler() {
 			let tournamentId = message.tournamentId;
 
 			// Update the player count display
-			let playerCountElement = document.getElementById(
-				`player-count-${tournamentId}`,
-			);
+			let playerCountElement = document.getElementById(`player-count-${tournamentId}`);
 			if (playerCountElement) {
 				playerCountElement.textContent = `${playerCount}/${maxPlayerCount}`;
 			}
 
 			// update the list of player if we are in the lobby
-			if (
-				window.location.hash === `#lobby-tournament?id=${tournamentId}`
-			) {
+			if (window.location.hash === `#lobby-tournament?id=${tournamentId}`) {
 				let playerListElement = document.querySelector(`.players-list`);
 
 				if (playerListElement) {
@@ -92,22 +86,6 @@ export async function socketTournamentHandler() {
 				aAction.textContent = "Join";
 				tdAction.appendChild(aAction);
 				tr.appendChild(tdAction);
-
-				doRequest
-					.get("/api/get_user_connected")
-					.then((userConnected) => {
-						if (tournament.creator_id === userConnected.user.id) {
-							const aDelete = document.createElement("a");
-							aDelete.className = "red-btn tour-btn";
-							aDelete.id = `delete-tournament-btn-${tournament.id}`;
-							aDelete.textContent = "Delete";
-							tdAction.appendChild(aDelete);
-						}
-						tr.appendChild(tdAction);
-					})
-					.catch((error) => {
-						console.error("Error:", error);
-					});
 
 				if (tbody !== null) tbody.appendChild(tr);
 			});

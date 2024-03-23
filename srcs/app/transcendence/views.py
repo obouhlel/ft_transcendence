@@ -105,7 +105,6 @@ def page(request, page):
 				'player2': player2,
 				'game': page
 			}
-		logger.info('###### context: ' + context['player1'].username + ' vs ' + context['player2'].username)
 		html_content = render_to_string('views/game-info.html', request=request, context=context)
 		return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:

@@ -59,6 +59,7 @@ function parseMessage(message, game) {
       }
       openWinnerModal(message["winner"]);
       setTimeout(() => {
+        game.socket.close();
         window.location.hash = "home";
       }, 3000);
     }
@@ -75,8 +76,7 @@ export function socketListener(game) {
     parseMessage(data, game);
   };
 
-  game.socket.onclose = function () {
-  };
+  game.socket.onclose = function () {};
 
   game.socket.onerror = function (error) {
     console.error(error);
