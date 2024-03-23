@@ -9,6 +9,10 @@ from asgiref.sync import sync_to_async
 import asyncio
 import random
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 @sync_to_async
 def updateParty(player1, player2):
     game = GameModel.objects.get(name='Pong')
@@ -20,16 +24,24 @@ def updateParty(player1, player2):
         player2.score = 0
     user1 = CustomUser.objects.get(username=player1.username)
     user2 = CustomUser.objects.get(username=player2.username)
-    party = Party.objects.filter(player1=user1,  player2=user2, status='Waiting', game=game).last()
+    party = Party.objects.filter(player1=user1,  player2=user2, game=game).last()
     if party is None:
-        party = Party.objects.filter(player1=user2,  player2=user1, status='Waiting', game=game).last()
+        party = Party.objects.filter(player1=user2,  player2=user1, game=game).last()
+        logger.info(f'WTFFFFFFFF{party}')
         party.score1 = player2.score
         party.score2 = player1.score
     else:
         party.score1 = player1.score
         party.score2 = player2.score
+    tournament_id = party.tournament.id if party.tournament else None
+    tournament_status = party.tournament.status if party.tournament else None
+    
     party.update_end()
-    return party.type
+    logger.info(f'----------Party type = {party.type}')
+    logger.info(f'-----------Status = {tournament_status}')
+    return {'type': party.type, 
+            'id': tournament_id,
+            'status': tournament_status} 
     
 
 # -----------------------------Classes--------------------------------
@@ -192,14 +204,16 @@ class Duo():
     async def gameLoop(self):
         while True:
             if self.isSomeoneDisconected() == True:
-                type_party = await updateParty(playerLeft, playerRight)
+                dataParty = await updateParty(playerLeft, playerRight)
                 disconnectedPlayer = self.getDisconectedPlayer()
                 winner = self.getOtherPlayer(disconnectedPlayer.username)
                 scoreString = "10 - 0" if winner.side == 'left' else "0 - 10"
                 await self.broadcast({ 'game': 'end',
                                        'score': scoreString,
                                        'winner': winner.username,
-                                        'type': type_party })
+                                       'type': dataParty['type'],
+                                       'status': dataParty['status'],
+                                       'id': dataParty['id']  })
                 self.remove(disconnectedPlayer)
                 self.remove(winner)
                 return
@@ -217,10 +231,12 @@ class Duo():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
-                type_party = await updateParty(playerLeft, playerRight)
+                dataParty = await updateParty(playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
                                        'winner': playerLeft.username if playerLeft.score == 10 else playerRight.username, 
-                                       'type': type_party })
+                                       'type': dataParty['type'],
+                                       'status': dataParty['status'],
+                                       'id': dataParty['id'] })
                 return
             await asyncio.sleep(0.01)
     

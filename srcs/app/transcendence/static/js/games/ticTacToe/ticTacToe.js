@@ -66,6 +66,11 @@ export async function ticTacToe3D() {
     display: null,
     keys: {},
   };
+  game.keys['ArrowUp'] = 'up'
+  game.keys['ArrowDown'] = 'up'
+  game.keys['ArrowLeft'] = 'up'
+  game.keys['ArrowRight'] = 'up'
+  game.keys[' '] = 'up'
   game.socket = new WebSocket(url);
   UTILS.createContainerForGame("TicTacToe", game.renderer);
   JS_UTILS.eraseCookie("username");

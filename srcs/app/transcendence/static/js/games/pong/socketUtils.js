@@ -13,7 +13,7 @@ function sendStartingGame(game) {
   openVersusModal();
   setTimeout(() => {
     JS_UTILS.sendMessageToSocket(game.socket, message);
-  }, 5000);
+  }, 3000);
 }
 
 export function sendLeaveGame(game) {
@@ -61,9 +61,31 @@ function parseMessage(message, game) {
       openWinnerModal(message["winner"]);
       console.log(message);
       if (message["type"] == "Matchmaking") {
+
         setTimeout(() => {
           window.location.hash = "home";
         }, 3000);
+      }
+      else if (message["type"] == "Tournament") {
+        console.log(message)
+        if (message["status"] == "finished") {
+          setTimeout(() => {
+            console.log("FINISHED TOURNAMENT");
+            window.location.hash = "home";
+          }, 3000);
+        }
+        else if (message["winner"] == message["username"]) {
+          setTimeout(() => {
+            console.log("NEXT ROUND");
+            if (message["id"] != undefined) window.location.hash = "lobby-tournament?id=" + message["id"];
+          }, 3000);
+        }
+        else {
+          setTimeout(() => {
+            console.log("BYE BYE TOURNAMENT");
+            window.location.hash = "home";
+          }, 3000);
+        }
       }
     }
   }

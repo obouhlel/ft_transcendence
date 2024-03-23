@@ -29,7 +29,6 @@ export async function tournamentHandler() {
 					messageElement.textContent = response_data.message;
 				}
 			});
-
 		}
 		else if (event.target.matches('[id^="leave-tournament-btn-"]')) {
 			let tournamentId = event.target.id.split("-")[3];
