@@ -13,7 +13,7 @@ function sendStartingGame(game) {
   openVersusModal();
   setTimeout(() => {
     JS_UTILS.sendMessageToSocket(game.socket, message);
-  }, 5000);
+  }, 3000);
 }
 
 export function sendLeaveGame(game) {
