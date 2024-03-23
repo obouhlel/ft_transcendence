@@ -9,11 +9,9 @@ export async function socketTournamentHandler() {
 	);
 
 	socketDynamiqueTournament.onopen = function (event) {
-		console.log("###### WebSocket tournament connection opened #####");
 	};
 
 	socketDynamiqueTournament.onclose = function (event) {
-		console.log("###### WebSocket tournament connection closed ######");
 	};
 
 	socketDynamiqueTournament.onmessage = async function (event) {
@@ -98,7 +96,6 @@ export async function socketTournamentHandler() {
 				doRequest
 					.get("/api/get_user_connected")
 					.then((userConnected) => {
-						console.log("userConnected :", userConnected);
 						if (tournament.creator_id === userConnected.user.id) {
 							const aDelete = document.createElement("a");
 							aDelete.className = "red-btn tour-btn";

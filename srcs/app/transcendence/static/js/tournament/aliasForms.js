@@ -10,7 +10,6 @@ export function aliasFormsHandler() {
 		const alias = document.getElementById("alias").value;
 		const data = { alias: alias };
 		doRequest.post(`/api/alias/`, data, (response) => {
-			console.log(response);
 			const messageElement = document.getElementById("message");
 			if (!messageElement)
 				return console.error('Element with class "message" not found');

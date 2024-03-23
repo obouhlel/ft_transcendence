@@ -11,7 +11,6 @@ export const createTournamentHandler = () => {
 				id_game: parseInt(document.getElementById("game_id").value),
 			};
 			doRequest.post(`/api/create_tournament/`, data, (data) => {
-				console.log(data);
 				if (data.status === "ok") {
 					window.location.hash =
 						"lobby-tournament?id=" + data.id_tournament;

@@ -18,7 +18,6 @@ export async function tournamentHandler() {
 			let tournamentId = event.target.id.split("-")[3];
 			let data = { id_tournament: tournamentId };
 			doRequest.post(`/api/join_tournament/`, data, (response_data) => {
-				console.log(response_data);
 				if (response_data.status === "ok")
 					window.location.hash =
 						"lobby-tournament?id=" + tournamentId;
@@ -35,17 +34,10 @@ export async function tournamentHandler() {
 			let tournamentId = event.target.id.split("-")[3];
 			let data = { id_tournament: tournamentId };
 			doRequest.post(`/api/leave_tournament/`, data, (response_data) => {
-				console.log(response_data);
 			});
 		} else if (event.target.matches('[id^="delete-tournament-btn-"]')) {
 			let tournamentId = event.target.id.split("-")[3];
-			doRequest.delete(
-				`/api/delete_tournament/${tournamentId}/`,
-				{},
-				(response_data) => {
-					console.log(response_data);
-				},
-			);
+			doRequest.delete(`/api/delete_tournament/${tournamentId}/`, {});
 		}
 	};
 	document.body.addEventListener("click", handleClick);

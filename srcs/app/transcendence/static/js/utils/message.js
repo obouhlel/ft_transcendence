@@ -9,7 +9,7 @@ export function message() {
             messageElement.innerText = 'Error : ' + decodeURIComponent(message);
         }
         else {
-            console.log(`Element with ID message not found`);
+            console.error(`Element with ID message not found`);
         }
     }
 }

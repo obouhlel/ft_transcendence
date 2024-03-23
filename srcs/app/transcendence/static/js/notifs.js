@@ -12,12 +12,10 @@ export async function handlerNotification() {
 
   // on socket open
   notifyScoket.onopen = function (e) {
-    console.log("Socket notify connected.");
   };
 
   // on socket close
   notifyScoket.onclose = function (e) {
-    console.log("Socket notify closed unexpectedly");
   };
 
   // on receiving message on group
@@ -30,7 +28,6 @@ export async function handlerNotification() {
       updateHeader();
     }
     if (message === "Accepted" && pages[0] === "profile") {
-      console.log("Friend request accepted");
       show_dynamic_friends();
     }
   };
@@ -85,7 +82,6 @@ export function handlerNotificationAction() {
         action: "accept",
       };
       doRequest.post("/api/respond_friend_request/", data, updateHeader);
-      console.log(`Accept clicked for notification ${id}`);
     });
 
     denyElement.addEventListener("click", () => {
@@ -95,7 +91,6 @@ export function handlerNotificationAction() {
         action: "decline",
       };
       doRequest.post("/api/respond_friend_request/", data, updateHeader);
-      console.log(`Deny clicked for notification ${id}`);
     });
   });
 }

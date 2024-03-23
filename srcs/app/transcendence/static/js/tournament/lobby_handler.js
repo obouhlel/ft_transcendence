@@ -36,7 +36,6 @@ export async function tournamentLobbyHandler() {
 			`/api/leave_tournament/`,
 			{ id_tournament: tournamentId },
 			(response) => {
-				console.log(response);
 				if (response.status === "ok")
 					window.location.hash = "tournament?id=" + gameId;
 				else if (response.status === "error") {
@@ -54,13 +53,7 @@ export async function tournamentLobbyHandler() {
 			newHash !== "#create-tournament"
 		) {
 			const data = { id_tournament: tournamentId };
-			console.log(
-				"------------------ Leaving tournament on hash change + data: ",
-				data,
-			);
-			doRequest.post(`/api/leave_tournament/`, data, (response) => {
-				console.log("------------------ response: ", response);
-			});
+			doRequest.post(`/api/leave_tournament/`, data);
 		}
 	};
 
