@@ -39,7 +39,7 @@ def updateParty(player1, player2):
         party.score2 = player2.score
         party.save()
     tournament_id = party.tournament.id if party.tournament else None
-    if party.partyintournament.round_nb == party.tournament.nb_round:
+    if tournament_id and party.partyintournament.round_nb == party.tournament.nb_round:
         tournament_status = "finished"
     else:
         tournament_status = "playing"
@@ -133,6 +133,7 @@ class Duo():
         self.players: List[Player] = []
         self.ball: Ball = Ball()
         self.activated: bool = False
+        self.isFinished: bool = False
         
     def append(self, player: Player):
         self.players.append(player)
@@ -226,6 +227,7 @@ class Duo():
                                        'id': dataParty['id']  })
                 self.remove(disconnectedPlayer)
                 self.remove(winner)
+                self.isFinished = True
                 return
             playerLeft = self.getPlayerLeft()
             playerRight = self.getPlayerRight()
@@ -247,6 +249,7 @@ class Duo():
                                        'type': dataParty['type'],
                                        'status': dataParty['status'],
                                        'id': dataParty['id'] })
+                self.isFinished = True
                 return
             await asyncio.sleep(0.01)
     
@@ -296,6 +299,8 @@ def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = pong.getDuo(message['id'])
     if duo == None:
         duo = Duo(message['id'])
+    if duo.isFinished: 
+        return { 'error': 'game_ended' }
     user = socket.scope['user']
     player = Player(user.username, assignSide(duo), socket)
     duo.append(player)

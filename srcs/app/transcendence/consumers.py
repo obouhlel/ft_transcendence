@@ -18,10 +18,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 # -----------------------------Json Message--------------------------------
-def getMatchFoundJson(game, url):
-	return json.dumps({ 'matchmaking': 'match found',
+def getMatchFoundJson(game, url, **kwargs):
+	data = { 'matchmaking': 'match found',
 						'game': game.lower(),
-						'url': url })
+						'url': url }
+	data.update(kwargs)
+	return json.dumps(data)
 
 def getRegisterJson(username):
 	return json.dumps({ 'register': 'connected'})
@@ -89,23 +91,23 @@ def makeParty(lobby):
 					party.save()
 					return party
 
-def startParty(party, game):
-					url = createUrlPattern(game.name.lower())
-					channel_layer = get_channel_layer()
-					async_to_sync(channel_layer.group_send)(
-						"game__uid_" + str(party.party.player1.id),
-						{
-							"type": "startParty",
-							"message": getMatchFoundJson(game.name, url)
-						}
-					)
-					async_to_sync(channel_layer.group_send)(
-						"game__uid_" + str(party.party.player2.id),
-						{
-							"type": "startParty",
-							"message": getMatchFoundJson(game.name, url)
-						}
-					)
+def send_start_message_to_players(party, game):
+	url = createUrlPattern(game.name.lower())
+	channel_layer = get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		"game__uid_" + str(party.player1.id),
+		{
+			"type": "startParty",
+			"message": getMatchFoundJson(game.name, url, party_id=party.id)
+		}
+	)
+	async_to_sync(channel_layer.group_send)(
+		"game__uid_" + str(party.player2.id),
+		{
+			"type": "startParty",
+			"message": getMatchFoundJson(game.name, url, party_id=party.id)
+		}
+	)
 
 @sync_to_async
 def findAndStartPartiesForTournament():
@@ -119,7 +121,7 @@ def findAndStartPartiesForTournament():
 			tournament.status = "playing"
 			tournament.save()
 			for party in parties:
-				startParty(party, tournament.game)
+				send_start_message_to_players(party.party, tournament.game)
 				
 
 @sync_to_async
@@ -147,44 +149,14 @@ def getNextRound():
 				return
 			logger.info(parties)
 			for party in parties:
-				url = createUrlPattern(tournament.game.name.lower())
-				channel_layer = get_channel_layer()
-				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.party.player1.id),
-					{
-						"type": "startParty",
-						"message": getMatchFoundJson(tournament.game.name, url)
-					}
-				)
-				async_to_sync(channel_layer.group_send)(
-					"game__uid_" + str(party.party.player2.id),
-					{
-						"type": "startParty",
-						"message": getMatchFoundJson(tournament.game.name, url)
-					}
-				)
+				send_start_message_to_players(party.party, tournament.game)
 
 @sync_to_async
 def findAndStartParties():
 	for game in Game.objects.all():
 		if game.lobby.users.count() >= 2:
 			party = makeParty(game.lobby)
-			url = createUrlPattern(game.name.lower())
-			channel_layer = get_channel_layer()
-			async_to_sync(channel_layer.group_send)(
-				"game__uid_" + str(party.player1.id),
-				{
-					"type": "startParty",
-					"message": getMatchFoundJson(game.name, url)
-				}
-			)
-			async_to_sync(channel_layer.group_send)(
-				"game__uid_" + str(party.player2.id),
-				{
-					"type": "startParty",
-					"message": getMatchFoundJson(game.name, url)
-				}
-			)
+			send_start_message_to_players(party, game)
 
 async def matchmaking():
 	while True:

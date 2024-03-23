@@ -90,6 +90,9 @@ function parseMessage(message, game) {
         }
       }
     }
+  } else if ("error" in message) {
+    console.log(message["error"]);
+    window.location.hash = "home";
   }
 }
 
