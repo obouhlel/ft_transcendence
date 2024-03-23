@@ -57,9 +57,7 @@ function parseMessage(message, game) {
       } else {
         UTILS.updateScore(game.scene, "You lose", game);
       }
-      setTimeout(() => {
-        openWinnerModal(message["winner"]);
-      }, 3000);
+      openWinnerModal(message["winner"]);
       setTimeout(() => {
         window.location.hash = "home";
       }, 3000);

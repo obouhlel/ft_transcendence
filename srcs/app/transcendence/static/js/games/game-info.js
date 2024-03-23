@@ -16,7 +16,7 @@ export function openVersusModal()
 	setTimeout(() => {
 		versusModal.classList.add('display-hidden');
 		overlay.classList.add('display-hidden');
-	}, 5000);
+	}, 3000);
 
 }
 
@@ -36,5 +36,5 @@ export function openWinnerModal(winnerName) {
 	setTimeout(() => {
 		winnerModal.classList.add('winner-hidden');
 		overlay.classList.add('display-hidden');
-	}, 5000);
+	}, 3000);
 }
