@@ -14,14 +14,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+WIN_SCORE = 5
+
 @sync_to_async
 def updateParty(player1, player2):
     game = GameModel.objects.get(name='Pong')
     if player1.disconnected == True:
         player1.score = 0
-        player2.score = 5
+        player2.score = WIN_SCORE
     elif player2.disconnected == True:
-        player1.score = 5
+        player1.score = WIN_SCORE
         player2.score = 0
     user1 = CustomUser.objects.get(username=player1.username)
     user2 = CustomUser.objects.get(username=player2.username)
@@ -31,12 +33,16 @@ def updateParty(player1, player2):
         logger.info(f'WTFFFFFFFF{party}')
         party.score1 = player2.score
         party.score2 = player1.score
+        party.save()
     else:
         party.score1 = player1.score
         party.score2 = player2.score
+        party.save()
     tournament_id = party.tournament.id if party.tournament else None
-    tournament_status = party.tournament.status if party.tournament else None
-    
+    if party.partyintournament.round_nb == party.tournament.nb_round:
+        tournament_status = "finished"
+    else:
+        tournament_status = "playing"
     party.update_end()
     logger.info(f'----------Party type = {party.type}')
     logger.info(f'-----------Status = {tournament_status}')
@@ -178,12 +184,12 @@ class Duo():
         playerLeft = self.getPlayerLeft()
         playerRight = self.getPlayerRight()
         if playerLeft == None:
-            playerRight.score = 5
+            playerRight.score = WIN_SCORE
             return True
         if playerRight == None:
-            playerLeft.score = 5
+            playerLeft.score = WIN_SCORE
             return True
-        return playerLeft.score == 5 or playerRight.score == 5
+        return playerLeft.score == WIN_SCORE or playerRight.score == WIN_SCORE
 
     def isSomeoneDisconected(self):
         for player in self.players:
@@ -237,7 +243,7 @@ class Duo():
             if self.isEnd():
                 dataParty = await updateParty(playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
-                                       'winner': playerLeft.username if playerLeft.score == 10 else playerRight.username, 
+                                       'winner': playerLeft.username if playerLeft.score == WIN_SCORE else playerRight.username, 
                                        'type': dataParty['type'],
                                        'status': dataParty['status'],
                                        'id': dataParty['id'] })

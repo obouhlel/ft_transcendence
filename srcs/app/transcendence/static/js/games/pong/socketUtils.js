@@ -75,10 +75,12 @@ function parseMessage(message, game) {
           }, 3000);
         }
         else if (message["winner"] == message["username"]) {
-          setTimeout(() => {
-            console.log("NEXT ROUND");
-            if (message["id"] != undefined) window.location.hash = "lobby-tournament?id=" + message["id"];
-          }, 3000);
+          console.log("YOU WIN THIS ROUND, WAITING FOR NEXT ROUND");
+          // dont set timeout because the new url will be set by the server if we set timeout and redirect, we will not be able to see the next round
+          // setTimeout(() => {
+          //   console.log("NEXT ROUND");
+          //   if (message["id"] != undefined) window.location.hash = "lobby-tournament?id=" + message["id"];
+          // }, 3000);
         }
         else {
           setTimeout(() => {

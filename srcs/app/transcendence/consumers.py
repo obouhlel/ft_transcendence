@@ -133,7 +133,7 @@ def getNextRound():
 		# logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
 		# if this is the last players && party(current_round).len == 1
 		# end tournament
-		if tournament.partyintournament_set.filter(round_nb=tournament.current_round).count() == 1:
+		if tournament.partyintournament_set.filter(round_nb=tournament.nb_round, party__status = "finished").count() == 1:
 			logger.info("END TOURNAMENTTTTTTTTTTTTTTTTTT")
 			tournament.end_tournament()
 			tournament.save()
@@ -255,6 +255,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 		await self.send(response)
 
 	async def startParty(self, event):
+		logger.info("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH %s", {'id':self.scope['user'].id, 'event':event})
 		await self.send(text_data=event['message'])
 
 

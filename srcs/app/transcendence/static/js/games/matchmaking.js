@@ -78,7 +78,7 @@ function parseMessage(message, infos) {
         }
         if (message["matchmaking"] === "match found") {
           JS_UTILS.createCookie("url", message["url"], 1);
-          window.location.hash = message["game"];
+          window.location.hash = `${message["game"]}?_t=${Date.now()}`;
         }
         break;
       default:

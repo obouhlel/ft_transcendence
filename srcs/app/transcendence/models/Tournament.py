@@ -72,16 +72,18 @@ class Tournament(models.Model):
 			'users': self.getAllUser(),
 			'winner_id': self.winner.id if self.winner else None
 	}
-
+	def last_party(self):
+		return self.partyintournament_set.filter(round_nb=self.nb_round).get()
 	def end_tournament(self):
-		self.ended_at = timezone.now()
-		self.status = 'finished'
-		last_party = self.partyintournament_set.filter(round_nb=self.nb_round).get()
-		logger.info("LAST PARTY")
-		logger.info(last_party)
-		self.winner_tournament = last_party.party.winner_party
-		self.save()
-		return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
+		try:
+			last_party = self.last_party()
+			self.ended_at = timezone.now()
+			self.status = 'finished'
+			self.winner_tournament = last_party.party.winner_party
+			self.save()
+			return JsonResponse({'status': 'ok', 'message': ('Tournament ended successfully.')})
+		except PartyInTournament.DoesNotExist:
+			return JsonResponse({'status': 'error', 'message': ('No last party found.')}, status=404)
 
 	def make_party_of_round(self, round_nb, list_players):
 		if len(list_players) <= 1:
