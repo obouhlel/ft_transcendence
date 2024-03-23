@@ -71,9 +71,11 @@ function parseMessage(data, game) {
       game.socket.close();
       game.isMyTurn = false;
       openWinnerModal(data["username"]);
-      setTimeout(() => {
-        window.location.hash = "home";
-      }, 3000);
+      if (data["type"] == "matchmaking") {
+        setTimeout(() => {
+          window.location.hash = "home";
+        }, 3000);
+      }
     }
   }
 }

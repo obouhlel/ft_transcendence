@@ -59,9 +59,11 @@ function parseMessage(message, game) {
       }
       game.socket.close();
       openWinnerModal(message["username"]);
-      setTimeout(() => {
-        window.location.hash = "home";
-      }, 3000);
+      if (message["type"] == "matchmaking") {
+        setTimeout(() => {
+          window.location.hash = "home";
+        }, 3000);
+      }
     }
   }
 }
