@@ -4,9 +4,7 @@ export async function tournamentLobbyHandler() {
 	const tournamentId = window.location.hash.split("id=")[1];
 	const hashage = window.location.hash.split("?")[0];
 
-	const data = await doRequest.get(
-		`/api/get_tournament_by_id/${tournamentId}`,
-	);
+	const data = await doRequest.get(`/api/get_tournament_by_id/${tournamentId}`);
 
 	const messageElement = document.getElementById("message");
 	if (!messageElement)

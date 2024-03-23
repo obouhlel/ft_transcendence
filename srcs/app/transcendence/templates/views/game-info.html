@@ -43,19 +43,9 @@
             <h1 class="winner-heading">🏆 Winner 🏆</h1>
             <div class="winner-container">
                 <div class="winner-img">
-                    {% if user.avatar %}
-                    <img
-                        src="{{ user.avatar.url }}"
-                        alt="Avatar"
-                        width="100"
-                        height="100" />
-                    {% else %}
-                    <img
-                        src="{% static 'img/user-image.png' %}"
-                        alt="Avatar" />
-                    {% endif %}
+                    <img src="{% static 'img/user-image.png' %}" alt="Winner" width="100" height="100" class="winner-avatar" />
                 </div>
-                <p class="winner-name">{{ user.username }}</p>
+                <p class="winner-name" id="winner"></p>
             </div>
 		</div>
 	</div>

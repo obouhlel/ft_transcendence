@@ -70,9 +70,8 @@ function parseMessage(data, game) {
       }
       game.socket.close();
       game.isMyTurn = false;
-      openWinnerModal(data["winner"]);
+      openWinnerModal(data["username"]);
       setTimeout(() => {
-        game.socket.close();
         window.location.hash = "home";
       }, 3000);
     }
