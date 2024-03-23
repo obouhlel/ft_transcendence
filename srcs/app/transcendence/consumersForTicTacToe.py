@@ -15,9 +15,9 @@ def updateParty(winner, loser, isDraw=False):
     game = GameModel.objects.get(name='Tictactoe')
     winner = CustomUser.objects.get(username=winner.username)
     loser = CustomUser.objects.get(username=loser.username)
-    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='Waiting').last()
+    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='waiting').last()
     if party is None:
-        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='Waiting').last()
+        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='waiting').last()
         if party is None:
             logger.error(f"party not found: {winner.username} vs {loser.username}")
             return

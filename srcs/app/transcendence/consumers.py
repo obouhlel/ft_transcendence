@@ -164,9 +164,6 @@ def getNextRound():
 					}
 				)
 
-		
-
-
 @sync_to_async
 def findAndStartParties():
 	for game in Game.objects.all():

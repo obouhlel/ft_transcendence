@@ -11,7 +11,7 @@ class Game(models.Model):
 	image = models.CharField(max_length=128, default='/var/www/static/default_game.webp')
 	genre = models.CharField(max_length=80)
 	created_at = models.DateTimeField(auto_now_add=True)
-	point_to_win = models.IntegerField(default=10)
+	point_to_win = models.IntegerField(default=5)
 	def __str__(self):
 		return f"{self.name} game {self.id}"
 	def game_data(self):
@@ -32,7 +32,7 @@ class Game(models.Model):
 		lobby = [lobby.lobby_data() for lobby in list_lobby]
 		return lobby
 	def getParties(self):
-		list_party = self.party_set.filter(status='Finished').order_by('-ended_at')[:5]
+		list_party = self.party_set.filter(status='finished').order_by('-ended_at')[:5]
 		# list_party = self.party_set.all()
 		party = [party.party_data() for party in list_party]
 		return party

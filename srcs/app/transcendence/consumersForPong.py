@@ -2,6 +2,7 @@ from typing import List
 
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
+from channels.exceptions import StopConsumer
 from transcendence.models import Party, CustomUser
 from transcendence.models import Game  as GameModel
 from asgiref.sync import sync_to_async
@@ -18,9 +19,9 @@ def updateParty(player1, player2):
     game = GameModel.objects.get(name='Pong')
     if player1.disconnected == True:
         player1.score = 0
-        player2.score = 10
+        player2.score = 5
     elif player2.disconnected == True:
-        player1.score = 10
+        player1.score = 5
         player2.score = 0
     user1 = CustomUser.objects.get(username=player1.username)
     user2 = CustomUser.objects.get(username=player2.username)
@@ -177,12 +178,12 @@ class Duo():
         playerLeft = self.getPlayerLeft()
         playerRight = self.getPlayerRight()
         if playerLeft == None:
-            playerRight.score = 10
+            playerRight.score = 5
             return True
         if playerRight == None:
-            playerLeft.score = 10
+            playerLeft.score = 5
             return True
-        return playerLeft.score == 10 or playerRight.score == 10
+        return playerLeft.score == 5 or playerRight.score == 5
 
     def isSomeoneDisconected(self):
         for player in self.players:
@@ -199,15 +200,18 @@ class Duo():
     async def broadcast(self, message: dict):
         for player in self.players:
             message["username"] = player.username
-            await player.socket.send(json.dumps(message))
-        
+            try:
+                await player.socket.send(json.dumps(message))
+            except:
+                player.disconnected = True
+
     async def gameLoop(self):
         while True:
             if self.isSomeoneDisconected() == True:
                 dataParty = await updateParty(playerLeft, playerRight)
                 disconnectedPlayer = self.getDisconectedPlayer()
                 winner = self.getOtherPlayer(disconnectedPlayer.username)
-                scoreString = "10 - 0" if winner.side == 'left' else "0 - 10"
+                scoreString = "5 - 0" if winner.side == 'left' else "0 - 5"
                 await self.broadcast({ 'game': 'end',
                                        'score': scoreString,
                                        'winner': winner.username,
