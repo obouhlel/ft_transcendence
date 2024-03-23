@@ -72,11 +72,9 @@ function parseMessage(data, game) {
       game.isMyTurn = false;
       console.log(data);
       openWinnerModal(data["winner"]);
-      if (data["type"] == "matchmaking") {
-        setTimeout(() => {
-          window.location.hash = "home";
-        }, 3000);
-      }
+      setTimeout(() => {
+        window.location.hash = "home";
+      }, 3000);
     }
   }
 }

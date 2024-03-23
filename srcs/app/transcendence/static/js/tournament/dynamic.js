@@ -91,4 +91,11 @@ export async function socketTournamentHandler() {
 			});
 		}
 	};
+
+	window.addEventListener("hashchange", (event) => {
+		const hash = window.location.hash.split("?")[0];
+		if (hash !== "#lobby-tournament" && hash !== "#tournament" && hash !== "#create-tournament") {
+			socketDynamiqueTournament.close();
+		}
+	});
 }

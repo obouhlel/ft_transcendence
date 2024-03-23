@@ -38,9 +38,6 @@ export function openWinnerModal(winnerName) {
 				console.error('Element not found');
 				return ;
 			}
-
-			console.log(data);
-			
 			if (data.user.avatar) winnerImg.src = data.user.avatar;
 		});
 	

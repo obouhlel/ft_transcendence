@@ -93,9 +93,9 @@ def page(request, page):
 		if request.user.is_authenticated:
 			request.user.update_status('In Game')
 		user_id = request.user.id
-		party = Party.objects.filter(player1=user_id, status='Waiting').first()
+		party = Party.objects.filter(player1=user_id, status='Waiting').last()
 		if not party:
-			party = Party.objects.filter(player2=user_id, status='Waiting').first()
+			party = Party.objects.filter(player2=user_id, status='Waiting').last()
 		if party:
 			player1 = CustomUser.objects.get(id=party.player1.id)
 			player2 = CustomUser.objects.get(id=party.player2.id)
