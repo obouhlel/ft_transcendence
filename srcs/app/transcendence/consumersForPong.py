@@ -12,6 +12,12 @@ import random
 @sync_to_async
 def updateParty(player1, player2):
     game = GameModel.objects.get(name='Pong')
+    if player1.disconnected == True:
+        player1.score = 0
+        player2.score = 10
+    elif player2.disconnected == True:
+        player1.score = 10
+        player2.score = 0
     user1 = CustomUser.objects.get(username=player1.username)
     user2 = CustomUser.objects.get(username=player2.username)
     party = Party.objects.filter(player1=user1,  player2=user2, status='Waiting', game=game).last()
@@ -23,6 +29,7 @@ def updateParty(player1, player2):
         party.score1 = player1.score
         party.score2 = player2.score
     party.update_end()
+    return party.type
     
 
 # -----------------------------Classes--------------------------------
@@ -185,12 +192,14 @@ class Duo():
     async def gameLoop(self):
         while True:
             if self.isSomeoneDisconected() == True:
+                type_party = await updateParty(playerLeft, playerRight)
                 disconnectedPlayer = self.getDisconectedPlayer()
                 winner = self.getOtherPlayer(disconnectedPlayer.username)
                 scoreString = "10 - 0" if winner.side == 'left' else "0 - 10"
                 await self.broadcast({ 'game': 'end',
                                        'score': scoreString,
-                                       'winner': winner.side })
+                                       'winner': winner.username,
+                                        'type': type_party })
                 self.remove(disconnectedPlayer)
                 self.remove(winner)
                 return
@@ -208,10 +217,10 @@ class Duo():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
-                await updateParty(playerLeft, playerRight)
+                type_party = await updateParty(playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
                                        'winner': playerLeft.username if playerLeft.score == 10 else playerRight.username, 
-                                       })
+                                       'type': type_party })
                 return
             await asyncio.sleep(0.01)
     
