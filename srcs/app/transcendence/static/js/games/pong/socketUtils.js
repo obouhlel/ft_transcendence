@@ -62,7 +62,6 @@ function parseMessage(message, game) {
       }
       game.socket.close();
       openWinnerModal(message["winner"]);
-      console.log(message);
       if (message["type"] == "Matchmaking") {
 
         setTimeout(() => {
@@ -70,7 +69,6 @@ function parseMessage(message, game) {
         }, 3000);
       }
       else if (message["type"] == "Tournament") {
-        console.log(message)
         if (message["status"] == "finished") {
           setTimeout(() => {
             // console.log("FINISHED TOURNAMENT");

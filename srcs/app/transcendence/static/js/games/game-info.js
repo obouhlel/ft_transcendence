@@ -5,7 +5,7 @@ export function openVersusModal()
 
 	if (!versusModal || !overlay)
 	{
-		console.error('Element not found');
+		// console.error('Element not found');
 		return ;
 	}
 
@@ -25,14 +25,14 @@ export function openWinnerModal(winnerName) {
 	const overlay = document.querySelector('.overlay');
 
 	if (!winnerModal || !overlay) {
-		console.error('Element not found');
+		// console.error('Element not found');
 		return;
 	}
 	if (winnerName === 'draw') {
 		//show a draw modal
 		const drawModal = document.querySelector('.draw-modal');
 		if (!drawModal) {
-			console.error('Element not found');
+			// console.error('Element not found');
 			return ;
 		}
 		drawModal.classList.remove('display-hidden');
@@ -52,7 +52,7 @@ export function openWinnerModal(winnerName) {
 				const winnerImg = winnerModal.querySelector('.winner-avatar');
 
 				if (!winnerImg) {
-					console.error('Element not found');
+					// console.error('Element not found');
 					return ;
 				}
 				if (data.user.avatar) winnerImg.src = data.user.avatar;
@@ -63,8 +63,8 @@ export function openWinnerModal(winnerName) {
 			console.error('Element not found');
 			return ;
 		}
-		console.log(winnerName);
-		console.log(winnerElement);
+		// console.log(winnerName);
+		// console.log(winnerElement);
 		
 		winnerElement.textContent = winnerName;
 

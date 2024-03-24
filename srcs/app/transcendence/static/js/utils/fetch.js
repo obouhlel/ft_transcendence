@@ -36,20 +36,13 @@ export const doRequest = {
         }
 
         try {
-            console.log(`${SERVER_URL}${url}`);
             const response = await fetch(`${SERVER_URL}${url}`, options);
-            console.log(response);
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = '#login';
-                return ;
-            }
             const responseData = await response.json();
             if (callback)
                 callback(responseData);
         }
         catch (error) {
-            return ;
-            // console.error("Can't do request post");
+            console.error("Can't do request post");
         }
     },
 
