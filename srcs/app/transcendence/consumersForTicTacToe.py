@@ -10,27 +10,31 @@ from .models import Game as GameModel, CustomUser, Party
 import logging
 logger = logging.getLogger(__name__)
 @sync_to_async
-def updateParty(winner, loser, isDraw=False):
-    logger.info(f"updateParty: {winner.username} vs {loser.username}")
-    game = GameModel.objects.get(name='Tictactoe')
-    winner = CustomUser.objects.get(username=winner.username)
-    loser = CustomUser.objects.get(username=loser.username)
-    party = Party.objects.filter(player1=winner, player2=loser, game=game, status='waiting').last()
-    if party is None:
-        party = Party.objects.filter(player1=loser, player2=winner, game=game, status='waiting').last()
-        if party is None:
-            logger.error(f"party not found: {winner.username} vs {loser.username}")
-            return
-    if isDraw:
-        party.score1 = 1
-        party.score2 = 1
-    elif party.player1 == winner:
-        party.score1 = 2
-        party.score2 = 0
-    else:
-        party.score1 = 0
-        party.score2 = 2
-    party.update_end()    
+def updateParty(party_id, winner, loser, isDraw=False):
+    try:
+        winner = CustomUser.objects.get(username=winner.username)
+        party = Party.objects.get(id=party_id)
+        if isDraw:
+            party.score1 = 1
+            party.score2 = 1
+        elif party.player1 == winner:
+            party.score1 = 2
+            party.score2 = 0
+        else:
+            party.score1 = 0
+            party.score2 = 2
+        party.save()
+        party.update_end()
+        tournament_id = party.tournament.id if party.tournament else None
+        if tournament_id and party.partyintournament.round_nb == party.tournament.nb_round:
+            tournament_status = "finished"
+        else:
+            tournament_status = "playing"
+        return {'type': party.type, 
+                'id': tournament_id,
+                'status': tournament_status}
+    except Exception as e:
+        return { 'error': str(e) }
 
 class Player():
     def __init__(self, username, pawn, websocket):
@@ -70,13 +74,15 @@ class Map():
         return self.map[x][y]
 
 class Duo():
-    def __init__(self, id):
+    def __init__(self, id, party_id):
         self.id: str = id
         self.isXadded: bool = False
         self.turn: str = 'X'
         self.players: List[Player] = []
         self.map: Map = Map()
         self.activated: bool = False
+        self.isFishished: bool = False
+        self.party_id: int = party_id
         
     def append(self, player: Player):
         self.players.append(player)
@@ -125,11 +131,15 @@ class Duo():
             if self.isSomeoneDisconected() == True:
                 disconnectedPlayer = self.getDisconectedPlayer()
                 winner = self.getOtherPlayer(disconnectedPlayer.username)
-                await updateParty(winner, disconnectedPlayer)
+                dataParty = await updateParty(self.party_id, winner, disconnectedPlayer)
                 await winner.socket.send(json.dumps({ 'game': 'end',
-                                                      'winner': winner.username }))
+                                                      'winner': winner.username,
+                                                      'type': dataParty['type'],
+                                                      'status': dataParty['status'],
+                                                      'id': dataParty['id'] }))
                 self.remove(disconnectedPlayer)
                 self.remove(winner)
+                self.isFishished = True
                 return
             playerTurn = self.getPlayerWithPawn(self.turn)
             if sended == False:
@@ -142,14 +152,22 @@ class Duo():
                                                      'z': self.map.lastPlayedPos['y'] }))
                 playerTurn.played = False
                 if self.map.isWin(playerTurn):
-                    await updateParty(playerTurn, otherPlayer)
+                    dataParty = await updateParty(self.party_id, playerTurn, otherPlayer)
                     await self.broadcast({ 'game': 'end',
-                                           'winner': playerTurn.username })
+                                           'winner': playerTurn.username,
+                                           'type': dataParty['type'],
+                                           'status': dataParty['status'],
+                                           'id': dataParty['id']})
+                    self.isFishished = True
                     return
                 if self.map.isFull():
-                    await updateParty(playerTurn, otherPlayer, True)
+                    dataParty = await updateParty(self.party_id, playerTurn, otherPlayer, True)
                     await self.broadcast({ 'game': 'end',
-                                           'winner': 'draw' })
+                                           'winner': 'draw' ,
+                                           'type': dataParty['type'],
+                                           'status': dataParty['status'],
+                                           'id': dataParty['id']})
+                    self.isFishished = True
                     return
                 self.turn = 'X' if self.turn == 'O' else 'O'
                 sended = False
@@ -200,7 +218,9 @@ def assignPawn(duo: Duo):
 def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = ticTakToe.getDuo(message['id'])
     if duo == None:
-        duo = Duo(message['id'])
+        duo = Duo(message['id'], message['party_id'])
+    if duo.isFishished == True:
+        return { 'error': 'game_ended'}
     user = socket.scope['user']
     player = Player(user.username, assignPawn(duo), socket)
     duo.append(player)

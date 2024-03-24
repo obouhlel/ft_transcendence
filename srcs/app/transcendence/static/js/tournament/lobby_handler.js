@@ -1,18 +1,18 @@
 import { doRequest } from "../utils/fetch.js";
 
 export async function tournamentLobbyHandler() {
-	// const tournamentId = window.location.hash.split("id=")[1];
-	// const hashage = window.location.hash.split("?")[0];
+	const tournamentId = window.location.hash.split("id=")[1];
+	const hashage = window.location.hash.split("?")[0];
 
-	// const data = await doRequest.get(`/api/get_tournament_by_id/${tournamentId}`);
+	const data = await doRequest.get(`/api/get_tournament_by_id/${tournamentId}`);
 
-	// const messageElement = document.getElementById("message");
-	// if (!messageElement)
-	// 	return console.error('Element with id "message" not found');
-	// if (data.status === "error") {
-	// 	messageElement.textContent = data.message;
-	// 	return ;
-	// }
+	const messageElement = document.getElementById("message");
+	if (!messageElement)
+		return console.error('Element with id "message" not found');
+	if (data.status === "error") {
+		messageElement.textContent = data.message;
+		return ;
+	}
 
 	// const tournament = data.tournament;
 	// const nb_players = tournament.users.length;
@@ -28,20 +28,20 @@ export async function tournamentLobbyHandler() {
 	// 	}
 	// };
 
-	// const handleClickLeave = (event) => {
-	// 	const gameId = tournament.id_game;
-	// 	doRequest.post(
-	// 		`/api/leave_tournament/`,
-	// 		{ id_tournament: tournamentId },
-	// 		(response) => {
-	// 			if (response.status === "ok")
-	// 				window.location.hash = "tournament?id=" + gameId;
-	// 			else if (response.status === "error") {
-	// 				messageElement.textContent = response.message;
-	// 			}
-	// 		},
-	// 	);
-	// };
+	const handleClickLeave = (event) => {
+		const gameId = tournament.id_game;
+		doRequest.post(
+			`/api/leave_tournament/`,
+			{ id_tournament: tournamentId },
+			(response) => {
+				if (response.status === "ok")
+					window.location.hash = "tournament?id=" + gameId;
+				else if (response.status === "error") {
+					messageElement.textContent = response.message;
+				}
+			},
+		);
+	};
 
 	// const handleHashChange = (event) => {
 	// 	const newHash = window.location.hash.split("?")[0];
@@ -68,6 +68,6 @@ export async function tournamentLobbyHandler() {
 
 	// const startButton = document.getElementById("start-tournament");
 	// if (startButton) startButton.addEventListener("click", handleClickStart);
-	// const leaveButton = document.getElementById("leave-tournament");
-	// if (leaveButton) leaveButton.addEventListener("click", handleClickLeave);
+	const leaveButton = document.getElementById("leave-tournament");
+	if (leaveButton) leaveButton.addEventListener("click", handleClickLeave);
 }

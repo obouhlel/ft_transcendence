@@ -58,13 +58,8 @@ def tournament_created_or_deleted(sender, instance, **kwargs):
             "type": "tournament_created_or_deleted",
             "message": {
                 "action": "Update Tournament List",
-                "tournaments": [tournament.tournament_data(minimal=True) for tournament in Tournament.objects.filter(game_id=instance.game.id)]
+                "tournaments": [tournament.tournament_data(minimal=True) for tournament in Tournament.objects.filter(game_id=instance.game.id, status = 'waiting')]
             },
         }
     )
-
-
-
-
-
 

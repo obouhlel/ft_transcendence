@@ -50,7 +50,7 @@ def page(request, page):
 			tournaments = Tournament.objects.filter(game=game, status='waiting')
 			user = request.user
 			if user.tournaments.filter(game=game, status='waiting').count() > 0:
-				current_tournament = user.tournaments.filter(game=game, status='waiting').first()
+				current_tournament = user.tournaments.filter(game=game, status='waiting').last()
 			else:
 				current_tournament = None
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
