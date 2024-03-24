@@ -17,38 +17,36 @@ logger = logging.getLogger(__name__)
 WIN_SCORE = 5
 
 @sync_to_async
-def updateParty(player1, player2):
-    game = GameModel.objects.get(name='Pong')
-    if player1.disconnected == True:
-        player1.score = 0
-        player2.score = WIN_SCORE
-    elif player2.disconnected == True:
-        player1.score = WIN_SCORE
-        player2.score = 0
-    user1 = CustomUser.objects.get(username=player1.username)
-    user2 = CustomUser.objects.get(username=player2.username)
-    party = Party.objects.filter(player1=user1,  player2=user2, game=game).last()
-    if party is None:
-        party = Party.objects.filter(player1=user2,  player2=user1, game=game).last()
-        logger.info(f'WTFFFFFFFF{party}')
-        party.score1 = player2.score
-        party.score2 = player1.score
+def updateParty(party_id, player1, player2):
+    try:
+        if player1.disconnected == True:
+            player1.score = 0
+            player2.score = WIN_SCORE
+        elif player2.disconnected == True:
+            player1.score = WIN_SCORE
+            player2.score = 0
+        user1 = CustomUser.objects.get(username=player1.username)
+        party = Party.objects.get(id=party_id)
+        if party.player1 == user1:
+            party.score1 = player1.score
+            party.score2 = player2.score
+        else:
+            party.score1 = player2.score
+            party.score2 = player1.score
         party.save()
-    else:
-        party.score1 = player1.score
-        party.score2 = player2.score
-        party.save()
-    tournament_id = party.tournament.id if party.tournament else None
-    if tournament_id and party.partyintournament.round_nb == party.tournament.nb_round:
-        tournament_status = "finished"
-    else:
-        tournament_status = "playing"
-    party.update_end()
-    logger.info(f'----------Party type = {party.type}')
-    logger.info(f'-----------Status = {tournament_status}')
-    return {'type': party.type, 
-            'id': tournament_id,
-            'status': tournament_status} 
+        party.update_end()
+
+        tournament_id = party.tournament.id if party.tournament else None
+        if tournament_id and party.partyintournament.round_nb == party.tournament.nb_round:
+            tournament_status = "finished"
+        else:
+            tournament_status = "playing"
+        return {'type': party.type, 
+                'id': tournament_id,
+                'status': tournament_status}
+    except Exception as e:
+        logger.error(f"updateParty: {e}")
+        return {'type': 'error', 'id': None, 'status': 'error'}
     
 
 # -----------------------------Classes--------------------------------
@@ -127,13 +125,14 @@ class Ball():
         self.direction = {'x': random.choice([-1, 1]), 'z': 0}
 
 class Duo():
-    def __init__(self, id):
+    def __init__(self, id, party_id):
         self.id: str = id
         self.isLeftAdded: bool = False
         self.players: List[Player] = []
         self.ball: Ball = Ball()
         self.activated: bool = False
         self.isFinished: bool = False
+        self.party_id: int = party_id
         
     def append(self, player: Player):
         self.players.append(player)
@@ -215,7 +214,7 @@ class Duo():
     async def gameLoop(self):
         while True:
             if self.isSomeoneDisconected() == True:
-                dataParty = await updateParty(playerLeft, playerRight)
+                dataParty = await updateParty(self.party_id, playerLeft, playerRight)
                 disconnectedPlayer = self.getDisconectedPlayer()
                 winner = self.getOtherPlayer(disconnectedPlayer.username)
                 scoreString = "5 - 0" if winner.side == 'left' else "0 - 5"
@@ -243,7 +242,7 @@ class Duo():
                 await self.broadcast({ 'game': 'score',
                                        'score': self.getScoreString() })
             if self.isEnd():
-                dataParty = await updateParty(playerLeft, playerRight)
+                dataParty = await updateParty(self.party_id, playerLeft, playerRight)
                 await self.broadcast({ 'game': 'end',
                                        'winner': playerLeft.username if playerLeft.score == WIN_SCORE else playerRight.username, 
                                        'type': dataParty['type'],
@@ -298,7 +297,7 @@ def assignSide(duo: Duo):
 def assignDuo(message: dict, socket: AsyncWebsocketConsumer):
     duo = pong.getDuo(message['id'])
     if duo == None:
-        duo = Duo(message['id'])
+        duo = Duo(message['id'], message['party_id'])
     if duo.isFinished: 
         return { 'error': 'game_ended' }
     user = socket.scope['user']

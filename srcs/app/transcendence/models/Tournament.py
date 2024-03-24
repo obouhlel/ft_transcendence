@@ -86,25 +86,16 @@ class Tournament(models.Model):
 			return JsonResponse({'status': 'error', 'message': ('No last party found.')}, status=404)
 
 	def make_party_of_round(self, round_nb, list_players):
-		if len(list_players) <= 1:
+		if len(list_players) == 1:
 			self.winner_tournament = list_players[0]
 			return None
-		logger.info("LENNNNNNNNNNNNNNNNNNNNNNNNNNNN")
-		logger.info(len(list_players))
 		for i in range(0, len(list_players), 2):
-			logger.info("LEEEEEEEEEEEEEEEEEEEE")
-			logger.info(i)
-			logger.info(list_players[i])
-			logger.info(list_players[i+1])
 			party = Party.startParty(list_players[i], list_players[i+1], self.game, "Tournament")
 			party.tournament = self
 			party.save()
 			self.current_round = round_nb
 			self.save()
-			logger.info("ROUNDDDDDDDDD")
-			logger.info(round_nb)
 			PartyInTournament.objects.create(party=party, tournament=self, round_nb=self.current_round, index=i//2)
-		logger.info("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU")
 		logger.info(PartyInTournament.objects.filter(tournament=self, round_nb=round_nb))
 		return PartyInTournament.objects.filter(tournament=self, round_nb=round_nb)
 

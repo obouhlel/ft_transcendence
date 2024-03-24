@@ -8,10 +8,13 @@ import { PawnCross, PawnCircle } from "./class/Pawn.js";
 import { openVersusModal, openWinnerModal } from "../game-info.js";
 
 function sendStartingGame(game) {
+  const hashQuery = new URLSearchParams(window.location.hash.split('?')[1]);
+  const party_id = hashQuery.get('party_id');
   let message = {
     game: "starting",
     id: game.secretId,
     username: game.username,
+    party_id: party_id,
   };
   openVersusModal();
   setTimeout(() => {
@@ -76,6 +79,10 @@ function parseMessage(data, game) {
         window.location.hash = "home";
       }, 3000);
     }
+  }
+  else if ("error" in data) {
+    console.log(data["error"]);
+    window.location.hash = "home";
   }
 }
 
