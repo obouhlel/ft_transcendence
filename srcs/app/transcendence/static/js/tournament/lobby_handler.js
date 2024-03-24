@@ -14,7 +14,7 @@ export async function tournamentLobbyHandler() {
 		return ;
 	}
 
-	// const tournament = data.tournament;
+	const tournament = data.tournament;
 	// const nb_players = tournament.users.length;
 	// const nb_players_max = tournament.nb_player_to_start;
 

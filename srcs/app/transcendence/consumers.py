@@ -127,14 +127,6 @@ def findAndStartPartiesForTournament():
 @sync_to_async
 def getNextRound():
 	for tournament in Tournament.objects.filter(status="playing"):
-		# logger.info("CURRENT ROUND")
-		# logger.info(tournament.current_round)
-		# logger.info("PARTIES")
-		# logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round).count())
-		# logger.info("FINISHED PARTIES")
-		# logger.info(tournament.partyintournament_set.filter(round_nb=tournament.current_round, party__status='finished').count())
-		# if this is the last players && party(current_round).len == 1
-		# end tournament
 		if tournament.partyintournament_set.filter(round_nb=tournament.nb_round, party__status = "finished").count() == 1:
 			logger.info("END TOURNAMENTTTTTTTTTTTTTTTTTT")
 			tournament.end_tournament()

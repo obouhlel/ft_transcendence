@@ -45,6 +45,7 @@ def getStatsUsersByGame(request, id_game):
 				'time_played': stat_user.time_played,
 				'nb_win': stat_user.nb_win,
 				'nb_lose': stat_user.nb_lose,
+				'ratio': stat_user.ratio,
 			}
 			return JsonResponse({'status': 'ok', 'stat': data})
 		except Stat_User_by_Game.DoesNotExist:
