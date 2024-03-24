@@ -3,17 +3,23 @@
 python manage.py makemigrations --noinput
 python manage.py migrate --noinput
 
-# Ajouter les utilisateurs par défaut
-python manage.py add_default_data
-
+# Create superuser if not exists
+# If superuser exists, update password
 
 if [ "$DJANGO_SUPERUSER_USERNAME" ]
 then
-    python manage.py createsuperuser \
-        --noinput \
-        --username $DJANGO_SUPERUSER_USERNAME \
-        --email $DJANGO_SUPERUSER_EMAIL
+	if [ "$(python manage.py shell -c "from transcendence.models import CustomUser; print(CustomUser.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists())")" = "True" ]
+	then
+		python manage.py shell -c "from transcendence.models import CustomUser; u = CustomUser.objects.get(username='$DJANGO_SUPERUSER_USERNAME'); u.set_password('$DJANGO_SUPERUSER_PASSWORD'); u.save()"
+	else
+    	python manage.py createsuperuser \
+			--noinput \
+			--username $DJANGO_SUPERUSER_USERNAME \
+			--email $DJANGO_SUPERUSER_EMAIL
+	fi
 fi
+
+python manage.py add_default_data
 
 python manage.py collectstatic --noinput
 

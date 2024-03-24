@@ -3,6 +3,8 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from transcendence.models import Party , CustomUser, Game, Stat_Game, Lobby, Stat_User_by_Game
 
+import logging
+logger = logging.getLogger(__name__)
 class Command(BaseCommand):
 	help = 'Add default users to the database'
 
@@ -64,10 +66,9 @@ class Command(BaseCommand):
 			for user in superusers:
 				user.first_name = 'Admin' + str(i)
 				user.last_name = 'Transcendence'
-				user.sexe = 'O'
+				user.sexe = 'F'
 				user.birth_date = "1990-01-01"
 				user.save()
 				for game in Game.objects.all():
-					stat_user_by_game, _created = Stat_User_by_Game.objects.get_or_create(user=user, game=game)
-					stat_user_by_game.save()
+					Stat_User_by_Game.objects.get_or_create(user=user, game=game)
 				
