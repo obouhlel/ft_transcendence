@@ -12,13 +12,14 @@ export function dataForm(fields)
 			data.append(field, value);
 		}
 		else {
-			console.error(`Element with ID ${field} not found`);
+			return ;
+			// console.error(`Element with ID ${field} not found`);
 		}
 	});
 	
 	if (!csrftoken)
 	{
-		console.error('CSRF token not found');
+		// console.error('CSRF token not found');
 		return data;
 	}
 	

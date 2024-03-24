@@ -2,8 +2,6 @@ from typing import Any
 from django.utils.translation import gettext as _
 from django.db import models
 
-import logging
-logger = logging.getLogger(__name__)
 
 class Stat_User_by_Game(models.Model):
 	id = models.AutoField(primary_key=True)
@@ -19,8 +17,6 @@ class Stat_User_by_Game(models.Model):
 	def update(self,time:int, win: bool, draw: bool = False):
 		self.nb_played += 1
 		self.time_played += time
-		logger.info("tttttttttt")
-		logger.info(draw)
 		if draw == False:
 			if win == True:
 				self.nb_win += 1

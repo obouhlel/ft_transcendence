@@ -12,7 +12,7 @@ export async function show_dynamic_friends() {
         if (data.status === 'ok') {
             const friendList = document.querySelector('.friend-list-members');
             if (!friendList) {
-                console.error('Element with class "friend-list-members" not found');
+                // console.error('Element with class "friend-list-members" not found');
                 return;
             }
             document.querySelectorAll('.friend-card').forEach(card => card.remove());
@@ -34,10 +34,11 @@ export async function show_dynamic_friends() {
                 friendList.prepend(friendCard);
             });
         } else {
-            console.error(data.message);
+			return ;
+            // console.error(data.message);
         }
     })
-    .catch(console.error);
+    // .catch(console.error);
 }
 
 // delete friend
@@ -46,7 +47,7 @@ export async function deleteFriend()
 	const parentElement = document.querySelector('.friend-list-members');
 	if (!parentElement)
 	{
-		console.error('Element with class "friend-list-members" not found');
+		// console.error('Element with class "friend-list-members" not found');
 		return ;
 	}
 	parentElement.addEventListener('click', function(event) {
@@ -98,7 +99,7 @@ if (searchInput != '')
 			}
 		})
 		.catch(error => {
-			console.error(error);
+			// console.error(error);
 		});
 	}
 }
@@ -108,7 +109,7 @@ export async function addFriendHandler()
 	const parentElement = document.querySelector('.find-friends-result');
 	if (!parentElement)
 	{
-		console.error('Element with class "find-friends-result" not found');
+		// console.error('Element with class "find-friends-result" not found');
 		return;
 	}
 	parentElement.addEventListener('click', function(event) {
@@ -131,7 +132,7 @@ export async function addFriendHandler()
 				message.style.color = 'red';
 				message.style.textAlign = 'center';
 				message.style.padding = '10px';
-                console.error(data.message);
+                // console.error(data.message);
             }
         });
 	});
@@ -146,7 +147,7 @@ export function openModal()
 	const btnOpenModal = document.querySelector('.show-modal');
 	if (!modal || !overlay || !btnCloseModal || !btnOpenModal)
 	{
-		console.error('Element not found');
+		// console.error('Element not found');
 		return ;
 	}
 

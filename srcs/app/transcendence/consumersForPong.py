@@ -10,9 +10,6 @@ from asgiref.sync import sync_to_async
 import asyncio
 import random
 
-import logging
-
-logger = logging.getLogger(__name__)
 
 WIN_SCORE = 5
 
@@ -45,7 +42,6 @@ def updateParty(party_id, player1, player2):
                 'id': tournament_id,
                 'status': tournament_status}
     except Exception as e:
-        logger.error(f"updateParty: {e}")
         return {'type': 'error', 'id': None, 'status': 'error'}
     
 

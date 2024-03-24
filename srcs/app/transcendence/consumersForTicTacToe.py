@@ -7,8 +7,6 @@ import asyncio
 from asgiref.sync import sync_to_async
 from .models import Game as GameModel, CustomUser, Party
 
-import logging
-logger = logging.getLogger(__name__)
 @sync_to_async
 def updateParty(party_id, winner, loser, isDraw=False):
     try:

@@ -3,7 +3,8 @@ import { doRequest } from "../utils/fetch.js";
 export function aliasFormsHandler() {
 	const aliasForms = document.getElementById("alias-forms");
 	if (!aliasForms)
-		return console.error('Element with id "alias-forms" not found');
+		return;
+		// return console.error('Element with id "alias-forms" not found');
 	const handleSubmit = (event) => {
 		event.preventDefault();
 
@@ -12,7 +13,8 @@ export function aliasFormsHandler() {
 		doRequest.post(`/api/alias/`, data, (response) => {
 			const messageElement = document.getElementById("message");
 			if (!messageElement)
-				return console.error('Element with class "message" not found');
+				return;
+				// return console.error('Element with class "message" not found');
 			if (response.status === "ok") {
 				messageElement.textContent = response.message;
 			} else if (response.status === "error") {

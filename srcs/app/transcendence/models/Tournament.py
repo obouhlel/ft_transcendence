@@ -7,9 +7,6 @@ from .Party import Party, PartyInTournament
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-import logging
-logger = logging.getLogger(__name__)
-
 class Tournament(models.Model):
 	id = models.AutoField(primary_key=True)
 	game = models.ForeignKey('Game', on_delete=models.CASCADE)
@@ -96,6 +93,5 @@ class Tournament(models.Model):
 			self.current_round = round_nb
 			self.save()
 			PartyInTournament.objects.create(party=party, tournament=self, round_nb=self.current_round, index=i//2)
-		logger.info(PartyInTournament.objects.filter(tournament=self, round_nb=round_nb))
 		return PartyInTournament.objects.filter(tournament=self, round_nb=round_nb)
 

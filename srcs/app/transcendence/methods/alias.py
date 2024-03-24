@@ -2,8 +2,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from transcendence.models import CustomUser
 import json
-import logging
-logger = logging.getLogger(__name__)
+
 
 @require_http_methods(['POST'])
 def postAlias(request):
@@ -24,5 +23,4 @@ def postAlias(request):
     except CustomUser.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'User does not exist.'}, status=404)
     except Exception as e:
-        logger.error(e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

@@ -14,9 +14,6 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 import random
 
-import logging
-logger = logging.getLogger(__name__)
-
 # -----------------------------Json Message--------------------------------
 def getMatchFoundJson(game, url, **kwargs):
 	data = { 'matchmaking': 'match found',
@@ -46,8 +43,6 @@ def createUrlPattern(game):
 		newConsumer = consumersForPong.PongConsumer.as_asgi()
 	elif game == "tictactoe":
 		newConsumer = consumersForTicTacToe.TicTacToeConsumer.as_asgi()
-	logger.info(f"New pattern: {newPattern}")
-	logger.info(f"New consumer: {newConsumer}")
 	routing.add_urlpattern(newPattern, newConsumer)
 	return url
 
@@ -115,7 +110,6 @@ def findAndStartPartiesForTournament():
 	# for tournament in Tournament.objects.filter(status="Start"):
 	for tournament in Tournament.objects.filter(status="waiting"):
 		if tournament.users.count() >= tournament.nb_player_to_start:
-			logger.info("START TOURNAMENTTTTTTTTTTTTTTTTTT")
 			list_players = tournament.users.all()
 			parties = tournament.make_party_of_round(1, list_players)
 			tournament.status = "playing"
@@ -128,7 +122,6 @@ def findAndStartPartiesForTournament():
 def getNextRound():
 	for tournament in Tournament.objects.filter(status="playing"):
 		if tournament.partyintournament_set.filter(round_nb=tournament.nb_round, party__status = "finished").count() == 1:
-			logger.info("END TOURNAMENTTTTTTTTTTTTTTTTTT")
 			tournament.end_tournament()
 			tournament.save()
 			return
@@ -139,7 +132,6 @@ def getNextRound():
 				tournament.end_tournament()
 				tournament.save()
 				return
-			logger.info(parties)
 			for party in parties:
 				send_start_message_to_players(party.party, tournament.game)
 
@@ -215,11 +207,9 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 	async def receive(self, text_data):
 		message = json.loads(text_data)
 		response = await parseMessage(self, message)
-		logger.info(response)
 		await self.send(response)
 
 	async def startParty(self, event):
-		logger.info("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHH %s", {'id':self.scope['user'].id, 'event':event})
 		await self.send(text_data=event['message'])
 
 

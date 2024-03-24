@@ -7,10 +7,11 @@ export async function tournamentHandler() {
 		if (event.target.matches('[id^="join-tournament-btn-"]')) {
 
 			if (leaveButtons.length > 0) {
-				console.error("Invalid button clicked");
+				// console.error("Invalid button clicked");
 				const messageElement = document.getElementById("message");
 				if (!messageElement)
-					return console.error('Element with id "message" not found');
+					return;
+					// return console.error('Element with id "message" not found');
 				messageElement.textContent =
 					"You can only one join a tournament";
 				return ;
@@ -25,7 +26,8 @@ export async function tournamentHandler() {
 				else if (response_data.status === "error") {
 					const messageElement = document.getElementById("message");
 					if (!messageElement)
-						return console.error('Element with id "message" not found');
+						return;
+						// return console.error('Element with id "message" not found');
 					messageElement.textContent = response_data.message;
 				}
 			});
