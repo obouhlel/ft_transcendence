@@ -68,11 +68,7 @@ export async function show_dynamic_history(gameID) {
         }
 
         const adversary = data_adversary.user;
-        const data_userConnected = await doRequest.get(
-          "/api/get_user_connected"
-        );
-        const userConnected = data_userConnected.user;
-        const date = new Date(party.ended_at).toLocaleDateString();
+        const date = new Date(party.started_at).toLocaleDateString();
 
         html += `
 					<div class="tr">

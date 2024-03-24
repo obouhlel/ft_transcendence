@@ -12,7 +12,7 @@ class Command(BaseCommand):
 		user1 , _created = CustomUser.objects.get_or_create(
 			username='admin',
 			email='admin@admin.fr',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', # adminadmin
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
 			first_name='admin',
 			last_name='admin',
 			sexe='M',
@@ -25,7 +25,7 @@ class Command(BaseCommand):
 		user2 , _created = CustomUser.objects.get_or_create(
 			username='user2',
 			email='user2@email.com',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', # adminadmin
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', 
 			first_name='User',
 			last_name='Two',
 			sexe='F',
@@ -38,7 +38,7 @@ class Command(BaseCommand):
 		user3 , _created = CustomUser.objects.get_or_create(
 			username='user3',
 			email='user3@email.com',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', # adminadmin
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
 			first_name='User',
 			last_name='Two',
 			sexe='F',
@@ -100,73 +100,73 @@ class Command(BaseCommand):
 		user3_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user3, game=game1)
 		user3_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user3, game=game2)
 
-		# Créer des parties
-		party1, _created = Party.objects.get_or_create(
-			game=game1,
-			name='Party 1',
-			started_at=timezone.now(),
-			ended_at=timezone.now() + timezone.timedelta(minutes=10),
-			status='finished',
-			player1=user1,
-			player2=user2,
-			score1=5,
-			score2=2,
-			winner_party=user1,
-			loser_party=user2
-		)
+		# # Créer des parties
+		# party1, _created = Party.objects.get_or_create(
+		# 	game=game1,
+		# 	name='Party 1',
+		# 	started_at=timezone.now(),
+		# 	ended_at=timezone.now() + timezone.timedelta(minutes=10),
+		# 	status='finished',
+		# 	player1=user1,
+		# 	player2=user2,
+		# 	score1=5,
+		# 	score2=2,
+		# 	winner_party=user1,
+		# 	loser_party=user2
+		# )
 
-		party2, _created = Party.objects.get_or_create(
-			game=game2,
-			name='Party 2',
-			started_at=timezone.now(),
-			ended_at=timezone.now() + timezone.timedelta(minutes=15),
-			status='finished',
-			player1=user1,
-			player2=user2,
-			score1=3,
-			score2=5,
-			winner_party=user2,
-			loser_party=user1
-		)
+		# party2, _created = Party.objects.get_or_create(
+		# 	game=game2,
+		# 	name='Party 2',
+		# 	started_at=timezone.now(),
+		# 	ended_at=timezone.now() + timezone.timedelta(minutes=15),
+		# 	status='finished',
+		# 	player1=user1,
+		# 	player2=user2,
+		# 	score1=3,
+		# 	score2=5,
+		# 	winner_party=user2,
+		# 	loser_party=user1
+		# )
 
-		party3, _created = Party.objects.get_or_create(
-			game=game1,
-			name='Party 3',
-			started_at=timezone.now(),
-			ended_at=timezone.now() + timezone.timedelta(minutes=20),
-			status='finished',
-			player1=user1,
-			player2=user2,
-			score1=3,
-			score2=10,
-			winner_party=user2,
-			loser_party=user1
-		)
-		# Ajouter les parties aux statistiques des utilisateurs
+		# party3, _created = Party.objects.get_or_create(
+		# 	game=game1,
+		# 	name='Party 3',
+		# 	started_at=timezone.now(),
+		# 	ended_at=timezone.now() + timezone.timedelta(minutes=20),
+		# 	status='finished',
+		# 	player1=user1,
+		# 	player2=user2,
+		# 	score1=3,
+		# 	score2=10,
+		# 	winner_party=user2,
+		# 	loser_party=user1
+		# )
+		# # Ajouter les parties aux statistiques des utilisateurs
 
-		user1_stat_game1.nb_played += 1
-		user1_stat_game1.nb_win += 1
-		user1_stat_game1.save()
-
-		
-		user2_stat_game1.nb_played += 1
-		user2_stat_game1.nb_lose += 1
-		user2_stat_game1.save()
-
-		user1_stat_game1.nb_played += 1
-		user1_stat_game1.nb_lose += 1
-		user1_stat_game1.save()
-
-		user2_stat_game1.nb_played += 1
-		user2_stat_game1.nb_win += 1
-		user2_stat_game1.save()
+		# user1_stat_game1.nb_played += 1
+		# user1_stat_game1.nb_win += 1
+		# user1_stat_game1.save()
 
 		
-		user1_stat_game2.nb_played += 1
-		user1_stat_game2.nb_lose += 1
-		user1_stat_game2.save()
+		# user2_stat_game1.nb_played += 1
+		# user2_stat_game1.nb_lose += 1
+		# user2_stat_game1.save()
+
+		# user1_stat_game1.nb_played += 1
+		# user1_stat_game1.nb_lose += 1
+		# user1_stat_game1.save()
+
+		# user2_stat_game1.nb_played += 1
+		# user2_stat_game1.nb_win += 1
+		# user2_stat_game1.save()
 
 		
-		user2_stat_game2.nb_played += 1
-		user2_stat_game2.nb_win += 1
-		user2_stat_game2.save()
+		# user1_stat_game2.nb_played += 1
+		# user1_stat_game2.nb_lose += 1
+		# user1_stat_game2.save()
+
+		
+		# user2_stat_game2.nb_played += 1
+		# user2_stat_game2.nb_win += 1
+		# user2_stat_game2.save()

@@ -5,10 +5,13 @@ import * as PONG from "./pongUtils.js";
 import { openVersusModal, openWinnerModal } from "../game-info.js";
 
 function sendStartingGame(game) {
+  const hashQuery = new URLSearchParams(window.location.hash.split('?')[1]);
+  const party_id = hashQuery.get('party_id');
   let message = {
     game: "starting",
     id: game.secretId,
     username: game.username,
+    party_id: party_id,
   };
   openVersusModal();
   setTimeout(() => {
@@ -90,6 +93,9 @@ function parseMessage(message, game) {
         }
       }
     }
+  } else if ("error" in message) {
+    console.log(message["error"]);
+    window.location.hash = "home";
   }
 }
 

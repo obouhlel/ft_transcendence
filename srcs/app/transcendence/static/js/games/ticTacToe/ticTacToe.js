@@ -47,8 +47,13 @@ function windowListener(game) {
 }
 
 export async function ticTacToe3D() {
-  const socketPath = JS_UTILS.readCookie("url");
-  JS_UTILS.eraseCookie("url");
+  const hashQuery = new URLSearchParams(window.location.hash.split('?')[1]);
+    const socketPath = hashQuery.get('url');
+    if (!socketPath) {
+        console.error('No socket path');
+        window.location.hash = 'home';
+        return;
+    }
   const url = `wss://${window.location.host}/${socketPath}`;
   const splittedURL = url.split("/");
 

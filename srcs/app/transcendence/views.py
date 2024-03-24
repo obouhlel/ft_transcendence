@@ -50,7 +50,7 @@ def page(request, page):
 			tournaments = Tournament.objects.filter(game=game, status='waiting')
 			user = request.user
 			if user.tournaments.filter(game=game, status='waiting').count() > 0:
-				current_tournament = user.tournaments.filter(game=game, status='waiting').first()
+				current_tournament = user.tournaments.filter(game=game, status='waiting').last()
 			else:
 				current_tournament = None
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
@@ -90,21 +90,23 @@ def page(request, page):
 		html_content = render_to_string('error/401.html', request=request)
 		return JsonResponse({'html': html_content})
 	elif page in games_pages:
-		if request.user.is_authenticated:
-			request.user.update_status('In Game')
-		user_id = request.user.id
-		party = Party.objects.filter(player1=user_id, status='waiting').last()
-		if not party:
-			party = Party.objects.filter(player2=user_id, status='waiting').last()
-		if party:
+		if not request.user.is_authenticated:
+			html_content = render_to_string('error/401.html', request=request)
+			return JsonResponse({'html': html_content})
+		request.user.update_status('In Game')
+		try:
+			party = Party.objects.get(id=request.GET.get('party_id'))
 			context = {
 				'party': party,
 				'player1': party.player1,
 				'player2': party.player2,
 				'game': page
 			}
-		html_content = render_to_string('views/game-info.html', request=request, context=context)
-		return JsonResponse({'html': html_content})
+			html_content = render_to_string('views/game-info.html', request=request, context=context)
+			return JsonResponse({'html': html_content})
+		except Party.DoesNotExist:
+			html_content = render_to_string('error/404.html', request=request)
+			return JsonResponse({'html': html_content})
 	elif page == 'register-42' and not request.user.is_authenticated:
 		try:
 			data = request.session.get('data')
