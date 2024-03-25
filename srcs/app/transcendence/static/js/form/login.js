@@ -15,8 +15,13 @@ export function handleLoginFormSubmit() {
 			'username': username,
 			'password': password
 		};
-
-		doRequest.post(`/api/login/`, data, callback.login);
+		try {
+			doRequest.post(`/api/login/`, data, callback.login);
+		}
+		catch (error) {
+			// console.error(error);
+			return ;
+		}
 	});
 	// 42 login
 	const url_42 = 'https://api.intra.42.fr/oauth/authorize';

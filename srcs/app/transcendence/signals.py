@@ -5,8 +5,6 @@ from asgiref.sync import async_to_sync
 from .models import FriendRequest, Tournament
 from django.db.models.signals import m2m_changed
 import datetime
-import logging
-logger = logging.getLogger(__name__)
 
 @receiver(post_save, sender=FriendRequest)
 def notification_created(sender, instance, created, **kwargs):

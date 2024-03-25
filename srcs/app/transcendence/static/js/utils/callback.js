@@ -3,7 +3,8 @@ export const callback = {
 	{
 		let messageElement = document.getElementById('message');
 		if (!messageElement)
-			return console.error('Element with class "message" not found');
+			return ;
+			// return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
 			window.location.hash = 'games';
@@ -26,7 +27,8 @@ export const callback = {
 	{
 		let messageElement = document.getElementById('message');
 		if (!messageElement)
-			return console.error('Element with class "message" not found');
+			return ;
+			// return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
 			window.location.hash = 'login';
@@ -41,7 +43,8 @@ export const callback = {
 	{
 		let messageElement = document.getElementById('message');
 		if (!messageElement)
-			return console.error('Element with class "message" not found');
+			return; 
+			// return console.error('Element with class "message" not found');
 		if (data.status === 'ok')
 		{
 			window.location.hash = 'profile';

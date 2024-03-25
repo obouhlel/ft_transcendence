@@ -17,9 +17,10 @@ export const createTournamentHandler = () => {
 				} else if (data.status === "error") {
 					const messageElement = document.getElementById("message");
 					if (!messageElement)
-						return console.error(
-							'Element with class "message" not found',
-						);
+						return;
+						// return console.error(
+						// 	'Element with class "message" not found',
+						// );
 					messageElement.textContent = data.message;
 				}
 			});

@@ -9,43 +9,7 @@ class Command(BaseCommand):
 	def handle(self, *args, **options):
 		# Créer des utilisateurs
 
-		user1 , _created = CustomUser.objects.get_or_create(
-			username='admin',
-			email='admin@admin.fr',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
-			first_name='admin',
-			last_name='admin',
-			sexe='M',
-			birthdate="1990-01-01",
-			is_superuser=True,
-			is_staff=True
-		)
-		user1.save()
-
-		user2 , _created = CustomUser.objects.get_or_create(
-			username='user2',
-			email='user2@email.com',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', 
-			first_name='User',
-			last_name='Two',
-			sexe='F',
-			birthdate="1990-01-01",
-			is_superuser=False,
-			is_staff=False
-		)
-		user2.save()
-
-		user3 , _created = CustomUser.objects.get_or_create(
-			username='user3',
-			email='user3@email.com',
-			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
-			first_name='User',
-			last_name='Two',
-			sexe='F',
-			birthdate="1990-01-01",
-			is_superuser=False,
-			is_staff=False
-		)
+		
 
 		description_pong = """
 		Pong is a classic arcade game where players control paddles to hit a ball back and forth.\n
@@ -79,6 +43,7 @@ class Command(BaseCommand):
 		The game is played on a 3x3 grid.
 		Players take turns marking an empty cell with their symbol (X or O).
 		The first player to form a row, column, or diagonal of their symbol wins the game.
+		In tournament mode, it's a draw, the first player loses.
 		"""
 
 		game2, _created = Game.objects.get_or_create(
@@ -92,7 +57,44 @@ class Command(BaseCommand):
 		Stat_Game.objects.get_or_create(game=game2)
 		Lobby.objects.get_or_create(game=game2)
 
+		user1 , _created = CustomUser.objects.get_or_create(
+			username='admin',
+			email='admin@admin.fr',
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
+			first_name='admin',
+			last_name='admin',
+			sexe='M',
+			birthdate="1990-01-01",
+			is_superuser=True,
+			is_staff=True
+		)
+		user1.save()
+		
 
+		user2 , _created = CustomUser.objects.get_or_create(
+			username='user2',
+			email='user2@email.com',
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=', 
+			first_name='User',
+			last_name='Two',
+			sexe='F',
+			birthdate="1990-01-01",
+			is_superuser=False,
+			is_staff=False
+		)
+		user2.save()
+
+		user3 , _created = CustomUser.objects.get_or_create(
+			username='user3',
+			email='user3@email.com',
+			password='pbkdf2_sha256$720000$mZq8LupVHlUqJko8DreAal$CW0qJRNmGjsI+R1ERf95FXWPSkcZlXvRMgr4mAQGQbI=',
+			first_name='User',
+			last_name='Two',
+			sexe='F',
+			birthdate="1990-01-01",
+			is_superuser=False,
+			is_staff=False
+		)
 		user1_stat_game1, _created =Stat_User_by_Game.objects.get_or_create(user=user1, game=game1)
 		user2_stat_game1, _created = Stat_User_by_Game.objects.get_or_create(user=user2, game=game1)
 		user1_stat_game2, _created = Stat_User_by_Game.objects.get_or_create(user=user1, game=game2)

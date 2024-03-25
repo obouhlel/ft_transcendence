@@ -7,8 +7,6 @@ import asyncio
 from asgiref.sync import sync_to_async
 from .models import Game as GameModel, CustomUser, Party
 
-import logging
-logger = logging.getLogger(__name__)
 @sync_to_async
 def updateParty(party_id, winner, loser, isDraw=False):
     try:
@@ -24,7 +22,7 @@ def updateParty(party_id, winner, loser, isDraw=False):
             party.score1 = 0
             party.score2 = 2
         party.save()
-        party.update_end()
+        party.update_end(draw=isDraw)
         tournament_id = party.tournament.id if party.tournament else None
         if tournament_id and party.partyintournament.round_nb == party.tournament.nb_round:
             tournament_status = "finished"
@@ -162,6 +160,10 @@ class Duo():
                     return
                 if self.map.isFull():
                     dataParty = await updateParty(self.party_id, playerTurn, otherPlayer, True)
+                    if dataParty['type'] == 'tournament':
+                        winner  = otherPlayer.username
+                    else:
+                        winner = 'draw'
                     await self.broadcast({ 'game': 'end',
                                            'winner': 'draw' ,
                                            'type': dataParty['type'],

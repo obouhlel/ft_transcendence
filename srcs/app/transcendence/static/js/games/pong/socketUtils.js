@@ -73,12 +73,12 @@ function parseMessage(message, game) {
         console.log(message)
         if (message["status"] == "finished") {
           setTimeout(() => {
-            console.log("FINISHED TOURNAMENT");
+            // console.log("FINISHED TOURNAMENT");
             window.location.hash = "home";
           }, 3000);
         }
         else if (message["winner"] == message["username"]) {
-          console.log("YOU WIN THIS ROUND, WAITING FOR NEXT ROUND");
+          // console.log("YOU WIN THIS ROUND, WAITING FOR NEXT ROUND");
           // dont set timeout because the new url will be set by the server if we set timeout and redirect, we will not be able to see the next round
           // setTimeout(() => {
           //   console.log("NEXT ROUND");
@@ -87,14 +87,14 @@ function parseMessage(message, game) {
         }
         else {
           setTimeout(() => {
-            console.log("BYE BYE TOURNAMENT");
+            // console.log("BYE BYE TOURNAMENT");
             window.location.hash = "home";
           }, 3000);
         }
       }
     }
   } else if ("error" in message) {
-    console.log(message["error"]);
+    // console.log(message["error"]);
     window.location.hash = "home";
   }
 }
@@ -112,6 +112,6 @@ export function socketListener(game) {
   game.socket.onclose = function () {};
 
   game.socket.onerror = function (error) {
-    console.error(error);
+    // console.error(error);
   };
 }

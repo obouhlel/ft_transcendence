@@ -50,7 +50,7 @@ export async function ticTacToe3D() {
   const hashQuery = new URLSearchParams(window.location.hash.split('?')[1]);
     const socketPath = hashQuery.get('url');
     if (!socketPath) {
-        console.error('No socket path');
+        // console.error('No socket path');
         window.location.hash = 'home';
         return;
     }
