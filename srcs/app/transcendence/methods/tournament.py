@@ -118,8 +118,8 @@ def joinTournament(request):
 	try:
 		tournament = Tournament.objects.get(id=id_tournament)
 		user = request.user
-		if user.tournaments.filter(status = "waiting").count() > 0:
-			return JsonResponse({'status': 'error', 'message': 'ERROR: CAN NOT BE IN MULTIPLE TOURNAMENT AT THE SAME TIME'}, status=400)
+		if user.tournaments.filter(status = "waiting").count() > 0 and not user.tournaments.filter(id=id_tournament):
+			return JsonResponse({'status': 'error', 'message': 'You can join different tournament at the same time!'}, status=400)
 		# if (user.tournaments.filter(id=id_tournament)):
 		# 	return JsonResponse({'status': 'error', 'message': 'You are already in this tournament.'}, status=400)
 		if (tournament.status != 'waiting'):
