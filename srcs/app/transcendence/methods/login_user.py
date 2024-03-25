@@ -3,9 +3,6 @@ from django.contrib.auth import authenticate, login as django_login
 from django.views.decorators.http import require_http_methods
 import json
 
-import logging
-logger = logging.getLogger(__name__)
-
 @require_http_methods(['POST'])
 def login_user(request):
 	data = json.loads(request.body)

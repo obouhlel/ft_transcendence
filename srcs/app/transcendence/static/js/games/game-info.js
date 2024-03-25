@@ -20,7 +20,7 @@ export function openVersusModal()
 
 }
 
-export function openWinnerModal(winnerName) {
+export function openWinnerModal(winnerName, type_party) {
 	const winnerModal = document.querySelector('.winner-modal');
 	const overlay = document.querySelector('.overlay');
 
@@ -56,6 +56,9 @@ export function openWinnerModal(winnerName) {
 					return ;
 				}
 				if (data.user.avatar) winnerImg.src = data.user.avatar;
+				if (type_party === 'Tournament' && data.user.alias)
+					winnerName = data.user.alias ? data.user.alias : winnerName;
+				winnerElement.textContent = winnerName;
 			});
 		
 		const winnerElement = document.getElementById('winner');
@@ -63,10 +66,6 @@ export function openWinnerModal(winnerName) {
 			console.error('Element not found');
 			return ;
 		}
-		console.log(winnerName);
-		console.log(winnerElement);
-		
-		winnerElement.textContent = winnerName;
 
 		winnerModal.classList.remove('winner-hidden');
 		overlay.classList.remove('display-hidden');

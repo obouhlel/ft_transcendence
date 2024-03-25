@@ -17,7 +17,11 @@
                         alt="Avatar" />
                     {% endif %}
                 </div>
+                {% if player1.alias and type == 'Tournament' %}
+                <p class="player-name">{{ player1.alias }}</p>
+                {% else %}
                 <p class="player-name">{{ player1.username }}</p>
+                {% endif %}
             </div>
             <p class="versus-text">VS</p>
             <div class="player-container player-two-container">
@@ -34,7 +38,11 @@
                         alt="Avatar" />
                     {% endif %}
                 </div>
+                {% if player2.alias and type == 'Tournament' %}
+                <p class="player-name">{{ player2.alias }}</p>
+                {% else %}
                 <p class="player-name">{{ player2.username }}</p>
+                {% endif %}
             </div>
 		</div>
 	</div>

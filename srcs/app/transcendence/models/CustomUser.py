@@ -58,6 +58,7 @@ class CustomUser(AbstractUser):
 			'first_name': self.first_name,
 			'last_name': self.last_name,
 			'username': self.username,
+			'alias': self.alias,
 			'avatar': self.avatar.url if self.avatar else None,
 			'is_active': self.is_active,
 			'is_superuser': self.is_superuser,

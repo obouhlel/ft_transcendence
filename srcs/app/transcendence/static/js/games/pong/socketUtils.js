@@ -61,8 +61,7 @@ function parseMessage(message, game) {
         UTILS.updateScore(game.scene, "You lose", game);
       }
       game.socket.close();
-      openWinnerModal(message["winner"]);
-      console.log(message);
+      openWinnerModal(message["winner"], message["type"]);
       if (message["type"] == "Matchmaking") {
 
         setTimeout(() => {
@@ -70,31 +69,22 @@ function parseMessage(message, game) {
         }, 3000);
       }
       else if (message["type"] == "Tournament") {
-        console.log(message)
         if (message["status"] == "finished") {
           setTimeout(() => {
-            // console.log("FINISHED TOURNAMENT");
             window.location.hash = "home";
           }, 3000);
         }
         else if (message["winner"] == message["username"]) {
-          // console.log("YOU WIN THIS ROUND, WAITING FOR NEXT ROUND");
-          // dont set timeout because the new url will be set by the server if we set timeout and redirect, we will not be able to see the next round
-          // setTimeout(() => {
-          //   console.log("NEXT ROUND");
-          //   if (message["id"] != undefined) window.location.hash = "lobby-tournament?id=" + message["id"];
-          // }, 3000);
+          console.log("Waiting for next round");
         }
         else {
           setTimeout(() => {
-            // console.log("BYE BYE TOURNAMENT");
             window.location.hash = "home";
           }, 3000);
         }
       }
     }
   } else if ("error" in message) {
-    // console.log(message["error"]);
     window.location.hash = "home";
   }
 }

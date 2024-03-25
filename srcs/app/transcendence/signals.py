@@ -2,9 +2,8 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from .models import FriendRequest, Tournament
+from .models import FriendRequest, Tournament, CustomUser
 from django.db.models.signals import m2m_changed
-import datetime
 
 @receiver(post_save, sender=FriendRequest)
 def notification_created(sender, instance, created, **kwargs):
@@ -28,6 +27,29 @@ def notification_deleted(sender, instance, **kwargs):
             "message": "Accepted",
         }
     )
+
+@receiver(post_save, sender=CustomUser)
+def user_status_changed(sender, instance, **kwargs):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send) (
+        "group_notify",
+        {
+            "type": "user_update",
+            "message": "Update",
+        }
+    )
+
+@receiver(m2m_changed, sender=CustomUser.list_friends.through)
+def friends_changed(sender, instance, action, **kwargs):
+    if action in ["post_add", "post_remove"]:
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send) (
+            "group_notify",
+            {
+                "type": "user_update",
+                "message": "Update",
+            }
+        )
 
 @receiver(m2m_changed, sender=Tournament.users.through)
 def tournament_players_changed(sender, instance, action, **kwargs):

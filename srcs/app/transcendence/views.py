@@ -93,7 +93,7 @@ def page(request, page):
 		try:
 			party = Party.objects.get(id=request.GET.get('party_id'))
 			context = {
-				'party': party,
+				'type': party.type,
 				'player1': party.player1,
 				'player2': party.player2,
 				'game': page

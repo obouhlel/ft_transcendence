@@ -45,7 +45,6 @@ def register_user(request):
 	avatar = None
 	if 'avatar' in request.FILES:
 		avatar = request.FILES['avatar']
-		
 
 	user = CustomUser.objects.create(
 		username=username,
