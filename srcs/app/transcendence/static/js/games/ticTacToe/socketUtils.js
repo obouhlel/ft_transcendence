@@ -73,15 +73,13 @@ function parseMessage(data, game) {
       }
       game.socket.close();
       game.isMyTurn = false;
-      // console.log(data);
-      openWinnerModal(data["winner"]);
+      openWinnerModal(data["winner"], message["type"]);
       setTimeout(() => {
         window.location.hash = "home";
       }, 3000);
     }
   }
   else if ("error" in data) {
-    // console.log(data["error"]);
     window.location.hash = "home";
   }
 }

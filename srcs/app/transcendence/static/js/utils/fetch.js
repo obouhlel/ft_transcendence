@@ -37,6 +37,10 @@ export const doRequest = {
 
         try {
             const response = await fetch(`${SERVER_URL}${url}`, options);
+            if (response.status === 401 || response.status === 403) {
+                window.location.href = '#login';
+                return ;
+            }
             const responseData = await response.json();
             if (callback)
                 callback(responseData);

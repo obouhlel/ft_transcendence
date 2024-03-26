@@ -10,7 +10,9 @@ RUN apk update && apk add --no-cache \
     python3-dev \
     libffi-dev
 
-RUN mkdir -p /app /var/www
+RUN mkdir -p /app /var/www /var/www/static /var/www/media
+
+COPY ./tools/default_avatar.png /var/www/media/
 
 WORKDIR /app
 

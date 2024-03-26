@@ -19,15 +19,15 @@ export async function handlerNotification() {
   };
 
   // on receiving message on group
-  notifyScoket.onmessage = function (e) {
+  notifyScoket.onmessage = async function (e) {
     const data = JSON.parse(e.data);
     const message = data.message;
-    const pages = hashChangeHandler();
+    let [page, params] = hashChangeHandler();
 
     if (message === "Send") {
       updateHeader();
     }
-    if (message === "Accepted" && pages[0] === "profile") {
+    if ((message === "Accepted" || message === "Update") && page === "profile") {
       show_dynamic_friends();
     }
   };
