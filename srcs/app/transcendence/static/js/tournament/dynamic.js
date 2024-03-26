@@ -40,7 +40,7 @@ export async function socketTournamentHandler() {
 
 						let imgElement = document.createElement("img");
 						imgElement.src = user.avatar
-							? `${user.avatar}`
+							? `/media/${user.avatar}`
 							: "/static/img/user-image.png";
 						imgElement.alt = `${user.username} Avatar`;
 

@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.csrf import ensure_csrf_cookie
 from transcendence.models import *
 from django.conf import settings
-from logging import getLogger
+
 
 error_pages = ['400', '401', '403', '404', '405']
 allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 'change-password',
@@ -12,7 +12,6 @@ allowed_pages = ['login', 'register', 'register-42', 'profile', 'edit_profile', 
 				'create-tournament', 'lobby-tournament', 'dashboard', 'game-info']
 games_pages = ['pong', 'tictactoe']
 
-logger = getLogger(__name__)
 
 @ensure_csrf_cookie
 def index(request):
@@ -24,7 +23,6 @@ def page(request, page):
 	context = {
 		'games': games,
 	}
-	logger.debug('page: ' + page)
 	if request.user.is_authenticated:
 		request.user.update_status('Online')
 	if page == 'home':
@@ -56,7 +54,6 @@ def page(request, page):
 			html_content = render_to_string('views/tournament.html', request=request, context={'tournaments': tournaments, 'game': game, 'user': user, 'current_tournament': current_tournament})
 			return JsonResponse({'html': html_content})
 		except game.DoesNotExist:
-			logger.error(e)
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})
 	if page == 'lobby-tournament' and request.user.is_authenticated:
@@ -68,7 +65,6 @@ def page(request, page):
 			html_content = render_to_string('views/lobby-tournament.html', request=request, context={'tournament': tournament})
 			return JsonResponse({'html': html_content})
 		except Exception as e:
-			logger.error(e)
 			html_content = render_to_string('error/404.html', request=request)
 			return JsonResponse({'html': html_content})
 	if page == 'create-tournament' and request.user.is_authenticated:
@@ -97,7 +93,7 @@ def page(request, page):
 		try:
 			party = Party.objects.get(id=request.GET.get('party_id'))
 			context = {
-				'party': party,
+				'type': party.type,
 				'player1': party.player1,
 				'player2': party.player2,
 				'game': page

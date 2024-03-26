@@ -8,13 +8,14 @@ export async function tournamentLobbyHandler() {
 
 	const messageElement = document.getElementById("message");
 	if (!messageElement)
-		return console.error('Element with id "message" not found');
+		return;
+		// return console.error('Element with id "message" not found');
 	if (data.status === "error") {
 		messageElement.textContent = data.message;
 		return ;
 	}
 
-	// const tournament = data.tournament;
+	const tournament = data.tournament;
 	// const nb_players = tournament.users.length;
 	// const nb_players_max = tournament.nb_player_to_start;
 

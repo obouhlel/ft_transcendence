@@ -15,7 +15,7 @@ export async function fetchUserDataAndRenderChart() {
   
       renderChart(demographics);
     } catch (error) {
-      console.error('Error fetching user data:', error);
+      // console.error('Error fetching user data:', error);
     }
   }
 

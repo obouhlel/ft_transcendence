@@ -4,7 +4,7 @@ export async function show_dynamic_stats(gameID) {
   if (!gameID) {
     const tabId = this.getAttribute("data-tab");
     if (!tabId) {
-      console.error('No tab ID class "data-tab" not found');
+      // console.error('No tab ID class "data-tab" not found');
       return;
     }
     gameID = tabId.slice(3);
@@ -24,10 +24,12 @@ export async function show_dynamic_stats(gameID) {
             );
       cards[3].textContent = data.stat.nb_played;
     } else {
-      console.error(data.message);
+      // console.error(data.message);
+      return;
     }
   } catch (error) {
-    console.error("Can't fetch stats users, because not logged in");
+    // console.error("Can't fetch stats users, because not logged in");
+    return;
   }
 }
 
@@ -40,7 +42,7 @@ export async function show_dynamic_history(gameID) {
     if (data.status === "ok") {
       const tbody = document.querySelector(".Matches .table .tbody");
       if (!tbody) {
-        console.error('Element with class "Matches table tbody" not found');
+        // console.error('Element with class "Matches table tbody" not found');
         return;
       }
       let html = "";
@@ -81,10 +83,12 @@ export async function show_dynamic_history(gameID) {
       }
       tbody.innerHTML = html;
     } else {
-      console.error(data.message);
+      // console.error(data.message);
+      return;
     }
   } catch (error) {
-    console.error("Can't fetch history, because not logged in");
+    // console.error("Can't fetch history, because not logged in");
+    return;
   }
 }
 

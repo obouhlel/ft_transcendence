@@ -17,12 +17,11 @@ class Stat_User_by_Game(models.Model):
 	def update(self,time:int, win: bool, draw: bool = False):
 		self.nb_played += 1
 		self.time_played += time
-		if draw:
-			pass
-		elif win:
-			self.nb_win += 1
-		else:
-			self.nb_lose += 1
+		if draw == False:
+			if win == True:
+				self.nb_win += 1
+			else:
+				self.nb_lose += 1
 		self.ratio = self.nb_win / self.nb_played
 		self.save()
 	def stat_user_by_game_data(self):
