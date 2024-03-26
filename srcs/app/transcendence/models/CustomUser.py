@@ -21,7 +21,7 @@ from .Game import Game
 # - date_joined
 class CustomUser(AbstractUser):
 	alias = models.CharField(max_length=30)
-	avatar = models.ImageField(upload_to='avatars/')
+	avatar = models.ImageField(upload_to='avatars/', default='/default_avatar.png')
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
 	birthdate = models.DateField(default=timezone.now)
