@@ -5,6 +5,7 @@ from django.utils import timezone
 from transcendence.models import CustomUser, Stat_User_by_Game, Game
 import pytz
 import re
+from PIL import Image
 
 @require_http_methods(['POST'])
 def register_user(request):
@@ -58,6 +59,10 @@ def register_user(request):
 	avatar = None
 	if 'avatar' in request.FILES:
 		avatar = request.FILES['avatar']
+		if not avatar.content_type.startswith('image'):
+			return JsonResponse({'status': 'error', 'message': 'Avatar must be an image.'}, status=400)
+		if avatar.size > 2 * 1024 * 1024:
+			return JsonResponse({'status': 'error', 'message': 'Avatar is too large.'}, status=400)
 
 	user = CustomUser.objects.create(
 		username=username,

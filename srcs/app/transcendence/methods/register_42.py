@@ -3,9 +3,11 @@ from django.contrib.auth.hashers import make_password
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import authenticate, login as django_login
 from django.utils import timezone
+from django.core.files.base import ContentFile
 from transcendence.models import CustomUser, Stat_User_by_Game, Game
 import re
 import pytz
+import requests
 
 @require_http_methods(['POST'])
 def register_42(request):
@@ -59,7 +61,14 @@ def register_42(request):
 	avatar = None
 	if 'avatar' in request.FILES:
 		avatar = request.FILES['avatar']
-
+		if not avatar.content_type.startswith('image'):
+			return JsonResponse({'status': 'error', 'message': 'Avatar must be an image.'}, status=400)
+		if avatar.size > 2 * 1024 * 1024:
+			return JsonResponse({'status': 'error', 'message': 'Avatar is too big.'}, status=400)
+	else:
+		avatar_url = request.session.pop('avatar')
+		avatar = ContentFile(requests.get(avatar_url).content, 'avatar.jpg')
+	
 	user = CustomUser.objects.create(
 		username=username,
 		password=make_password(password),

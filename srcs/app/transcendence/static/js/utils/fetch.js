@@ -46,8 +46,7 @@ export const doRequest = {
                 callback(responseData);
         }
         catch (error) {
-            return ;
-            // console.error("Can't do request post");
+            console.error("Can't do request post");
         }
     },
 

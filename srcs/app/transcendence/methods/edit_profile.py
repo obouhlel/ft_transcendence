@@ -4,6 +4,8 @@ from django.views.decorators.http import require_http_methods
 from transcendence.models import CustomUser
 import re
 import logging
+from django.db import models
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +17,9 @@ def edit_profile(request):
 	last_name = data.get("lastname")
 	first_name = data.get("firstname")
 	email = data.get("email")
-	avatar = request.FILES.get("avatar")
+	avatar = None
+	if len (request.FILES) > 0:
+		avatar = request.FILES["avatar"]
 
 	if not username:
 		return JsonResponse(
@@ -67,14 +71,51 @@ def edit_profile(request):
 		)
 
 	try:
-		CustomUser.objects.filter(username=request.user.username).update(
-			username=username,
-			first_name=first_name,
-			last_name=last_name,
-			email=email
-		)
+		user = CustomUser.objects.get(username=request.user.username)
+		if username:
+			#check if the username is already taken	
+			if CustomUser.objects.filter(username=username).exclude(id=user.id).exists():
+				return JsonResponse(
+					{"status": "error", "message": "Username already taken."}, status=400
+				)
+			user.username = username
+		if email:
+			#check if the email is already taken
+			if CustomUser.objects.filter(email=email).exclude(id=user.id).exists():
+				return JsonResponse(
+					{"status": "error", "message": "Email already taken."}, status=400
+				)
+			user.email = email
+		if first_name:
+			user.first_name = first_name
+		if last_name:
+			user.last_name = last_name
+		
 		if avatar:
-			CustomUser.objects.filter(username=request.user.username).update(avatar=avatar)
+			#check if the image is valid
+			try:
+				img = Image.open(avatar)
+				img.verify()
+			except Exception as e:
+				return JsonResponse(
+					{"status": "error", "message": "Invalid image."}, status=400
+				)
+
+			#check the image size
+			if avatar.size > 2 * 1024 * 1024:
+				return JsonResponse(
+					{"status": "error", "message": "Image size is too large."}, status=400
+				)
+
+			#delete the previous image
+			old_avatar = user.avatar
+			if old_avatar and old_avatar.name != 'avatars/default_avatar.png':
+				old_avatar.delete(save=False)
+			#save the new image
+			user.avatar =  avatar
+		user.save()
+
+			
 	except CustomUser.DoesNotExist:
 		return JsonResponse(
 			{"status": "error", "message": "User not found."}, status=404

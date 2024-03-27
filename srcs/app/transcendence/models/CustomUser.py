@@ -1,3 +1,5 @@
+import os
+import uuid
 from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
@@ -5,6 +7,10 @@ from django.db import models
 from django.utils import timezone
 from .Game import Game
 
+def get_file_path(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = "%s.%s" % (uuid.uuid4(), ext)
+    return os.path.join('avatars/', filename)
 
 # AbstractUser has the following fields:
 # - username
@@ -19,9 +25,13 @@ from .Game import Game
 # - is_superuser
 # - last_login
 # - date_joined
+
+import logging
+logger = logging.getLogger(__name__)	
+
 class CustomUser(AbstractUser):
 	alias = models.CharField(max_length=30)
-	avatar = models.ImageField(upload_to='avatars/', default='/default_avatar.png')
+	avatar = models.ImageField(upload_to=get_file_path, default='avatars/default_avatar.png')
 	status = models.CharField(max_length=30, default='Offline')
 	list_friends = models.ManyToManyField('self')
 	birthdate = models.DateField(default=timezone.now)
@@ -33,15 +43,11 @@ class CustomUser(AbstractUser):
 
 	def update_status(self, status: str):
 		self.status = status
-		self.save()
+		self.save(update_fields=['status']) #fix avatar update
 
 	def update_last_connexion(self):
 		self.last_connexion = timezone.now()
-		self.save()
-
-	def update_avatar(self, avatar: str):
-		self.avatar = avatar
-		self.save()
+		self.save(update_fields=['last_connexion'])
 
 	def user_data(self, minimal: bool = False):
 		if minimal:
@@ -109,6 +115,7 @@ class CustomUser(AbstractUser):
 		stat = self.stats.get(game=game)
 		stat.update(time, win, draw)
 		return game_id
+	
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)
