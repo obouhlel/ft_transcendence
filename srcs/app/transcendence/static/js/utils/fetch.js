@@ -37,16 +37,18 @@ export const doRequest = {
 
         try {
             const response = await fetch(`${SERVER_URL}${url}`, options);
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = '#login';
-                return ;
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (callback)
+                    callback(errorData);
+                throw new Error(`Error : ${response.statusText} - ${response.status} - ${errorData.message}`);
             }
             const responseData = await response.json();
             if (callback)
                 callback(responseData);
         }
         catch (error) {
-            console.error("Can't do request post");
+            return ;
         }
     },
 
@@ -68,7 +70,6 @@ export const doRequest = {
         }
         catch (error) {
             return ;
-            // console.error("Can't do request get");
         }
     },
 
@@ -83,12 +84,15 @@ export const doRequest = {
         };
         try {
             const response = await fetch(`${SERVER_URL}${url}`, options);
+            if (!response.ok) {
+                throw new Error(`Error : ${response.statusText} - ${response.status}`);
+            }
             const data = await response.json();
-            callback();
+            if (callback)
+                callback();
         }
         catch (error) {
             return ;
-            // console.error("Can't do request delete");
         }
     }
 };
