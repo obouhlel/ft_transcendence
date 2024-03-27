@@ -53,7 +53,7 @@ export function handleChangePassword() {
 		doRequest.post(`/api/change_password/`, data, (data) => {
 			if (data.status === 'ok')
 			{
-				window.location.hash = '#profile';
+				window.location.hash = '#home';
 			}
 			else if (data.status === 'error')
 			{

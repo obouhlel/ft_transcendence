@@ -1,16 +1,16 @@
-import os
-import uuid
+
 from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
 from .Game import Game
+from .utils import get_file_path
 
-def get_file_path(instance, filename):
-    ext = filename.split('.')[-1]
-    filename = "%s.%s" % (uuid.uuid4(), ext)
-    return os.path.join('avatars/', filename)
+# def get_file_path(instance, filename):
+# 	ext = filename.split('.')[-1]
+# 	filename = "%s.%s" % (uuid.uuid4(), ext)
+# 	return os.path.join('avatars/', filename)
 
 # AbstractUser has the following fields:
 # - username
@@ -37,6 +37,7 @@ class CustomUser(AbstractUser):
 	birthdate = models.DateField(default=timezone.now)
 	sexe = models.CharField(max_length=1, default='U')
 	token = models.CharField(max_length=128)
+
 
 	def __str__(self):
 		return f"{self.username}"
@@ -94,6 +95,7 @@ class CustomUser(AbstractUser):
 	def getStat(self):
 		list_stat = self.stats.all()
 		return [stat.stat_user_by_game_data() for stat in list_stat]
+
 	def joinLobby(self, game_id: int):
 		game = Game.objects.get(id=game_id)
 		lobby = game.lobby
@@ -103,6 +105,7 @@ class CustomUser(AbstractUser):
 			return None
 		lobby.users.add(self)
 		return game_id
+
 	def leaveLobby(self, game_id: int):
 		game = Game.objects.get(id=game_id)
 		lobby = game.lobby
@@ -110,12 +113,12 @@ class CustomUser(AbstractUser):
 			return None
 		lobby.users.remove(self)
 		return game_id
+
 	def updateStat(self, game_id: int, time: int, win: bool, draw: bool = False):
 		game = Game.objects.get(id=game_id)
 		stat = self.stats.get(game=game)
 		stat.update(time, win, draw)
 		return game_id
-	
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)

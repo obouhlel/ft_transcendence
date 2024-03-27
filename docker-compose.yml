@@ -11,6 +11,8 @@ services:
         interval: 10s
         timeout: 5s
         retries: 5
+    volumes:
+      - db_data:/var/lib/postgresql/data
 
   web:
     container_name: web
@@ -56,3 +58,6 @@ volumes:
     driver: local
   mediafiles:
     driver: local
+  db_data:
+    driver: local
+  

@@ -18,20 +18,21 @@ def register_user(request):
 	lastname = data.get('lastname')
 	sexe = data.get('sexe')
 	birthdate = data.get('birthdate')
+	data_list = [username, password, email, firstname, lastname]
+
+	for data in data_list:
+		if data is None or data == '':
+			return JsonResponse({'status': 'error', 'message': 'All fields are required.'}, status=400)
+	
+	if not birthdate:
+		return JsonResponse({'status': 'error', 'message': 'Birthdate is required.'}, status=400)
 
 	if not re.match('^[a-zA-Z0-9_-]{3,20}$', username):
 		return JsonResponse({'status': 'error', 'message': 'Invalid username. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', firstname):
-		return JsonResponse({'status': 'error', 'message': 'Invalid first name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
-
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', lastname):
-		return JsonResponse({'status': 'error', 'message': 'Invalid last name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
-
 	if not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
 		return JsonResponse({'status': 'error', 'message': 'Invalid email address.'}, status=400)
 
-	data_list = [username, password, email, firstname, lastname]
 	for data in data_list:
 		if len(data) > 50:
 			return JsonResponse({'status': 'error', 'message': 'Data is too long.'}, status=400)
