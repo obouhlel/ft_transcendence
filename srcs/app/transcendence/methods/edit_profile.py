@@ -58,7 +58,7 @@ def edit_profile(request):
 			status=400,
 		)
 
-	if not re.match("^[a-zA-Z0-9_-]{3,20}$", first_name):
+	if not re.match("^[a-zA-Z0-9_-]{1,20}$", first_name):
 		return JsonResponse(
 			{
 				"status": "error",
@@ -67,7 +67,7 @@ def edit_profile(request):
 			status=400,
 		)
 
-	if not re.match("^[a-zA-Z0-9_-]{3,20}$", last_name):
+	if not re.match("^[a-zA-Z0-9_-]{1,20}$", last_name):
 		return JsonResponse(
 			{
 				"status": "error",

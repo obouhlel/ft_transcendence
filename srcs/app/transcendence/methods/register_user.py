@@ -30,10 +30,10 @@ def register_user(request):
 	if not re.match('^[a-zA-Z0-9_-]{3,20}$', username):
 		return JsonResponse({'status': 'error', 'message': 'Invalid username. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', firstname):
+	if not re.match('^[a-zA-Z0-9_-]{1,20}$', firstname):
 		return JsonResponse({'status': 'error', 'message': 'Invalid first name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', lastname):
+	if not re.match('^[a-zA-Z0-9_-]{1,20}$', lastname):
 		return JsonResponse({'status': 'error', 'message': 'Invalid last name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
 	if not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
