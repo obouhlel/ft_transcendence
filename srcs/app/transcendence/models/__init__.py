@@ -1,4 +1,4 @@
-from .CustomUser import CustomUser, FriendRequest
+from .CustomUser import *
 from .Stat import *
 from .Game import *
 from .Lobby import *

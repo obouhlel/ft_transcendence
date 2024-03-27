@@ -1,16 +1,16 @@
-import os
-import uuid
+
 from typing import Any
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext as _
 from django.db import models
 from django.utils import timezone
 from .Game import Game
+from .utils import get_file_path
 
-def get_file_path(instance, filename):
-	ext = filename.split('.')[-1]
-	filename = "%s.%s" % (uuid.uuid4(), ext)
-	return os.path.join('avatars/', filename)
+# def get_file_path(instance, filename):
+# 	ext = filename.split('.')[-1]
+# 	filename = "%s.%s" % (uuid.uuid4(), ext)
+# 	return os.path.join('avatars/', filename)
 
 # AbstractUser has the following fields:
 # - username
@@ -37,6 +37,7 @@ class CustomUser(AbstractUser):
 	birthdate = models.DateField(default=timezone.now)
 	sexe = models.CharField(max_length=1, default='U')
 	token = models.CharField(max_length=128)
+
 
 	def __str__(self):
 		return f"{self.username}"
@@ -118,11 +119,6 @@ class CustomUser(AbstractUser):
 		stat = self.stats.get(game=game)
 		stat.update(time, win, draw)
 		return game_id
-	
-	def get_file_path(instance, filename):
-		ext = filename.split('.')[-1]
-		filename = "%s.%s" % (uuid.uuid4(), ext)
-		return os.path.join('avatars/', filename)
 
 class FriendRequest(models.Model):
 	id = models.AutoField(primary_key=True)

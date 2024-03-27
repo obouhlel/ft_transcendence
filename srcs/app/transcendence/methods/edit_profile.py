@@ -9,6 +9,8 @@ from PIL import Image
 
 logger = logging.getLogger(__name__)
 
+def error_response(message):
+	return JsonResponse({"status": "error", "message": message + " is required."}, status=400)
 
 @require_http_methods(["POST"])
 def edit_profile(request):
@@ -18,14 +20,13 @@ def edit_profile(request):
 	first_name = data.get("firstname")
 	email = data.get("email")
 	password = data.get("password")
+	data_list = [username, password, email, first_name, last_name]
 	avatar = None
 	if len (request.FILES) > 0:
 		avatar = request.FILES["avatar"]
 
 	if not password:
-		return JsonResponse(
-			{"status": "error", "message": "Password is required."}, status=400
-		)
+		return error_response("Password")
 	
 	if not check_password(password, request.user.password):
 		return JsonResponse(
@@ -33,45 +34,25 @@ def edit_profile(request):
 		)
 
 	if not username:
-		return JsonResponse(
-			{"status": "error", "message": "Username is required."}, status=400
-		)
+		return error_response("Username")
+	
 	if not last_name:
-		return JsonResponse(
-			{"status": "error", "message": "Last name is required."}, status=400
-		)
+		return error_response("Last name")
 	if not first_name:
-		return JsonResponse(
-			{"status": "error", "message": "First name is required."}, status=400
-		)
+		return error_response("First name")
+	
 	if not email:
-		return JsonResponse(
-			{"status": "error", "message": "Email is required."}, status=400
-		)
+		return error_response("Email")
 
+	for d in data_list:
+		if len(d) > 50:
+			return JsonResponse({'status': 'error', 'message': 'Data is too long.'}, status=400)
+		
 	if not re.match("^[a-zA-Z0-9_-]{3,20}$", username):
 		return JsonResponse(
 			{
 				"status": "error",
 				"message": "Invalid username. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.",
-			},
-			status=400,
-		)
-
-	if not re.match("^[a-zA-Z0-9_-]{1,20}$", first_name):
-		return JsonResponse(
-			{
-				"status": "error",
-				"message": "Invalid first name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.",
-			},
-			status=400,
-		)
-
-	if not re.match("^[a-zA-Z0-9_-]{1,20}$", last_name):
-		return JsonResponse(
-			{
-				"status": "error",
-				"message": "Invalid last name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.",
 			},
 			status=400,
 		)
