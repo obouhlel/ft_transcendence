@@ -108,9 +108,11 @@ def page(request, page):
 			data = request.session.get('data')
 			context = { 'data': data }
 			token = data.get('token')
+			avatar = data.get('avatar')
 			html_content = render_to_string('views/register-42.html', context, request=request)
 			request.session.pop('data')
 			request.session['token'] = token
+			request.session['avatar'] = avatar
 			return JsonResponse({'html': html_content})
 		except:
 			html_content = render_to_string('error/404.html', request=request)

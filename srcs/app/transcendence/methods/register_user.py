@@ -5,6 +5,7 @@ from django.utils import timezone
 from transcendence.models import CustomUser, Stat_User_by_Game, Game
 import pytz
 import re
+from PIL import Image
 
 @require_http_methods(['POST'])
 def register_user(request):
@@ -17,20 +18,27 @@ def register_user(request):
 	lastname = data.get('lastname')
 	sexe = data.get('sexe')
 	birthdate = data.get('birthdate')
+	data_list = [username, password, email, firstname, lastname]
+
+	for data in data_list:
+		if data is None or data == '':
+			return JsonResponse({'status': 'error', 'message': 'All fields are required.'}, status=400)
+	
+	if not birthdate:
+		return JsonResponse({'status': 'error', 'message': 'Birthdate is required.'}, status=400)
 
 	if not re.match('^[a-zA-Z0-9_-]{3,20}$', username):
 		return JsonResponse({'status': 'error', 'message': 'Invalid username. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', firstname):
+	if not re.match('^[a-zA-Z0-9_-]{1,20}$', firstname):
 		return JsonResponse({'status': 'error', 'message': 'Invalid first name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
-	if not re.match('^[a-zA-Z0-9_-]{3,20}$', lastname):
+	if not re.match('^[a-zA-Z0-9_-]{1,20}$', lastname):
 		return JsonResponse({'status': 'error', 'message': 'Invalid last name. Use only alphanumeric characters, dashes and underscores. Length must be between 3 and 20 characters.'}, status=400)
 
 	if not re.match('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email):
 		return JsonResponse({'status': 'error', 'message': 'Invalid email address.'}, status=400)
 
-	data_list = [username, password, email, firstname, lastname]
 	for data in data_list:
 		if len(data) > 50:
 			return JsonResponse({'status': 'error', 'message': 'Data is too long.'}, status=400)
@@ -58,6 +66,10 @@ def register_user(request):
 	avatar = None
 	if 'avatar' in request.FILES:
 		avatar = request.FILES['avatar']
+		if not avatar.content_type.startswith('image'):
+			return JsonResponse({'status': 'error', 'message': 'Avatar must be an image.'}, status=400)
+		if avatar.size > 2 * 1024 * 1024:
+			return JsonResponse({'status': 'error', 'message': 'Avatar is too large.'}, status=400)
 
 	user = CustomUser.objects.create(
 		username=username,

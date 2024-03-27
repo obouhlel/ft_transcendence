@@ -1,4 +1,4 @@
-import { pageHandlers } from "./pages.js";
+import { pageHandlers, pageHandlersNotLoggedIn } from "./pages.js";
 import { handleLoginFormSubmit } from "./form/login.js";
 import { handleLogout } from "./utils/logout.js";
 import { dropdown, responsiveNav } from "./header.js";
@@ -53,16 +53,25 @@ export async function executeHandlers(page) {
   }
 }
 
+function executeHandlersNotLoggedIn(page) {
+  if (!pageHandlersNotLoggedIn[page]) return;
+  for (const func of pageHandlersNotLoggedIn[page]) {
+    func();
+  }
+}
+
 async function showPage(page, params) {
   const data_header = await doRequest.get(`/update_header/${page}/`);
   const header_content = document.getElementById("header");
   header_content.innerHTML = data_header.html;
 
+  const isLogged = is_logged_in();
+
   const data_page = await doRequest.get(`/pages/${page}${params ? "?" + params : ""}`);
   const page_content = document.getElementById("page");
   page_content.innerHTML = data_page.html;
-  const isLogged = is_logged_in();
-  if (!isLogged && page === "home") handleLoginFormSubmit();
+
+  if (!isLogged) executeHandlersNotLoggedIn(page);
   else if (pageHandlers[page]) executeHandlers(page);
 
   if (isLogged) {

@@ -38,9 +38,6 @@ import { aliasFormsHandler } from "./tournament/aliasForms.js";
 
 export const pageHandlers = {
 	"400": [message],
-	"login": [handleLoginFormSubmit],
-	"register": [handleRegisterFormSubmit, changeAvatar],
-	"register-42": [handleRegister42FormSubmit, changeAvatar],
 	"dashboard": [
 		setupTabEventListeners,
 		fetchUserDataAndRenderChart,
@@ -66,4 +63,12 @@ export const pageHandlers = {
 	"tournament": [socketTournamentHandler, tournamentHandler, aliasFormsHandler],
 	"create-tournament": [createTournamentHandler],
 	"lobby-tournament": [socketTournamentHandler, tournamentLobbyHandler],
+};
+
+export const pageHandlersNotLoggedIn = {
+	"400": [message],
+	"home": [handleLoginFormSubmit],
+	"login": [handleLoginFormSubmit],
+	"register": [handleRegisterFormSubmit, changeAvatar],
+	"register-42": [handleRegister42FormSubmit, changeAvatar],
 };

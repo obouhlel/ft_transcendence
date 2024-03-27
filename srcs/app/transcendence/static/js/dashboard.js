@@ -86,7 +86,7 @@ export async function fetchUserDataAndProcessAges() {
 
     renderAgeDemographicsChart(ageRanges);
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    // console.error('Error fetching user data:', error);
   }
 }
 
@@ -171,7 +171,7 @@ async function fetchLeaderboardData(gameId) {
       usersData: usersResponse,
     };
   } catch (error) {
-    console.error("Error fetching data:", error);
+    // console.error("Error fetching data:", error);
     return { leaderboardData: null, usersData: null };
   }
 }
@@ -326,7 +326,7 @@ export async function updateDashboardDisplay(gameId) {
       updateDashboardStats(leaderboard);
       updateWinLossChart(leaderboard);
   } else {
-      console.error("Failed to fetch data");
+      // console.error("Failed to fetch data");
   }
 }
 

@@ -7,6 +7,8 @@ from django.views.decorators.http import require_http_methods
 from django.core.files.base import ContentFile
 from urllib.parse import urlencode
 import requests
+import logging
+logger = logging.getLogger(__name__)
 
 def get_access_token(code, request):
     token_url = 'https://api.intra.42.fr/oauth/token'
@@ -54,6 +56,7 @@ def save_user_data(user_data, access_token):
         'first_name': user_data['usual_first_name'] if user_data['usual_first_name'] else user_data['first_name'],
         'last_name': user_data['last_name'],
         'token': access_token,
+        'avatar': user_data['image']['link'],
     }
     return data
 

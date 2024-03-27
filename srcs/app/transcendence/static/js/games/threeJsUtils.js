@@ -20,7 +20,7 @@ async function loadAndSetFont(url) {
         theFont = font;
     }
 	catch (error) {
-        console.error("the font could not be loaded: " + error);
+        // console.error("the font could not be loaded: " + error);
     }
 }
 

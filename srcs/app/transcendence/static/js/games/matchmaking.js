@@ -97,7 +97,7 @@ function socketListener(socket) {
   };
 
   socket.onerror = function (error) {
-    console.error(error);
+    // console.error(error);
   };
 }
 

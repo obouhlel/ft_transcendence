@@ -6,7 +6,7 @@
 		<form method="post" id="register-form">
 			{% csrf_token %}
 			<div class="avatar-upload-container">
-				<img src="{% static 'img/avatar-placeholder.png' %}" class="avatar-placeholder" id="avatar-preview"
+				<img src="{{data.avatar}}" class="avatar-placeholder" id="avatar-preview"
 					alt="user" />
 				<input type="file" id="avatar" name="avatar" accept="image/*" style="display: none" />
 				<div class="image-upload-area">

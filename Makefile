@@ -29,10 +29,14 @@ stop:
 	docker compose stop
 
 clean:
+	find . -type d -name __pycache__ -exec rm -r {} +
 	rm -rf srcs/app/transcendence/migrations/0*.py
 
 fclean: clean stop
-	docker system prune -a -f
+	docker system prune -a -f --volumes
+	if [ "$$(docker volume ls -q)" != "" ]; then \
+		docker volume rm $$(docker volume ls -q); \
+	fi
 
 re: fclean all
 

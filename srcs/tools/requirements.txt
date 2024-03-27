@@ -17,4 +17,4 @@ Pillow
 requests
 
 # Update the front end (need to remove after the end of the project)
-watchfiles
+# watchfiles
