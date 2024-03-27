@@ -38,9 +38,6 @@ import { aliasFormsHandler } from "./tournament/aliasForms.js";
 
 export const pageHandlers = {
 	"400": [message],
-	// "login": [handleLoginFormSubmit],
-	// "register": [handleRegisterFormSubmit, changeAvatar],
-	// "register-42": [handleRegister42FormSubmit, changeAvatar],
 	"dashboard": [
 		setupTabEventListeners,
 		fetchUserDataAndRenderChart,
